@@ -8,7 +8,7 @@ var app = builder.Build();
 builder.Services
     .AddApplication()
     .AddInfrastructure()
-    .AddPersistence();
+    .AddPersistence(builder.Configuration);
 
 app.MapGet("/", () => "Welcome to task tracker!");
 
