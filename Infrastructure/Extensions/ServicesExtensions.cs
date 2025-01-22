@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastructure;
+namespace Infrastructure.Extensions;
 
-public static class DependencyInjection
+public static class ServicesExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
