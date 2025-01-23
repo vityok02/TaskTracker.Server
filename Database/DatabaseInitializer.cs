@@ -25,12 +25,12 @@ public class DatabaseInitializer
             .SqlDatabase(_connectionString)
             .WithTransaction()
             .WithScriptsEmbeddedInAssembly(typeof(DatabaseInitializer).Assembly)
-            .LogToConsole()
+            .LogTo(_logger)
             .Build();
 
         if (!upgrader.IsUpgradeRequired())
         {
-            _logger.LogInformation("Database is already up to date");
+            _logger.LogInformation("Database is already updated");
             return;
         }
 
