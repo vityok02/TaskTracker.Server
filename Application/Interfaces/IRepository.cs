@@ -2,16 +2,16 @@
 
 namespace Application.Interfaces;
 
-public interface IRepository<TEntity> 
+public interface IRepository<TEntity, TId> 
     where TEntity : BaseEntity
 {
-    Task<TEntity> GetByIdAsync(Guid id);
+    Task<TEntity?> GetByIdAsync(TId id);
 
     Task<IEnumerable<TEntity>> GetAllAsync();
 
-    Task CreateAsync(TEntity entity);
+    Task<TId> CreateAsync(TEntity entity);
 
     Task UpdateAsync(TEntity entity);
 
-    Task DeleteAsync(Guid id);
+    Task DeleteAsync(TId id);
 }
