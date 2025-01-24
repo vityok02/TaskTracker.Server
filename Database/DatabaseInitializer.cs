@@ -33,7 +33,7 @@ public class DatabaseInitializer
             _logger.LogInformation("Database is already updated");
             return;
         }
-
+        
         var result = upgrader.PerformUpgrade();
 
         if (!result.Successful)

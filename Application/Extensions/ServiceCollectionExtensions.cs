@@ -2,7 +2,7 @@
 
 namespace Application.Extensions;
 
-public static class ServicesExtensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
