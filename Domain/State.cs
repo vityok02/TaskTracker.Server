@@ -2,9 +2,11 @@
 
 namespace Domain;
 
-public class State : BaseEntity
+public class State : AuditableEntity
 {
+    public int Number { get; private set; }
     public string Name { get; private set; }
+    public string Description { get; private set; }
 
     private State(string name)
     {

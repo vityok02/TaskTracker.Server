@@ -1,23 +1,37 @@
 ﻿using Domain.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain;
 
 public class User : BaseEntity
 {
-    public string UserName { get; private set; }
-    
+    public string UserName { get; private set; } = string.Empty;
+    public string Email { get; private set; } = string.Empty;
+    public string Password { get; private set; } = string.Empty;
     public ICollection<Project> Projects { get; private set; } = [];
 
-    private User(Guid id, string userName)
+    private User(Guid id, string userName, string email, string password)
     {
         Id = id;
         UserName = userName;
+        Email = email;
+        Password = password;
     }
 
-    public static User Create(Guid id, string userName)
+    private User()
+    { }
+
+    public static User Create(Guid id, string userName, string email, string password)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
+        ArgumentException.ThrowIfNullOrWhiteSpace(password);
 
-        return new User(id, userName);
+        if (!email.Contains('@'))
+        {
+            throw new ArgumentException("Email must contain '@'.");
+        }
+
+        return new User(id, userName, email, password);
     }
 }

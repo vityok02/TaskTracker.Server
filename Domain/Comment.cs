@@ -1,15 +1,13 @@
-﻿using Domain.Abstract;
+﻿namespace Domain;
 
-namespace Domain;
-
-public class Comment : BaseEntity
+public class Comment : AuditableEntity
 {
-    public string Content { get; private set; }
+    public string Name { get; private set; }
     public AppTask Task { get; private set; }
 
-    private Comment(string content, AppTask task)
+    private Comment(string name, AppTask task)
     {
-        Content = content;
+        Name = name;
         Task = task;
     }
 
