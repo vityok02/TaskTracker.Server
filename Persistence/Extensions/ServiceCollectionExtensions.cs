@@ -1,8 +1,9 @@
-﻿using Application.Interfaces;
+﻿using Application.Interfaces.Base;
+using Application.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence.Abstractions;
 using Persistence.Repositories;
+using Persistence.Repositories.Base;
 
 namespace Persistence.Extensions;
 
@@ -11,10 +12,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddScoped<AppDbContext>(p => 
-                new AppDbContext(configuration.GetConnectionString("localdb")!))
-            .AddScoped(typeof(IEntityAttributeValuesProvider<>), typeof(EntityAttributeValuesProvider<>))
-            .AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+            .AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>()
+            .AddScoped(typeof(IRepository<,>), typeof(GenericRepository<,>))
+            .AddScoped<IUserRepository, UserRepository>()
+            //.AddScoped(typeof(IUserRepository<>))
+            ;
 
         return services;
     }
