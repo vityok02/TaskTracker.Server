@@ -1,9 +1,6 @@
 using Api.Extensions;
-using Api.Users;
 using Application.Extensions;
-using Application.Interfaces;
 using Database;
-using Domain;
 using Infrastructure.Extensions;
 using Persistence.Extensions;
 
@@ -35,13 +32,6 @@ var dbInitializer = new DatabaseInitializer(
 
 dbInitializer.Initialize();
 
-app.MapPost("/users", async (
-    IRepository<User, Guid> userRepository,
-    CreateUserDto userDto) =>
-{
-    User user = User.Create(Guid.NewGuid(), userDto.UserName);
-
-    await userRepository.CreateAsync(user);
-});
+app.MapControllers();
 
 app.Run();

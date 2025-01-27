@@ -1,8 +1,8 @@
 ﻿using Domain.Abstract;
 
-namespace Application.Interfaces;
+namespace Application.Interfaces.Base;
 
-public interface IRepository<TEntity, TId> 
+public interface IRepository<TEntity, TId>
     where TEntity : BaseEntity
 {
     Task<TEntity?> GetByIdAsync(TId id);
