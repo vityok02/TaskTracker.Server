@@ -54,7 +54,7 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
         string tableName = _entityAttributeValuesProvider.GetTableName();
         string columns = _entityAttributeValuesProvider.GetColumns(excludeKey: true);
         string properties = _entityAttributeValuesProvider.GetPropertyNames(excludeKey: true);
-        string query = $"INSERT INTO {tableName} ({columns}) VALUES ({properties}) RETURNING Id";
+        string query = $"INSERT INTO [{tableName}] ({columns}) VALUES ({properties}) SELECT SCOPE_IDENTITY()";
 
         var id = await connection.ExecuteScalarAsync(query, entity);
 

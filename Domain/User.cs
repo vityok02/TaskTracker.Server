@@ -5,6 +5,7 @@ namespace Domain;
 public class User : BaseEntity
 {
     public string UserName { get; private set; }
+    
     public ICollection<Project> Projects { get; private set; } = [];
 
     private User(Guid id, string userName)
