@@ -17,6 +17,16 @@ builder.Services
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(o =>
+    {
+        o.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        o.RoutePrefix = string.Empty;
+    });
+}
+
 using var scope = app.Services.CreateScope();
 var sp = scope.ServiceProvider;
 var dbInitializer = new DatabaseInitializer(
@@ -24,8 +34,6 @@ var dbInitializer = new DatabaseInitializer(
     sp.GetRequiredService<ILogger<DatabaseInitializer>>());
 
 dbInitializer.Initialize();
-
-app.MapGet("/", () => "Welcome to task tracker!");
 
 app.MapPost("/users", async (
     IRepository<User, Guid> userRepository,
