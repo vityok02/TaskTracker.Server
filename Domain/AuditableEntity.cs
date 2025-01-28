@@ -11,13 +11,13 @@ public abstract class AuditableEntity : BaseEntity
 
     public virtual void Create(Guid createdBy, DateTime createdAt)
     {
-        CreatedAt = DateTime.Now;
+        CreatedAt = createdAt;
         CreatedBy = createdBy;
     }
 
-    public virtual void Update(Guid updatedBy)
+    public virtual void Update(Guid updatedBy, DateTime updatedAt)
     {
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = updatedAt;
         UpdatedBy = updatedBy;
     }
 }

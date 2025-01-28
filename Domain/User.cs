@@ -1,5 +1,4 @@
 ﻿using Domain.Abstract;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain;
 
@@ -33,5 +32,10 @@ public class User : BaseEntity
         }
 
         return new User(id, userName, email, password);
+    }
+
+    public void AddProject(Project project)
+    {
+        Projects.Add(project);
     }
 }
