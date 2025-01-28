@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Extensions;
 
-public static class ServicesExtensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
