@@ -1,6 +1,6 @@
 ﻿using Domain.Abstract;
 
-namespace Application.Interfaces.Base;
+namespace Application.Abstract.Interfaces.Base;
 
 public interface IRepository<TEntity, TId>
     where TEntity : BaseEntity
