@@ -1,5 +1,5 @@
-﻿using Application.Interfaces.Base;
-using Application.Interfaces.Repositories;
+﻿using Application.Abstract.Interfaces.Base;
+using Application.Abstract.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Repositories;

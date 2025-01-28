@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Base;
+﻿using Application.Abstract.Interfaces.Base;
 using Dapper;
 using Domain.Abstract;
 
@@ -18,8 +18,7 @@ public class GenericRepository<TEntity, TId> : IRepository<TEntity, TId>
     {
         using var connection = _connectionFactory.Create();
 
-        var result = await connection.InsertAsync<TId, TEntity>(entity);
-        return result;
+        return await connection.InsertAsync<TId, TEntity>(entity);
     }
 
     public async Task DeleteAsync(TId id)
@@ -33,18 +32,14 @@ public class GenericRepository<TEntity, TId> : IRepository<TEntity, TId>
     {
         using var connection = _connectionFactory.Create();
 
-        var entities = await connection.GetListAsync<TEntity>();
-
-        return entities;
+        return await connection.GetListAsync<TEntity>();
     }
 
     public async Task<TEntity?> GetByIdAsync(TId id)
     {
         using var connection = _connectionFactory.Create();
 
-        var entity = await connection.GetAsync<TEntity>(id);
-
-        return entity;
+        return await connection.GetAsync<TEntity>(id);
     }
 
     public async Task UpdateAsync(TEntity entity)

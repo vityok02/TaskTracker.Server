@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Repositories;
+﻿using Application.Abstract.Interfaces.Repositories;
 using Domain;
 using Persistence.Repositories.Base;
 
