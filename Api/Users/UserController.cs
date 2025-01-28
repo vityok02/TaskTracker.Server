@@ -1,18 +1,20 @@
-﻿using Api.Users.Dtos;
-using Application.Interfaces.Repositories;
+﻿using Api.Base;
+using Api.Users.Dtos;
+using Application.Users.RegisterUser;
+using Application.Users.GetUser;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Users;
 [Route("users")]
 [ApiController]
-public class UserController : ControllerBase
+public sealed class UserController : ApiController
 {
-    private readonly IUserRepository _userRepository;
     private readonly LinkGenerator _linkGenerator;
 
-    public UserController(IUserRepository userRepository, LinkGenerator linkGenerator)
+    public UserController(ISender sender, LinkGenerator linkGenerator)
+        : base(sender)
     {
-        _userRepository = userRepository;
         _linkGenerator = linkGenerator;
     }
 
@@ -21,22 +23,34 @@ public class UserController : ControllerBase
     [Route("{id:guid}")]
     public async Task<IActionResult> GetUser([FromRoute] Guid id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
-        return Ok(user);
+        var result = await Sender.Send(new GetUserQuery(id));
+
+        return result.IsFailure
+            ? NotFound(result.Error)
+            : Ok(result.Value);
     }
 
     [HttpPost]
-    [ActionName("CreateUser")]
-    public async Task<IActionResult> CreateUser(
-        [FromBody] CreateUserDto userDto)
+    [ActionName("RegisterUser")]
+    public async Task<IActionResult> RegisterUser(
+        [FromBody] RegisterUserRequest userDto)
     {
-        // password logic
-        var user = Domain.User.Create(Guid.NewGuid(), userDto.UserName, userDto.Email, userDto.Password);
+        var result = await Sender.Send(new RegisterUserCommand(userDto));
 
-        var id = await _userRepository.CreateAsync(user);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
 
-        var uri = _linkGenerator.GetUriByAction(HttpContext, "GetUser", values: new { id });
+        var uri = _linkGenerator.GetUriByAction(HttpContext, "GetUser", values: new { result.Value.Id });
 
-        return Created(uri, new UserDetailsDto(user.Id, user.UserName, user.Email));
+        return Created(uri, result.Value);
+    }
+
+    [HttpPost]
+    [ActionName("CreateProject")]
+    public async Task<IActionResult> CreateProject()
+    {
+        return Ok();
     }
 }
