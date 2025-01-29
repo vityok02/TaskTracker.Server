@@ -1,5 +1,5 @@
 ﻿using Application.Abstract.Interfaces;
-using Application.Users;
+using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Extensions;
@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly))
+            .AddScoped<IDateTimeService, DateTimeService>()
             .AddScoped<IPasswordHasher, PasswordHasher>()
             ;
 

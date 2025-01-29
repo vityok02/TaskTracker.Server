@@ -36,6 +36,11 @@ public class User : BaseEntity
 
     public void AddProject(Project project)
     {
+        if (Projects.Any(p => p.Equals(project)))
+        {
+            throw new ArgumentException("Project already exists in user.");
+        }
+
         Projects.Add(project);
     }
 }

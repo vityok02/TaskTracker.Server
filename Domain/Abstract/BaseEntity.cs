@@ -16,7 +16,7 @@ public abstract class BaseEntity
             return false;
         }
 
-        return Id == other.Id;
+        return Equals(Id, other.Id);
     }
 
     public override int GetHashCode()
