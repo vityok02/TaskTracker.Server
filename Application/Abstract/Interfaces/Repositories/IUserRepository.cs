@@ -5,4 +5,5 @@ namespace Application.Abstract.Interfaces.Repositories;
 
 public interface IUserRepository : IRepository<User, Guid>
 {
+    Task<User?> GetByEmailAsync(string email);
 }

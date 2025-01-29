@@ -4,6 +4,7 @@ using Application.Abstract.Messaging;
 using Application.Users.GetUser;
 using Domain.Abstract;
 using Domain.Entities;
+using Domain.Errors;
 
 namespace Application.Users.RegisterUser;
 

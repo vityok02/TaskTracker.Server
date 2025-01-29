@@ -4,5 +4,5 @@ using Application.Users.GetUser;
 
 namespace Application.Users.RegisterUser;
 
-public sealed record RegisterUserCommand(RegisterUserRequest UserDto)
+public sealed record RegisterUserCommand(RegisterRequest UserDto)
     : ICommand<UserResponse>;

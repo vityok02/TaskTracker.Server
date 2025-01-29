@@ -1,11 +1,19 @@
 using Api.Extensions;
+using Api.OptionsSetup;
 using Application.Extensions;
 using Database;
 using Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Persistence.Extensions;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+
+builder.Services.ConfigureOptions<JwtOptionsSetup>();
+builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
 
 builder.Services
     .AddApplication()
@@ -29,6 +37,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseSerilogRequestLogging();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 using var scope = app.Services.CreateScope();
 var sp = scope.ServiceProvider;
