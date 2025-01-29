@@ -23,7 +23,11 @@ public class Result<TValue> : Result
     }
 
     public static Result<TValue> Success(TValue value) => new(value);
+
     public new static Result<TValue> Failure(Error error) => new(error);
+
     public new static Result<TValue> Failure(string code, string? description = null) => new(code, description);
+
+    public static implicit operator Result<TValue>(TValue value) => Success(value);
 }
 
