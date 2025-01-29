@@ -32,6 +32,7 @@ app.UseSerilogRequestLogging();
 
 using var scope = app.Services.CreateScope();
 var sp = scope.ServiceProvider;
+
 var dbInitializer = new DatabaseInitializer(
     builder.Configuration.GetConnectionString("localdb")!,
     sp.GetRequiredService<ILogger<DatabaseInitializer>>());
