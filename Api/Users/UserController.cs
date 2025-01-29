@@ -4,18 +4,16 @@ using Application.Users.RegisterUser;
 using Application.Users.GetUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Application.Projects.CreateProject;
 
 namespace Api.Users;
 [Route("users")]
 [ApiController]
 public sealed class UserController : ApiController
 {
-    private readonly LinkGenerator _linkGenerator;
-
     public UserController(ISender sender, LinkGenerator linkGenerator)
-        : base(sender)
+        : base(sender, linkGenerator)
     {
-        _linkGenerator = linkGenerator;
     }
 
     [HttpGet]
@@ -32,6 +30,7 @@ public sealed class UserController : ApiController
 
     [HttpPost]
     [ActionName("RegisterUser")]
+    [Route("register")]
     public async Task<IActionResult> RegisterUser(
         [FromBody] RegisterUserRequest userDto)
     {
@@ -42,15 +41,8 @@ public sealed class UserController : ApiController
             return BadRequest(result.Error);
         }
 
-        var uri = _linkGenerator.GetUriByAction(HttpContext, "GetUser", values: new { result.Value.Id });
+        var uri = LinkGenerator.GetUriByAction(HttpContext, "GetUser", values: new { result.Value.Id });
 
         return Created(uri, result.Value);
-    }
-
-    [HttpPost]
-    [ActionName("CreateProject")]
-    public async Task<IActionResult> CreateProject()
-    {
-        return Ok();
     }
 }
