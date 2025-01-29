@@ -4,12 +4,12 @@ using Domain.Abstract;
 
 namespace Persistence.Repositories.Base;
 
-public class GenericRepository<TEntity, TId> : IRepository<TEntity, TId>
+public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
     where TEntity : BaseEntity
 {
     protected readonly ISqlConnectionFactory ConnectionFactory;
 
-    public GenericRepository(ISqlConnectionFactory connectionFactory)
+    public BaseRepository(ISqlConnectionFactory connectionFactory)
     {
         ConnectionFactory = connectionFactory;
     }

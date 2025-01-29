@@ -2,8 +2,8 @@
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using Application.Users.GetUser;
-using Domain;
 using Domain.Abstract;
+using Domain.Entities;
 
 namespace Application.Users.RegisterUser;
 
@@ -32,8 +32,13 @@ internal sealed class RegisterUserCommandHandler
 
         var hashedPassword = _passwordHasher.Hash(command.UserDto.Password);
 
-        var user = User
-            .Create(Guid.NewGuid(), command.UserDto.UserName, command.UserDto.Email, hashedPassword);
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            UserName = command.UserDto.UserName,
+            Email = command.UserDto.Email,
+            Password = hashedPassword
+        };
 
         var id = await _userRepository.CreateAsync(user);
 

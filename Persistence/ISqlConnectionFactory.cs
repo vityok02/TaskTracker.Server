@@ -1,8 +1,8 @@
-﻿using System.Data;
+﻿using Microsoft.Data.SqlClient;
 
 namespace Persistence;
 
 public interface ISqlConnectionFactory
 {
-    IDbConnection Create();
+    SqlConnection Create();
 }

@@ -14,7 +14,7 @@ public class SqlConnectionFactory : ISqlConnectionFactory
             ?? throw new ApplicationException("Connection string is missing");
     }
 
-    public IDbConnection Create()
+    public SqlConnection Create()
     {
         return new SqlConnection(_connectionString);
     }
