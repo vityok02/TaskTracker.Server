@@ -3,6 +3,7 @@ using Application.Extensions;
 using Database;
 using Infrastructure.Extensions;
 using Persistence.Extensions;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ builder.Services
     .AddInfrastructure()
     .AddPersistence(builder.Configuration)
     .AddApi();
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 
@@ -23,6 +27,8 @@ if (app.Environment.IsDevelopment())
         o.RoutePrefix = string.Empty;
     });
 }
+
+app.UseSerilogRequestLogging();
 
 using var scope = app.Services.CreateScope();
 var sp = scope.ServiceProvider;
