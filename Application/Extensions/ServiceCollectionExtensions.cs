@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
             .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly))
             .AddScoped<IDateTimeService, DateTimeService>()
             .AddScoped<IPasswordHasher, PasswordHasher>()
+            .AddAutoMapper(AssemblyReference.Assembly)
             ;
 
         return services;

@@ -2,4 +2,5 @@
 
 namespace Application.Projects.CreateProject;
 
-public sealed record CreateProjectCommand(Guid UserId, ProjectRequest Project) : ICommand<ProjectResponse>;
+public sealed record CreateProjectCommand(Guid UserId, ProjectRequest Project)
+    : ICommand<ProjectResponse>;

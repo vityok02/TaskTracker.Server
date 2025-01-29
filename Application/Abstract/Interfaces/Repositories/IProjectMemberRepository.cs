@@ -7,5 +7,5 @@ public interface IProjectRepository : IRepository<Project, Guid>
 {
     Task<bool> ExistsAsync(Guid userId, string projectName);
 
-    Task<Guid> CreateAsync(Guid userId, Project project);
+    new Task<Guid> CreateAsync(Project project);
 }

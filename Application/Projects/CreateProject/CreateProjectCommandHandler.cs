@@ -2,6 +2,7 @@
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using Application.Users;
+using AutoMapper;
 using Domain.Abstract;
 using Domain.Entities;
 
@@ -13,15 +14,18 @@ internal sealed class CreateProjectCommandHandler
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IDateTimeService _dateTimeService;
+    private readonly IMapper _mapper;
 
     public CreateProjectCommandHandler(
         IUserRepository userRepository,
         IProjectRepository projectRepository,
-        IDateTimeService dateTimeService)
+        IDateTimeService dateTimeService,
+        IMapper mapper)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
         _dateTimeService = dateTimeService;
+        _mapper = mapper;
     }
 
     public async Task<Result<ProjectResponse>> Handle(
@@ -43,22 +47,21 @@ internal sealed class CreateProjectCommandHandler
         if (projectExists)
         {
             return Result<ProjectResponse>
-                .Failure(UserErrors.ProjectAlreadyExists(command.UserId, command.Project.Name));
+                .Failure(UserErrors.ProjectAlreadyExists(
+                    command.UserId, command.Project.Name));
         }
 
-        var project = new Project
-        {
-            Id = Guid.NewGuid(),
-            Name = command.Project.Name,
-            Description = command.Project.Description,
-            CreatedAt = _dateTimeService.GetCurrentTime(),
-            CreatedBy = command.UserId
-        };
+        var project = _mapper.Map<Project>(command.Project);
+
+        project.CreatedAt = _dateTimeService.GetCurrentTime();
+        project.CreatedBy = command.UserId;
 
         var projectId = await _projectRepository
-            .CreateAsync(command.UserId, project);
+            .CreateAsync(project);
+
+        project.Id = projectId;
 
         return Result<ProjectResponse>
-            .Success(new (projectId, project.Name, project.Description));
+            .Success(_mapper.Map<ProjectResponse>(project));
     }
 }
