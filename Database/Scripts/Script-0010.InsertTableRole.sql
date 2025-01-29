@@ -1,5 +1,5 @@
 INSERT INTO [Role] (Name, Description) 
 VALUES 
-    ('Admin', 'Administrator'),
+    ('Guest', 'Guest user'),
     ('User', 'Regular user'),
-    ('Guest', 'Guest user');
+    ('Admin', 'Administrator');

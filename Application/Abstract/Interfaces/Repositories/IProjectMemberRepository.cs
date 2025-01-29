@@ -1,9 +1,11 @@
 ﻿using Application.Abstract.Interfaces.Base;
-using Domain;
+using Domain.Entities;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
-public interface IProjectRepository<TId> : IRepository<Project, TId>
+public interface IProjectRepository : IRepository<Project, Guid>
 {
-    Task<TId> CreateAsync(Guid userId, Project project);
+    Task<bool> ExistsAsync(Guid userId, string projectName);
+
+    Task<Guid> CreateAsync(Guid userId, Project project);
 }

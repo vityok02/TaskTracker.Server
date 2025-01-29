@@ -2,8 +2,8 @@
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using Application.Users;
-using Domain;
 using Domain.Abstract;
+using Domain.Entities;
 
 namespace Application.Projects.CreateProject;
 
@@ -11,12 +11,12 @@ internal sealed class CreateProjectCommandHandler
     : ICommandHandler<CreateProjectCommand, ProjectResponse>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IProjectRepository<Guid> _projectRepository;
+    private readonly IProjectRepository _projectRepository;
     private readonly IDateTimeService _dateTimeService;
 
     public CreateProjectCommandHandler(
         IUserRepository userRepository,
-        IProjectRepository<Guid> projectRepository,
+        IProjectRepository projectRepository,
         IDateTimeService dateTimeService)
     {
         _userRepository = userRepository;
@@ -28,32 +28,37 @@ internal sealed class CreateProjectCommandHandler
         CreateProjectCommand command,
         CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdWithProjectsAsync(command.UserId);
+        var user = await _userRepository
+            .GetByIdAsync(command.UserId);
 
         if (user is null)
         {
-            return Result<ProjectResponse>.Failure(UserErrors.UserNotFound);
+            return Result<ProjectResponse>
+                .Failure(UserErrors.UserNotFound);
         }
 
-        if (user.Projects.Any(p => p.Name == command.Project.Name))
+        bool projectExists = await _projectRepository
+            .ExistsAsync(command.UserId, command.Project.Name);
+
+        if (projectExists)
         {
-            return Result<ProjectResponse>.Failure(UserErrors.ProjectAlreadyExists);
+            return Result<ProjectResponse>
+                .Failure(UserErrors.ProjectAlreadyExists(command.UserId, command.Project.Name));
         }
 
-        var project = Project.Create(
-            Guid.NewGuid(),
-            command.Project.Name,
-            command.Project.Description,
-            user,
-            _dateTimeService.GetCurrentTime());
+        var project = new Project
+        {
+            Id = Guid.NewGuid(),
+            Name = command.Project.Name,
+            Description = command.Project.Description,
+            CreatedAt = _dateTimeService.GetCurrentTime(),
+            CreatedBy = command.UserId
+        };
 
-        var projectId = await _projectRepository.CreateAsync(command.UserId, project);
-
-        user.AddProject(project);
-
-        // What happens if the user is simpy updated?
+        var projectId = await _projectRepository
+            .CreateAsync(command.UserId, project);
 
         return Result<ProjectResponse>
-            .Success(new ProjectResponse(projectId, project.Name, project.Description));
+            .Success(new (projectId, project.Name, project.Description));
     }
 }

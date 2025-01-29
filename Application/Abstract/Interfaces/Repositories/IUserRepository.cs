@@ -1,9 +1,8 @@
 ﻿using Application.Abstract.Interfaces.Base;
-using Domain;
+using Domain.Entities;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
 public interface IUserRepository : IRepository<User, Guid>
 {
-    Task<User?> GetByIdWithProjectsAsync(Guid id);
 }

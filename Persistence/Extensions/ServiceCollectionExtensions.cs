@@ -13,9 +13,9 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>()
-            .AddScoped(typeof(IRepository<,>), typeof(GenericRepository<,>))
+            .AddScoped(typeof(IRepository<,>), typeof(BaseRepository<,>))
             .AddScoped<IUserRepository, UserRepository>()
-            .AddScoped(typeof(IProjectRepository<>), typeof(ProjectRepository<>))
+            .AddScoped(typeof(IProjectRepository), typeof(ProjectRepository))
             ;
 
         return services;
