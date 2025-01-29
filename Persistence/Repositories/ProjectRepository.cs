@@ -28,7 +28,7 @@ public class ProjectRepository
         return result;
     }
 
-    public async Task<Guid> CreateAsync(Guid userId, Project project)
+    public new async Task<Guid> CreateAsync(Project project)
     {
         using var connection = ConnectionFactory
             .Create();
@@ -42,7 +42,7 @@ public class ProjectRepository
         await connection.ExecuteAsync(
             @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId) 
                 VALUES (@UserId, @ProjectId, @RoleId)",
-            new { UserId = userId, ProjectId = projectId, RoleId = roleId });
+            new { UserId = project.CreatedBy, ProjectId = projectId, RoleId = roleId });
 
         return projectId;
     }
