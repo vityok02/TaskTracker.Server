@@ -20,8 +20,8 @@ public sealed class UserController : ApiController
     }
 
     [Authorize]
-    [EndpointName(nameof(GetUser))]
     [HttpGet("{id:guid}")]
+    [EndpointName(nameof(GetUser))]
     public async Task<IActionResult> GetUser([FromRoute] Guid id)
     {
         var result = await Sender
