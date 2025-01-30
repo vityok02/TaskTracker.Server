@@ -1,6 +1,6 @@
 ﻿namespace Api.Users.Dtos;
 
-public record RegisterUserRequest(
+public record RegisterRequest(
     string UserName,
     string Email,
     string Password,

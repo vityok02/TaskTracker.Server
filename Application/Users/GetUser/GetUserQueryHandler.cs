@@ -26,6 +26,5 @@ internal sealed class GetUserQueryHandler
         return user is null
             ? Result<UserResponse>.Failure("User.NotFound", "User not found")
             : Result<UserResponse>.Success(_mapper.Map<UserResponse>(user));
-        //: Result<UserResponse>.Success(new UserResponse(user.Id, user.UserName, user.Email));
     }
 }

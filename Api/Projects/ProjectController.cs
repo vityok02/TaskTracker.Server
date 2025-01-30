@@ -13,7 +13,6 @@ public class ProjectController : ApiController
     {
     }
 
-
     [HttpPost]
     [ActionName("CreateProject")]
     public async Task<IActionResult> CreateProject(

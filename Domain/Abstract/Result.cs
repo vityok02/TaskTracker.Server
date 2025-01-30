@@ -3,7 +3,9 @@
 public class Result
 {
     public bool IsSuccess { get; protected set; }
+
     public bool IsFailure => !IsSuccess;
+
     public Error? Error { get; protected set; }
 
     protected Result()
@@ -24,6 +26,8 @@ public class Result
     }
 
     public static Result Success() => new();
+
     public static Result Failure(Error error) => new(error);
+
     public static Result Failure(string code, string? description = null) => new(code, description);
 }

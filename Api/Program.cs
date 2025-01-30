@@ -1,4 +1,4 @@
-using Api.Extensions;
+﻿using Api.Extensions;
 using Application.Extensions;
 using Database;
 using Infrastructure.Extensions;
@@ -8,10 +8,12 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
+    .AddAuthConfiguration(builder.Configuration)
     .AddApplication()
     .AddInfrastructure()
     .AddPersistence(builder.Configuration)
     .AddApi();
+
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -28,7 +30,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseSerilogRequestLogging();
+
+app.MapControllers();
 
 using var scope = app.Services.CreateScope();
 var sp = scope.ServiceProvider;
@@ -38,7 +47,5 @@ var dbInitializer = new DatabaseInitializer(
     sp.GetRequiredService<ILogger<DatabaseInitializer>>());
 
 dbInitializer.Initialize();
-
-app.MapControllers();
 
 app.Run();

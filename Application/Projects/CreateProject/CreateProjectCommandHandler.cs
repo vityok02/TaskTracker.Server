@@ -1,10 +1,10 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using Application.Users;
 using AutoMapper;
 using Domain.Abstract;
 using Domain.Entities;
+using Domain.Errors;
 
 namespace Application.Projects.CreateProject;
 
