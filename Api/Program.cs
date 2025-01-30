@@ -1,25 +1,19 @@
-using Api.Extensions;
-using Api.OptionsSetup;
+﻿using Api.Extensions;
 using Application.Extensions;
 using Database;
 using Infrastructure.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Persistence.Extensions;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
-
-builder.Services.ConfigureOptions<JwtOptionsSetup>();
-builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
-
 builder.Services
+    .AddAuthConfiguration(builder.Configuration)
     .AddApplication()
     .AddInfrastructure()
     .AddPersistence(builder.Configuration)
     .AddApi();
+
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -36,11 +30,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseSerilogRequestLogging();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
+
+app.UseSerilogRequestLogging();
+
+app.MapControllers();
 
 using var scope = app.Services.CreateScope();
 var sp = scope.ServiceProvider;
@@ -50,7 +47,5 @@ var dbInitializer = new DatabaseInitializer(
     sp.GetRequiredService<ILogger<DatabaseInitializer>>());
 
 dbInitializer.Initialize();
-
-app.MapControllers();
 
 app.Run();

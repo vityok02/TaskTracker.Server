@@ -26,6 +26,14 @@ internal sealed class RegisterUserCommandHandler
         RegisterUserCommand command,
         CancellationToken cancellationToken)
     {
+        var userExistsWithSuchEmail = await _userRepository
+            .ExistsByEmailAsync(command.UserDto.Email);
+
+        if (userExistsWithSuchEmail)
+        {
+            return Result<UserResponse>.Failure(UserErrors.AlreadyExists);
+        }
+
         if (!command.UserDto.IsPasswordsMatch)
         {
             return Result<UserResponse>.Failure(UserErrors.PasswordsDoNotMatch);

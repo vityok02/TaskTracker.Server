@@ -20,9 +20,8 @@ public sealed class UserController : ApiController
     }
 
     [Authorize]
-    [HttpGet]
-    [ActionName("GetUser")]
-    [Route("{id:guid}")]
+    [EndpointName(nameof(GetUser))]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUser([FromRoute] Guid id)
     {
         var result = await Sender
@@ -33,9 +32,8 @@ public sealed class UserController : ApiController
             : Ok(result.Value);
     }
 
-    [HttpPost]
-    [ActionName("Register")]
-    [Route("register")]
+    [HttpPost("register")]
+    [EndpointName(nameof(RegisterUser))]
     public async Task<IActionResult> RegisterUser(
         [FromBody] RegisterRequest userDto)
     {
@@ -48,19 +46,18 @@ public sealed class UserController : ApiController
         }
 
         var uri = LinkGenerator
-            .GetUriByAction(HttpContext, "GetUser", values: new { result.Value.Id });
+            .GetPathByName(HttpContext, nameof(GetUser), values: new { result.Value.Id });
 
         return Created(uri, result.Value);
     }
 
-    [HttpPost]
-    [ActionName("Login")]
-    [Route("login")]
+    [HttpPost("login")]
+    [EndpointName(nameof(LoginUser))]
     public async Task<IActionResult> LoginUser(
         [FromBody] LoginRequest loginUserRequest)
     {
         var result = await Sender
-            .Send(new LoginCommand(loginUserRequest.Email));
+            .Send(new LoginCommand(loginUserRequest));
 
         return result.IsFailure
             ? Unauthorized(result.Error)

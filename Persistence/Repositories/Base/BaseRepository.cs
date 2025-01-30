@@ -21,11 +21,11 @@ public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         return await connection.InsertAsync<TId, TEntity>(entity);
     }
 
-    public async Task DeleteAsync(TId id)
+    public async Task DeleteAsync(TEntity entity)
     {
         using var connection = ConnectionFactory.Create();
 
-        await connection.DeleteAsync<TEntity>(id);
+        await connection.DeleteAsync(entity);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync()
