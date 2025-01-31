@@ -1,11 +1,11 @@
-﻿using Application.Projects.CreateProject;
-using Application.Projects;
-using AutoMapper;
+﻿using AutoMapper;
 using Domain.Entities;
+using Application.Modules.Projects;
+using Application.Modules.Projects.CreateProject;
 
 namespace Application.Mapping;
 
-public class ProjectProfile : Profile
+public sealed class ProjectProfile : Profile
 {
     public ProjectProfile()
     {

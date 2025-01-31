@@ -3,9 +3,13 @@ using Domain.Entities;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
-public interface IProjectRepository : IRepository<Project, Guid>
+public interface IProjectMemberRepository
 {
-    Task<bool> ExistsAsync(Guid userId, string projectName);
+    Task<ProjectMember?> GetAsync(Guid userId, Guid projectId);
 
-    new Task<Guid> CreateAsync(Project project);
+    Task<Role> GetMemberRole(Guid userId, Guid projectId);
+
+    Task CreateMember(Guid userId, Guid projectId, Guid roleId);
+
+    Task<IEnumerable<ProjectMember>> GetAllAsync(Guid userId, Guid projectId);
 }

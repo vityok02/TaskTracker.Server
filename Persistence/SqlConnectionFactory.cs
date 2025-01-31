@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Persistence.Abstractions;
 using System.Data;
 
 namespace Persistence;
@@ -10,8 +11,7 @@ public class SqlConnectionFactory : ISqlConnectionFactory
 
     public SqlConnectionFactory(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("localdb")
-            ?? throw new ApplicationException("Connection string is missing");
+        _connectionString = configuration.GetConnectionString("localdb")!;
     }
 
     public SqlConnection Create()
