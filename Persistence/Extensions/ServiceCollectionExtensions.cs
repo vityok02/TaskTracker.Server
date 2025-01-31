@@ -2,6 +2,7 @@
 using Application.Abstract.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Persistence.Abstractions;
 using Persistence.Repositories;
 using Persistence.Repositories.Base;
 
@@ -13,9 +14,10 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>()
-            .AddScoped(typeof(IRepository<,>), typeof(BaseRepository<,>))
             .AddScoped<IUserRepository, UserRepository>()
-            .AddScoped(typeof(IProjectRepository), typeof(ProjectRepository))
+            .AddScoped<IProjectRepository, ProjectRepository>()
+            .AddScoped<IProjectMemberRepository, ProjectMemberRepository>()
+            .AddScoped<IRoleRepository, RoleRepository>()
             ;
 
         return services;

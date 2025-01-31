@@ -29,5 +29,6 @@ public class Result
 
     public static Result Failure(Error error) => new(error);
 
-    public static Result Failure(string code, string? description = null) => new(code, description);
+    public static Result Failure(string code, string? description = null)
+        => new(code, description);
 }

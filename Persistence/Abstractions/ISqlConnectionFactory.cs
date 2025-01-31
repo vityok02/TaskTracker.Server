@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 
-namespace Persistence;
+namespace Persistence.Abstractions;
 
 public interface ISqlConnectionFactory
 {

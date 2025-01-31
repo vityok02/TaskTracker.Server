@@ -1,13 +1,16 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Dapper;
 using Domain.Entities;
+using Persistence.Abstractions;
 using Persistence.Repositories.Base;
 
 namespace Persistence.Repositories;
 
-public class UserRepository : BaseRepository<User, Guid>, IUserRepository
+public class UserRepository
+    : BaseRepository<User, Guid>, IUserRepository
 {
-    public UserRepository(ISqlConnectionFactory connectionFactory) : base(connectionFactory)
+    public UserRepository(ISqlConnectionFactory connectionFactory)
+        : base(connectionFactory)
     { }
 
     public async Task<bool> ExistsByEmailAsync(string email)
@@ -16,7 +19,8 @@ public class UserRepository : BaseRepository<User, Guid>, IUserRepository
 
         var query = @"SELECT COUNT(1) FROM [User] WHERE Email = @Email";
 
-        return await connection.ExecuteScalarAsync<bool>(query, new { Email = email });
+        return await connection
+            .ExecuteScalarAsync<bool>(query, new { Email = email });
     }
 
     public async Task<User?> GetByEmailAsync(string email)
@@ -37,7 +41,8 @@ public class UserRepository : BaseRepository<User, Guid>, IUserRepository
 
         var query = @"SELECT * FROM [User] WHERE UserName = @UserName";
 
-        var user = await connection.QuerySingleOrDefaultAsync<User>(query, new { UserName = userName });
+        var user = await connection
+            .QuerySingleOrDefaultAsync<User>(query, new { UserName = userName });
 
         return user;
     }

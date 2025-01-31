@@ -8,7 +8,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services
-            .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly))
+            .AddMediatR(cfg => cfg
+                .RegisterServicesFromAssembly(AssemblyReference.Assembly))
             .AddAutoMapper(AssemblyReference.Assembly)
             ;
 

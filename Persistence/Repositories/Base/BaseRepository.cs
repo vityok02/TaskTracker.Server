@@ -1,15 +1,17 @@
 ﻿using Application.Abstract.Interfaces.Base;
 using Dapper;
 using Domain.Abstract;
+using Persistence.Abstractions;
 
 namespace Persistence.Repositories.Base;
 
-public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
+public abstract class BaseRepository<TEntity, TId>
+    : IRepository<TEntity, TId>
     where TEntity : BaseEntity
 {
     protected readonly ISqlConnectionFactory ConnectionFactory;
 
-    public BaseRepository(ISqlConnectionFactory connectionFactory)
+    protected BaseRepository(ISqlConnectionFactory connectionFactory)
     {
         ConnectionFactory = connectionFactory;
     }
