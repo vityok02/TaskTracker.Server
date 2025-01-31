@@ -1,4 +1,5 @@
-﻿using Api.OptionsSetup;
+﻿using Api.Filters;
+using Api.OptionsSetup;
 using Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +20,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddAuthConfiguration(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAuthConfiguration(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.ConfigureOptions<JwtOptionsSetup>();
         services.ConfigureOptions<JwtBearerOptionsSetup>();

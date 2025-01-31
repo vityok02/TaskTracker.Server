@@ -18,4 +18,7 @@ public static class UserErrors
 
     public static Error AlreadyExists
         => new("User.UserAlreadyExists", "User with such email already exists.");
+
+    public static Error Unauthorized
+        => new("User.Unauthorized", "User is unauthorized.");
 }

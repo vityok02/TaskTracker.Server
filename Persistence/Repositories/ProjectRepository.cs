@@ -1,19 +1,19 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Dapper;
 using Domain.Entities;
+using Persistence.Abstractions;
 using Persistence.Repositories.Base;
-using System.Data;
-using System.Transactions;
 
 namespace Persistence.Repositories;
 
 public class ProjectRepository
     : BaseRepository<Project, Guid>, IProjectRepository
 {
-    public ProjectRepository(ISqlConnectionFactory connectionFactory) : base(connectionFactory)
+    public ProjectRepository(ISqlConnectionFactory connectionFactory)
+        : base(connectionFactory)
     { }
 
-    public async Task<bool> ExistsAsync(Guid userId, string projectName)
+    public async Task<bool> ExistsByNameAsync(Guid userId, string projectName)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -28,16 +28,13 @@ public class ProjectRepository
         return result;
     }
 
-    public new async Task<Guid> CreateAsync(Project project)
+    public async Task<Guid> CreateAsync(Project project, Guid roleId)
     {
         using var connection = ConnectionFactory
             .Create();
-       
+
         var projectId = await connection
             .InsertAsync<Guid, Project>(project);
-
-        var roleId = await connection
-            .QueryFirstOrDefaultAsync<Guid>("select Id from Role");
 
         await connection.ExecuteAsync(
             @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId) 
