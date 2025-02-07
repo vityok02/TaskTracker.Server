@@ -2,6 +2,7 @@
 using Application.Extensions;
 using Database;
 using Infrastructure.Extensions;
+using Persistence.Abstractions;
 using Persistence.Extensions;
 using Serilog;
 
@@ -42,10 +43,13 @@ app.MapControllers();
 using var scope = app.Services.CreateScope();
 var sp = scope.ServiceProvider;
 
+var connectionStringProvider = sp
+    .GetRequiredService<IConnectionStringProvider>();
+
 var dbInitializer = new DatabaseInitializer(
-    builder.Configuration.GetConnectionString("localdb")!,
+    connectionStringProvider.GetConnectionString(),
     sp.GetRequiredService<ILogger<DatabaseInitializer>>());
 
 dbInitializer.Initialize();
 
-app.Run();
+await app.RunAsync();

@@ -1,4 +1,5 @@
 ﻿using Api.Controllers.Base;
+using Application.Modules.Users.Identity;
 using Application.Modules.Users.Identity.Login;
 using Application.Modules.Users.Identity.RegisterUser;
 using MediatR;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [Route("users")]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
 public class IdentityController : BaseController
 {
     public IdentityController(
@@ -18,6 +20,7 @@ public class IdentityController : BaseController
 
     [HttpPost("register")]
     [EndpointName(nameof(RegisterUser))]
+    [ProducesResponseType<RegisterResponse>(StatusCodes.Status201Created)]
     public async Task<IActionResult> RegisterUser(
         [FromBody] RegisterRequest userDto)
     {
@@ -39,6 +42,8 @@ public class IdentityController : BaseController
 
     [HttpPost("login")]
     [EndpointName(nameof(LoginUser))]
+    [ProducesResponseType<TokenResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<TokenResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> LoginUser(
         [FromBody] LoginRequest loginUserRequest)
     {
