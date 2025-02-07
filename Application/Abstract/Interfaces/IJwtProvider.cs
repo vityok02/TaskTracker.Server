@@ -1,8 +1,9 @@
-﻿using Domain.Entities;
+﻿using Application.Modules.Users.Identity;
+using Domain.Entities;
 
 namespace Application.Abstract.Interfaces;
 
 public interface IJwtProvider
 {
-    string Generate(User user);
+    TokenResponse Generate(User user);
 }
