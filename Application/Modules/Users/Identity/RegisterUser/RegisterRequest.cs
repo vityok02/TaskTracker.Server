@@ -4,7 +4,10 @@ public record RegisterRequest(
     string UserName,
     string Email,
     string Password,
-    string CheckingPassword)
+    string ConfirmedPassword)
 {
-    public bool IsPasswordsMatch => Password == CheckingPassword;
+    public bool IsPasswordsMatch()
+    {
+        return Password == ConfirmedPassword;
+    }
 }

@@ -8,7 +8,7 @@ using Domain.Errors;
 namespace Application.Modules.Users.Identity.RegisterUser;
 
 internal sealed class RegisterCommandHandler
-    : ICommandHandler<RegisterCommand, UserResponse>
+    : ICommandHandler<RegisterCommand, RegisterResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
@@ -24,7 +24,7 @@ internal sealed class RegisterCommandHandler
         _jwtProvider = jwtProvider;
     }
 
-    public async Task<Result<UserResponse>> Handle(
+    public async Task<Result<RegisterResponse>> Handle(
         RegisterCommand command,
         CancellationToken cancellationToken)
     {
@@ -33,13 +33,13 @@ internal sealed class RegisterCommandHandler
 
         if (userExistsWithSuchEmail)
         {
-            return Result<UserResponse>
+            return Result<RegisterResponse>
                 .Failure(UserErrors.AlreadyExists);
         }
 
-        if (!command.UserDto.IsPasswordsMatch)
+        if (!command.UserDto.IsPasswordsMatch())
         {
-            return Result<UserResponse>
+            return Result<RegisterResponse>
                 .Failure(UserErrors.PasswordsDoNotMatch);
         }
 
@@ -60,11 +60,6 @@ internal sealed class RegisterCommandHandler
         var token = _jwtProvider
             .Generate(user);
 
-        return Result<UserResponse>
-            .Success(new RegisterUserResponse(
-                id,
-                user.UserName,
-                user.Email,
-                token));
+        return new RegisterResponse(id, token);
     }
 }

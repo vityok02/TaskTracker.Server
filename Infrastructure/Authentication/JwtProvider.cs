@@ -1,4 +1,5 @@
 ﻿using Application.Abstract.Interfaces;
+using Application.Modules.Users.Identity;
 using Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -11,16 +12,18 @@ namespace Infrastructure.Authentication;
 internal sealed class JwtProvider : IJwtProvider
 {
     private readonly JwtOptions _options;
+    private TimeSpan ExpiresIn => TimeSpan.FromHours(24);
 
     public JwtProvider(IOptions<JwtOptions> options)
     {
         _options = options.Value;
     }
 
-    public string Generate(User user)
+    public TokenResponse Generate(User user)
     {
         var claims = new Claim[]
         {
+            new(ClaimTypes.Name, user.UserName),
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
         };
@@ -35,12 +38,12 @@ internal sealed class JwtProvider : IJwtProvider
             _options.Audience,
             claims,
             null,
-            DateTime.UtcNow.AddHours(1),
+            DateTime.Now.Add(ExpiresIn),
             signingCredentials);
 
         string tokenValue = new JwtSecurityTokenHandler()
             .WriteToken(token);
 
-        return tokenValue;
+        return new(tokenValue, ExpiresIn.TotalHours);
     }
 }

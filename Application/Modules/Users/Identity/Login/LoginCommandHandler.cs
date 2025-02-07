@@ -7,7 +7,7 @@ using Domain.Errors;
 namespace Application.Modules.Users.Identity.Login;
 
 internal sealed class LoginCommandHandler
-    : ICommandHandler<LoginCommand, string>
+    : ICommandHandler<LoginCommand, TokenResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtProvider _jwtProvider;
@@ -23,27 +23,29 @@ internal sealed class LoginCommandHandler
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<Result<string>> Handle(
+    public async Task<Result<TokenResponse>> Handle(
         LoginCommand command,
         CancellationToken cancellationToken)
     {
         var loginRequest = command.LoginRequest;
 
-        var user = await _userRepository.GetByEmailAsync(loginRequest.Email);
+        var user = await _userRepository
+            .GetByEmailAsync(loginRequest.Email);
 
         if (user is null)
         {
-            return Result<string>.Failure(UserErrors.InvalidCredentials);
+            return UserErrors.InvalidCredentials;
         }
 
-        bool verified = _passwordHasher.Verify(loginRequest.Password, user.Password);
+        bool verified = _passwordHasher
+            .Verify(loginRequest.Password, user.Password);
 
         if (!verified)
         {
-            return Result<string>.Failure(UserErrors.InvalidCredentials);
+            return UserErrors.InvalidCredentials;
         }
 
-        string token = _jwtProvider.Generate(user);
+        var token = _jwtProvider.Generate(user);
 
         return token;
     }
