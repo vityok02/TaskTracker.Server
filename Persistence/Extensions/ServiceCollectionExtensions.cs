@@ -1,10 +1,8 @@
-﻿using Application.Abstract.Interfaces.Base;
-using Application.Abstract.Interfaces.Repositories;
+﻿using Application.Abstract.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Abstractions;
 using Persistence.Repositories;
-using Persistence.Repositories.Base;
 
 namespace Persistence.Extensions;
 
@@ -18,6 +16,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IProjectRepository, ProjectRepository>()
             .AddScoped<IProjectMemberRepository, ProjectMemberRepository>()
             .AddScoped<IRoleRepository, RoleRepository>()
+            .AddSingleton<IConnectionStringProvider, ConnectionStringProvider>()
             ;
 
         return services;

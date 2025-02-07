@@ -1,21 +1,19 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Persistence.Abstractions;
-using System.Data;
 
 namespace Persistence;
 
 public class SqlConnectionFactory : ISqlConnectionFactory
 {
-    private readonly string _connectionString;
+    private readonly IConnectionStringProvider _connectionStringProvider;
 
-    public SqlConnectionFactory(IConfiguration configuration)
+    public SqlConnectionFactory(IConnectionStringProvider connectionStringProvider)
     {
-        _connectionString = configuration.GetConnectionString("localdb")!;
+        _connectionStringProvider = connectionStringProvider;
     }
 
     public SqlConnection Create()
     {
-        return new SqlConnection(_connectionString);
+        return new SqlConnection(_connectionStringProvider.GetConnectionString());
     }
 }

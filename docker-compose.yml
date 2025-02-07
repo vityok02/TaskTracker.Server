@@ -1,0 +1,23 @@
+services:
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    container_name: task-tracker.api
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    environment:
+      - CONNECTION_STRING=Server=db,1433;Database=TaskTracker;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: task-tracker.db
+    restart: always
+    environment:
+        - SA_PASSWORD=yourStrong(!)Password
+        - ACCEPT_EULA=Y
+    ports:
+        - "1433:1433"
+    volumes:
+        - ./.containers/bot-db:/var/lib/sql/data
