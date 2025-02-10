@@ -1,6 +1,4 @@
-﻿using Domain.Abstract;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class AppTask : BaseEntity
 {

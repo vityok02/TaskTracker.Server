@@ -1,7 +1,8 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using AutoMapper;
-using Domain.Abstract;
+using Domain.Errors;
+using Domain.Shared;
 
 namespace Application.Modules.Users.GetUserById;
 
@@ -23,7 +24,7 @@ internal sealed class GetUserQueryHandler
 
         return user is null
             ? Result<UserResponse>
-                .Failure("User.NotFound", "User not found")
+                .Failure(UserErrors.NotFound)
             : Result<UserResponse>
                 .Success(new UserResponse(user.Id, user.UserName, user.Email));
     }

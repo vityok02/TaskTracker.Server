@@ -1,4 +1,4 @@
-﻿namespace Domain.Abstract;
+﻿namespace Domain.Shared;
 
 public class Result
 {
@@ -6,17 +6,17 @@ public class Result
 
     public bool IsFailure => !IsSuccess;
 
-    public Error? Error { get; protected set; }
+    public Error Error { get; protected set; } = Error.None;
 
     protected Result()
     {
         IsSuccess = true;
     }
 
-    protected Result(string code, string? description = null)
+    protected Result(string code, string message)
     {
         IsSuccess = false;
-        Error = new Error(code, description);
+        Error = new Error(code, message);
     }
 
     protected Result(Error error)
@@ -29,6 +29,6 @@ public class Result
 
     public static Result Failure(Error error) => new(error);
 
-    public static Result Failure(string code, string? description = null)
-        => new(code, description);
+    public static Result Failure(string code, string message)
+        => new(code, message);
 }

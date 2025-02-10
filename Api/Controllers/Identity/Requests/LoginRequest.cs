@@ -1,3 +1,3 @@
-﻿namespace Application.Modules.Users.Identity.Login;
+﻿namespace Api.Controllers.Identity.Requests;
 
 public record LoginRequest(string Email, string Password);

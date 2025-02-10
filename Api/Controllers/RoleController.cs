@@ -1,4 +1,5 @@
 ﻿using Api.Controllers.Base;
+using Application.Modules.Roles;
 using Application.Modules.Roles.GetAllRoles;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,12 +20,15 @@ public class RoleController : BaseController
 
     // Question: Who can see the roles?
     [HttpGet]
-    public async Task<IActionResult> GetAllRoles()
+    [ProducesResponseType<IEnumerable<RoleResponse>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllRoles(
+        CancellationToken token)
     {
-        var result = await Sender.Send(new GetAllRolesQuery());
+        var result = await Sender
+            .Send(new GetAllRolesQuery(), token);
 
         return result.IsFailure
-            ? BadRequest(result.Error)
+            ? HandlerFailure(result)
             : Ok(result.Value);
     }
 }

@@ -7,7 +7,7 @@ public interface IUserRepository : IRepository<User, Guid>
 {
     Task<User?> GetByEmailAsync(string email);
 
-    Task<bool> ExistsByEmailAsync(string email);
+    Task<bool> IsEmailUniqueAsync(string email);
 
     Task<User?> GetByUserNameAsync(string userName);
 }

@@ -1,5 +1,5 @@
 ﻿using Application.Abstract.Interfaces;
-using Application.Modules.Users.Identity;
+using Application.Modules.Identity;
 using Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

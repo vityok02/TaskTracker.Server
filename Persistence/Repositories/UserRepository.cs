@@ -13,7 +13,7 @@ public class UserRepository
         : base(connectionFactory)
     { }
 
-    public async Task<bool> ExistsByEmailAsync(string email)
+    public async Task<bool> IsEmailUniqueAsync(string email)
     {
         using var connection = ConnectionFactory.Create();
 

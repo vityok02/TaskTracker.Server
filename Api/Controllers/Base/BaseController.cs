@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using Domain.Shared;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-
 namespace Api.Controllers.Base;
 
 public abstract class BaseController : Controller
@@ -13,4 +13,73 @@ public abstract class BaseController : Controller
         Sender = sender;
         LinkGenerator = linkGenerator;
     }
+
+    protected IActionResult HandlerFailure(Result result)
+    {
+        return result.Error.Code switch
+        {
+            ErrorTypes.ValidationError when result is IValidationResult validationResult => BadRequest(
+                CreateProblemDetails(
+                    "Validation Error", StatusCodes.Status400BadRequest,
+                    result.Error,
+                    validationResult.Errors)),
+
+            ErrorTypes.Unauthorized => Unauthorized(
+                CreateProblemDetails(
+                    "Unauthorized",
+                    StatusCodes.Status401Unauthorized,
+                    result.Error)),
+
+            ErrorTypes.InvalidCredentials => Unauthorized(
+                CreateProblemDetails(
+                    "Invalid Credentials",
+                    StatusCodes.Status401Unauthorized,
+                    result.Error)),
+
+            var code when code.EndsWith(ErrorTypes.NotFound) => NotFound(
+                CreateProblemDetails(
+                    "Not Found",
+                    StatusCodes.Status404NotFound,
+                    result.Error)),
+
+            var code when code.EndsWith(ErrorTypes.Conflict) => Conflict(
+                CreateProblemDetails(
+                    "Conflict",
+                    StatusCodes.Status409Conflict,
+                    result.Error)),
+
+            _ => BadRequest(
+                CreateProblemDetails(
+                    "Bad Request",
+                    StatusCodes.Status400BadRequest,
+                    result.Error))
+        };
+    }
+
+    private static ProblemDetails CreateProblemDetails(
+        string title,
+        int status,
+        Error error,
+        Error[]? errors = null) =>
+        new()
+        {
+            Title = title,
+            Type = error.Code,
+            Detail = error.Message,
+            Status = status,
+            Extensions = { { nameof(errors), errors } }
+        };
+
+    private static ProblemDetails CreateProblemDetails(
+    string title,
+    int status,
+    Error error) =>
+    new()
+    {
+        Title = title,
+        Type = error.Code,
+        Detail = error.Message,
+        Status = status,
+        Extensions = { { "resouceType", error.Code.Split(',')[0] } }
+    };
 }

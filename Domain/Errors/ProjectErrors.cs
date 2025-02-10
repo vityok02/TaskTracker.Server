@@ -1,9 +1,12 @@
-﻿using Domain.Abstract;
+﻿using Domain.Shared;
 
 namespace Domain.Errors;
 
 public static class ProjectErrors
 {
-    public static Func<string, Error> AlreadyExists => name
-        => new("Project.AlreadyExists", $"Project with name {name} already exists.");
+    public static Error AlreadyExists
+    => new("Project.AlreadyExists", $"User already has project with name such project");
+
+    public static Error NotFound
+        => new("Project.NotFound", "Project not found.");
 }
