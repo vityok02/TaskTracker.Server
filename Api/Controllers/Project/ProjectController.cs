@@ -1,0 +1,68 @@
+﻿using Api.Controllers.Base;
+using Api.Extensions;
+using Api.Filters;
+using Application.Modules.Projects;
+using Application.Modules.Projects.CreateProject;
+using Application.Modules.Projects.GetProjectById;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers.Project;
+
+[Authorize]
+[ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+[Route("projects")]
+public class ProjectController : BaseController
+{
+    private Guid UserId => User.GetUserIdFromClaims();
+
+    public ProjectController(
+        ISender sender,
+        LinkGenerator linkGenerator)
+        : base(sender, linkGenerator)
+    {
+    }
+
+    [HttpPost]
+    [ProducesResponseType<ProjectResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> CreateProject(
+        [FromBody] ProjectRequest projectRequest,
+        CancellationToken token)
+    {
+        var command = new CreateProjectCommand(
+            UserId,
+            projectRequest.Name,
+            projectRequest.Description);
+
+        var result = await Sender
+            .Send(command, token);
+
+        return result.IsFailure
+            ? HandlerFailure(result)
+            : CreatedAtAction(
+                nameof(GetProject),
+                new { projectId = result.Value.Id },
+                result.Value);
+    }
+
+    [ProjectMember]
+    [HttpGet("{projectId:guid}", Name = nameof(GetProject))]
+    [ProducesResponseType<ProjectResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetProject(
+        [FromRoute] Guid projectId,
+        CancellationToken token)
+    {
+        var query = new GetProjectQuery(UserId, projectId);
+
+        var result = await Sender
+            .Send(query, token);
+
+        return result.IsFailure
+            ? HandlerFailure(result)
+            : Ok(result.Value);
+    }
+}

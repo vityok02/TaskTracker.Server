@@ -1,4 +1,5 @@
 ﻿using Api.Controllers.Base;
+using Application.Modules.Users;
 using Application.Modules.Users.GetAllUsers;
 using Application.Modules.Users.GetUserById;
 using MediatR;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
+
 [Route("users")]
 [ApiController]
 public sealed class UserController : BaseController
@@ -19,26 +21,30 @@ public sealed class UserController : BaseController
 
     [Authorize]
     [HttpGet("{id:guid}")]
-    [EndpointName(nameof(GetUser))]
-    public async Task<IActionResult> GetUser([FromRoute] Guid id)
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUser(
+        [FromRoute] Guid id,
+        CancellationToken token)
     {
         var result = await Sender
-            .Send(new GetUserQuery(id));
+            .Send(new GetUserQuery(id), token);
 
         return result.IsFailure
-            ? NotFound(result.Error)
+            ? HandlerFailure(result)
             : Ok(result.Value);
     }
 
     [HttpGet]
-    [EndpointName(nameof(GetAllUsers))]
-    public async Task<IActionResult> GetAllUsers()
+    [ProducesResponseType<IEnumerable<UserResponse>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllUsers(
+        CancellationToken token)
     {
         var result = await Sender
-            .Send(new GetAllUsersQuery());
+            .Send(new GetAllUsersQuery(), token);
 
         return result.IsFailure
-            ? BadRequest(result.Error)
+            ? HandlerFailure(result)
             : Ok(result.Value);
     }
 }

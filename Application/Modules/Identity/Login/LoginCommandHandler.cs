@@ -1,8 +1,10 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using Domain.Abstract;
+using Application.Modules.Identity;
+using Application.Modules.Identity.Login;
 using Domain.Errors;
+using Domain.Shared;
 
 namespace Application.Modules.Users.Identity.Login;
 
@@ -27,10 +29,8 @@ internal sealed class LoginCommandHandler
         LoginCommand command,
         CancellationToken cancellationToken)
     {
-        var loginRequest = command.LoginRequest;
-
         var user = await _userRepository
-            .GetByEmailAsync(loginRequest.Email);
+            .GetByEmailAsync(command.Email);
 
         if (user is null)
         {
@@ -38,7 +38,7 @@ internal sealed class LoginCommandHandler
         }
 
         bool verified = _passwordHasher
-            .Verify(loginRequest.Password, user.Password);
+            .Verify(command.Password, user.Password);
 
         if (!verified)
         {

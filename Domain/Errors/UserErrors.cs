@@ -1,24 +1,18 @@
-﻿using Domain.Abstract;
+﻿using Domain.Shared;
 
 namespace Domain.Errors;
 
 public static class UserErrors
 {
-    public static Error UserNotFound
+    public static Error NotFound
         => new("User.NotFound", "User not found.");
-
-    public static Error PasswordsDoNotMatch
-        => new("User.PasswordsDoNotMatch", "Passwords do not match.");
-
-    public static Func<Guid, string, Error> ProjectAlreadyExists => (userId, name)
-        => new("User.ProjectAlreadyExists", $"User with id: '{userId}' already has project with name '{name}'");
 
     public static Error InvalidCredentials
         => new("User.InvalidCredentials", "Invalid credentials.");
 
     public static Error AlreadyExists
-        => new("User.UserAlreadyExists", "User with such email already exists.");
+        => new("User.AlreadyExists", "User with such email already exists.");
 
     public static Error Unauthorized
-        => new("User.Unauthorized", "User is unauthorized.");
+        => new("Unauthorized", "User is unauthorized.");
 }

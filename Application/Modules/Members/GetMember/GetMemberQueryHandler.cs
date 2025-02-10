@@ -1,8 +1,8 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using AutoMapper;
-using Domain.Abstract;
 using Domain.Errors;
+using Domain.Shared;
 
 namespace Application.Modules.Members.GetMember;
 

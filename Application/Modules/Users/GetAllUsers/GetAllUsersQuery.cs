@@ -1,6 +1,6 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using Domain.Abstract;
+using Domain.Shared;
 
 namespace Application.Modules.Users.GetAllUsers;
 

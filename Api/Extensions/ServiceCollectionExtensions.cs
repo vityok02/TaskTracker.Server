@@ -1,5 +1,4 @@
-﻿using Api.Filters;
-using Api.OptionsSetup;
+﻿using Api.OptionsSetup;
 using Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApi(this IServiceCollection services)
     {
         services
+            .AddAutoMapper(AssemblyReference.Assembly)
             .AddEndpointsApiExplorer()
             .AddSwaggerGen()
             .AddControllers()

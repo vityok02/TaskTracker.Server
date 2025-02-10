@@ -1,7 +1,7 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using Domain.Abstract;
 using Domain.Errors;
+using Domain.Shared;
 
 namespace Application.Modules.Members.AddMember;
 
@@ -26,13 +26,13 @@ internal sealed class AddMemberCommandHandler
         AddMemberCommand command,
         CancellationToken cancellationToken)
     {
-        var user = _userRepository
+        var user = await _userRepository
             .GetByIdAsync(command.UserId);
 
         if (user is null)
         {
             return Result<MemberResponse>
-                .Failure(UserErrors.UserNotFound);
+                .Failure(UserErrors.NotFound);
         }
 
         var member = await _projectMemberRepository
@@ -57,6 +57,6 @@ internal sealed class AddMemberCommandHandler
             .CreateMember(command.UserId, command.ProjectId, command.RoleId);
 
         return new MemberResponse(
-            command.UserId, command.RoleId);
+            user.Id, command.ProjectId, command.RoleId);
     }
 }

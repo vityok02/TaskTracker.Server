@@ -1,6 +1,7 @@
 ﻿using Api.Controllers.Base;
 using Api.Extensions;
 using Api.Filters;
+using Application.Modules.Members;
 using Application.Modules.Members.AddMember;
 using Application.Modules.Members.GetAllMembers;
 using Application.Modules.Members.GetMember;
@@ -14,6 +15,7 @@ namespace Api.Controllers;
 [Authorize]
 [ProjectMember]
 [Route("projects/{projectId:guid}/members")]
+[ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
 public class ProjectMemberController : BaseController
 {
     private Guid UserId => User.GetUserIdFromClaims();
@@ -27,10 +29,14 @@ public class ProjectMemberController : BaseController
 
     [ProjectMember(Roles.Admin)]
     [HttpPost]
-    [EndpointName(nameof(AddMember))]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> AddMember(
         [FromRoute] Guid projectId,
-        [FromBody] RoleRequest roleRequest)
+        [FromBody] RoleRequest roleRequest,
+        CancellationToken token)
     {
         var command = new AddMemberCommand(
             roleRequest.UserId,
@@ -38,47 +44,51 @@ public class ProjectMemberController : BaseController
             roleRequest.RoleId);
 
         var result = await Sender
-            .Send(command);
+            .Send(command, token);
 
-        if (result.IsFailure)
-        {
-            return BadRequest(result.Error);
-        }
-
-        return Ok(result.Value);
+        return result.IsFailure
+            ? HandlerFailure(result)
+            : CreatedAtAction(
+                nameof(GetMember),
+                new { memberId = result.Value.UserId },
+                result.Value);
     }
 
-    [HttpGet("{memberId:guid}")]
-    [EndpointName(nameof(GetMember))]
+    [HttpGet("{memberId:guid}", Name = nameof(GetMember))]
+    [ProducesResponseType<MemberResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMember(
-        [FromRoute] Guid projectId)
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid memberId,
+        CancellationToken token)
     {
         var query = new GetMemberQuery(
-            UserId,
+            memberId,
             projectId);
 
         var result = await Sender
-            .Send(query);
+            .Send(query, token);
 
         return result.IsFailure
-            ? BadRequest(result.Error)
+            ? HandlerFailure(result)
             : Ok(result.Value);
     }
 
     [HttpGet]
-    [EndpointName(nameof(GetAllMembers))]
+    [ProducesResponseType<IEnumerable<MemberResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllMembers(
-        [FromRoute] Guid projectId)
+        [FromRoute] Guid projectId,
+        CancellationToken token)
     {
         var query = new GetAllMembersQuery(
             UserId,
             projectId);
 
         var result = await Sender
-            .Send(query);
+            .Send(query, token);
 
         return result.IsFailure
-            ? BadRequest(result.Error)
+            ? HandlerFailure(result)
             : Ok(result.Value);
     }
 }

@@ -1,11 +1,12 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using Domain.Abstract;
+using Application.Modules.Users.Identity.RegisterUser;
 using Domain.Entities;
 using Domain.Errors;
+using Domain.Shared;
 
-namespace Application.Modules.Users.Identity.RegisterUser;
+namespace Application.Modules.Identity.Register;
 
 internal sealed class RegisterCommandHandler
     : ICommandHandler<RegisterCommand, RegisterResponse>
@@ -29,7 +30,7 @@ internal sealed class RegisterCommandHandler
         CancellationToken cancellationToken)
     {
         var userExistsWithSuchEmail = await _userRepository
-            .ExistsByEmailAsync(command.UserDto.Email);
+            .IsEmailUniqueAsync(command.Email);
 
         if (userExistsWithSuchEmail)
         {
@@ -37,20 +38,14 @@ internal sealed class RegisterCommandHandler
                 .Failure(UserErrors.AlreadyExists);
         }
 
-        if (!command.UserDto.IsPasswordsMatch())
-        {
-            return Result<RegisterResponse>
-                .Failure(UserErrors.PasswordsDoNotMatch);
-        }
-
         var hashedPassword = _passwordHasher
-            .Hash(command.UserDto.Password);
+            .Hash(command.Password);
 
         var user = new User
         {
             Id = Guid.NewGuid(),
-            UserName = command.UserDto.UserName,
-            Email = command.UserDto.Email,
+            UserName = command.UserName,
+            Email = command.Email,
             Password = hashedPassword
         };
 

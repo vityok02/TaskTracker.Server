@@ -1,4 +1,4 @@
-﻿using Domain.Abstract;
+﻿using Domain.Shared;
 
 namespace Domain.Errors;
 

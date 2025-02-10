@@ -1,4 +1,4 @@
-﻿using Application.Modules.Users.Identity;
+﻿using Application.Modules.Identity;
 using Domain.Entities;
 
 namespace Application.Abstract.Interfaces;

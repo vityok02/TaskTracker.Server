@@ -2,9 +2,10 @@
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using AutoMapper;
-using Domain.Abstract;
+using Domain.Constants;
 using Domain.Entities;
 using Domain.Errors;
+using Domain.Shared;
 
 namespace Application.Modules.Projects.CreateProject;
 
@@ -35,26 +36,27 @@ internal sealed class CreateProjectCommandHandler
         CreateProjectCommand command,
         CancellationToken cancellationToken)
     {
+        // TODO: improve db queries
+        // Implement ProjectService
         var user = await _userRepository
             .GetByIdAsync(command.UserId);
 
         if (user is null)
         {
             return Result<ProjectResponse>
-                .Failure(UserErrors.UserNotFound);
+                .Failure(UserErrors.NotFound);
         }
 
         bool projectExists = await _projectRepository
-            .ExistsByNameAsync(command.UserId, command.Project.Name);
+            .ExistsByNameAsync(command.UserId, command.ProjectName);
 
         if (projectExists)
         {
             return Result<ProjectResponse>
-                .Failure(UserErrors.ProjectAlreadyExists(
-                    command.UserId, command.Project.Name));
+                .Failure(ProjectErrors.AlreadyExists);
         }
 
-        var role = await _roleRepository.GetByNameAsync("Admin");
+        var role = await _roleRepository.GetByNameAsync(Domain.Constants.Roles.Admin);
 
         if (role is null)
         {
@@ -62,7 +64,7 @@ internal sealed class CreateProjectCommandHandler
                 .Failure(RoleErrors.NotFound);
         }
 
-        var project = _mapper.Map<Project>(command.Project);
+        var project = _mapper.Map<Project>(command);
 
         project.CreatedAt = _dateTimeService.GetCurrentTime();
         project.CreatedBy = command.UserId;
