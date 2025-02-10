@@ -3,6 +3,7 @@ using Api.Extensions;
 using Api.Filters;
 using Application.Modules.Projects;
 using Application.Modules.Projects.CreateProject;
+using Application.Modules.Projects.GetAllProjects;
 using Application.Modules.Projects.GetProjectById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,7 @@ namespace Api.Controllers.Project;
 [Route("projects")]
 public class ProjectController : BaseController
 {
-    private Guid UserId => User.GetUserIdFromClaims();
+    private Guid UserId => HttpContext.User.GetUserIdFromClaims();
 
     public ProjectController(
         ISender sender,
@@ -57,6 +58,21 @@ public class ProjectController : BaseController
         CancellationToken token)
     {
         var query = new GetProjectQuery(UserId, projectId);
+
+        var result = await Sender
+            .Send(query, token);
+
+        return result.IsFailure
+            ? HandlerFailure(result)
+            : Ok(result.Value);
+    }
+
+    [HttpGet]
+    [ProducesResponseType<IEnumerable<ProjectResponse>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllProjects(
+        CancellationToken token)
+    {
+        var query = new GetAllProjectsQuery(UserId);
 
         var result = await Sender
             .Send(query, token);

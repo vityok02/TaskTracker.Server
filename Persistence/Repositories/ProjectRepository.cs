@@ -43,4 +43,16 @@ public class ProjectRepository
 
         return projectId;
     }
+
+    public async Task<IEnumerable<Project>> GetAllAsync(Guid userId)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        var query = @"SELECT p.* FROM [Project] p
+            JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
+            WHERE pm.UserId = @UserId";
+
+        return await connection
+            .QueryAsync<Project>(query, new { UserId = userId });
+    }
 }

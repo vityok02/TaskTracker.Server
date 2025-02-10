@@ -7,7 +7,7 @@ public class CreateProjectCommandValidator
 {
     public CreateProjectCommandValidator()
     {
-        RuleFor(x => x.ProjectName)
+        RuleFor(x => x.Name)
             .NotEmpty()
             .Length(3, 50);
 

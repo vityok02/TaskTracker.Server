@@ -48,7 +48,7 @@ internal sealed class CreateProjectCommandHandler
         }
 
         bool projectExists = await _projectRepository
-            .ExistsByNameAsync(command.UserId, command.ProjectName);
+            .ExistsByNameAsync(command.UserId, command.Name);
 
         if (projectExists)
         {
