@@ -44,7 +44,7 @@ internal sealed class RegisterCommandHandler
         var user = new User
         {
             Id = Guid.NewGuid(),
-            UserName = command.UserName,
+            UserName = command.Username,
             Email = command.Email,
             Password = hashedPassword
         };

@@ -1,12 +1,10 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using Application.Modules.Identity;
-using Application.Modules.Identity.Login;
 using Domain.Errors;
 using Domain.Shared;
 
-namespace Application.Modules.Users.Identity.Login;
+namespace Application.Modules.Identity.Login;
 
 internal sealed class LoginCommandHandler
     : ICommandHandler<LoginCommand, TokenResponse>

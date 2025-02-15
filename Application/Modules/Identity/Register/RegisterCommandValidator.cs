@@ -8,7 +8,7 @@ internal class RegisterCommandValidator
 {
     public RegisterCommandValidator()
     {
-        RuleFor(x => x.UserName)
+        RuleFor(x => x.Username)
             .NotEmpty()
             .Length(2, 50);
 
