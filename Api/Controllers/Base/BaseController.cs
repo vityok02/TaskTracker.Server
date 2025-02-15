@@ -1,4 +1,5 @@
-﻿using Domain.Shared;
+﻿using AutoMapper;
+using Domain.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Base;
@@ -7,11 +8,16 @@ public abstract class BaseController : Controller
 {
     protected readonly ISender Sender;
     protected readonly LinkGenerator LinkGenerator;
+    protected readonly IMapper Mapper;
 
-    protected BaseController(ISender sender, LinkGenerator linkGenerator)
+    protected BaseController(
+        ISender sender,
+        LinkGenerator linkGenerator,
+        IMapper mapper)
     {
         Sender = sender;
         LinkGenerator = linkGenerator;
+        Mapper = mapper;
     }
 
     protected IActionResult HandlerFailure(Result result)

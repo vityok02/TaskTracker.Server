@@ -8,7 +8,7 @@ public static class UserErrors
         => new("User.NotFound", "User not found.");
 
     public static Error InvalidCredentials
-        => new("User.InvalidCredentials", "Invalid credentials.");
+        => new("User.InvalidCredentials", "Invalid email or password.");
 
     public static Error AlreadyExists
         => new("User.AlreadyExists", "User with such email already exists.");

@@ -14,15 +14,12 @@ namespace Api.Controllers.Identity;
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
 public class IdentityController : BaseController
 {
-    private readonly IMapper _mapper;
-
     public IdentityController(
         ISender sender,
         LinkGenerator linkGenerator,
         IMapper mapper)
-        : base(sender, linkGenerator)
+        : base(sender, linkGenerator, mapper)
     {
-        _mapper = mapper;
     }
 
     [HttpPost("register")]
@@ -32,7 +29,7 @@ public class IdentityController : BaseController
         [FromBody] RegisterRequest registerRequest,
         CancellationToken token)
     {
-        var registerCommand = _mapper
+        var registerCommand = Mapper
             .Map<RegisterCommand>(registerRequest);
 
         var result = await Sender
@@ -58,7 +55,7 @@ public class IdentityController : BaseController
         [FromBody] LoginRequest loginRequest,
         CancellationToken token)
     {
-        var loginCommand = _mapper
+        var loginCommand = Mapper
             .Map<LoginCommand>(loginRequest);
 
         var result = await Sender

@@ -1,6 +1,7 @@
 ﻿using Api.Controllers.Base;
 using Application.Modules.Roles;
 using Application.Modules.Roles.GetAllRoles;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,9 @@ public class RoleController : BaseController
 {
     public RoleController(
         ISender sender,
-        LinkGenerator linkGenerator) 
-        : base(sender, linkGenerator)
+        LinkGenerator linkGenerator,
+        IMapper mapper) 
+        : base(sender, linkGenerator, mapper)
     {
     }
 

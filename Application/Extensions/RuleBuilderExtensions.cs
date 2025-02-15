@@ -2,7 +2,7 @@
 
 namespace Application.Extensions;
 
-public static class PasswordValidationExtensions
+public static class RuleBuilderExtensions
 {
     public static IRuleBuilder<T, string> ApplyPasswordRules<T>(
         this IRuleBuilder<T, string> ruleBuilder)

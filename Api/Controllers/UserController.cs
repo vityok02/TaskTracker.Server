@@ -2,6 +2,7 @@
 using Application.Modules.Users;
 using Application.Modules.Users.GetAllUsers;
 using Application.Modules.Users.GetUserById;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +15,9 @@ public sealed class UserController : BaseController
 {
     public UserController(
         ISender sender,
-        LinkGenerator linkGenerator)
-        : base(sender, linkGenerator)
+        LinkGenerator linkGenerator,
+        IMapper mapper)
+        : base(sender, linkGenerator, mapper)
     {
     }
 
