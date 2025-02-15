@@ -10,7 +10,7 @@ using Domain.Shared;
 namespace Application.Modules.Projects.CreateProject;
 
 internal sealed class CreateProjectCommandHandler
-    : ICommandHandler<CreateProjectCommand, ProjectResponse>
+    : ICommandHandler<CreateProjectCommand, ProjectDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
@@ -32,7 +32,7 @@ internal sealed class CreateProjectCommandHandler
         _roleRepository = roleRepository;
     }
 
-    public async Task<Result<ProjectResponse>> Handle(
+    public async Task<Result<ProjectDto>> Handle(
         CreateProjectCommand command,
         CancellationToken cancellationToken)
     {
@@ -43,7 +43,7 @@ internal sealed class CreateProjectCommandHandler
 
         if (user is null)
         {
-            return Result<ProjectResponse>
+            return Result<ProjectDto>
                 .Failure(UserErrors.NotFound);
         }
 
@@ -52,7 +52,7 @@ internal sealed class CreateProjectCommandHandler
 
         if (projectExists)
         {
-            return Result<ProjectResponse>
+            return Result<ProjectDto>
                 .Failure(ProjectErrors.AlreadyExists);
         }
 
@@ -60,7 +60,7 @@ internal sealed class CreateProjectCommandHandler
 
         if (role is null)
         {
-            return Result<ProjectResponse>
+            return Result<ProjectDto>
                 .Failure(RoleErrors.NotFound);
         }
 
@@ -74,7 +74,18 @@ internal sealed class CreateProjectCommandHandler
 
         project.Id = projectId;
 
-        return Result<ProjectResponse>
-            .Success(_mapper.Map<ProjectResponse>(project));
+        var projectDto = new ProjectDto
+        {
+            Id = projectId,
+            Name = project.Name,
+            Description = project.Description,
+            CreatedBy = user.UserName,
+            CreatedAt = project.CreatedAt,
+            UpdatedBy = null,
+            UpdatedAt = null
+        };
+
+        return Result<ProjectDto>
+            .Success(projectDto);
     }
 }

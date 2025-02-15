@@ -1,10 +1,10 @@
 ﻿using Api.Controllers.Base;
 using Api.Extensions;
 using Api.Filters;
-using Application.Modules.Projects;
 using Application.Modules.Projects.CreateProject;
 using Application.Modules.Projects.GetAllProjects;
 using Application.Modules.Projects.GetProjectById;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +20,9 @@ public class ProjectController : BaseController
 
     public ProjectController(
         ISender sender,
-        LinkGenerator linkGenerator)
-        : base(sender, linkGenerator)
+        LinkGenerator linkGenerator,
+        IMapper mapper)
+        : base(sender, linkGenerator, mapper)
     {
     }
 
@@ -46,7 +47,7 @@ public class ProjectController : BaseController
             : CreatedAtAction(
                 nameof(GetProject),
                 new { projectId = result.Value.Id },
-                result.Value);
+                Mapper.Map<ProjectResponse>(result.Value));
     }
 
     [ProjectMember]
@@ -64,7 +65,7 @@ public class ProjectController : BaseController
 
         return result.IsFailure
             ? HandlerFailure(result)
-            : Ok(result.Value);
+            : Ok(Mapper.Map<ProjectResponse>(result.Value));
     }
 
     [HttpGet]
@@ -79,6 +80,6 @@ public class ProjectController : BaseController
 
         return result.IsFailure
             ? HandlerFailure(result)
-            : Ok(result.Value);
+            : Ok(Mapper.Map<IEnumerable<ProjectResponse>>(result.Value));
     }
 }

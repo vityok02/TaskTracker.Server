@@ -7,7 +7,7 @@ using Domain.Shared;
 namespace Application.Modules.Projects.GetProjectById;
 
 internal sealed class GetProjectQueryHandler
-    : IQueryHandler<GetProjectQuery, ProjectResponse>
+    : IQueryHandler<GetProjectQuery, ProjectDto>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
@@ -23,7 +23,7 @@ internal sealed class GetProjectQueryHandler
         _projectMemberRepository = projectMemberRepository;
     }
 
-    public async Task<Result<ProjectResponse>> Handle(
+    public async Task<Result<ProjectDto>> Handle(
         GetProjectQuery query,
         CancellationToken cancellationToken)
     {
@@ -32,13 +32,13 @@ internal sealed class GetProjectQueryHandler
 
         if (member is null)
         {
-            return Result<ProjectResponse>
+            return Result<ProjectDto>
                 .Failure(ProjectMemberErrors.NotFound);
         }
 
         var project = await _projectRepository
-            .GetByIdAsync(query.ProjectId);
+            .GetByIdAsync(query.UserId, query.ProjectId);
 
-        return _mapper.Map<ProjectResponse>(project);
+        return _mapper.Map<ProjectDto>(project);
     }
 }

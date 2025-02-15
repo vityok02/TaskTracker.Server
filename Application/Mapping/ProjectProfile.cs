@@ -1,5 +1,4 @@
-﻿using Application.Modules.Projects;
-using Application.Modules.Projects.CreateProject;
+﻿using Application.Modules.Projects.CreateProject;
 using AutoMapper;
 using Domain.Entities;
 
@@ -10,6 +9,5 @@ public sealed class ProjectProfile : Profile
     public ProjectProfile()
     {
         CreateMap<CreateProjectCommand, Project>();
-        CreateMap<Project, ProjectResponse>();
     }
 }

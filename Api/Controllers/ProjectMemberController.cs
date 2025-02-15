@@ -5,6 +5,7 @@ using Application.Modules.Members;
 using Application.Modules.Members.AddMember;
 using Application.Modules.Members.GetAllMembers;
 using Application.Modules.Members.GetMember;
+using AutoMapper;
 using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,8 +23,9 @@ public class ProjectMemberController : BaseController
 
     public ProjectMemberController(
         ISender sender,
-        LinkGenerator linkGenerator)
-        : base(sender, linkGenerator)
+        LinkGenerator linkGenerator,
+        IMapper mapper)
+        : base(sender, linkGenerator, mapper)
     {
     }
 

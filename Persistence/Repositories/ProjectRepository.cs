@@ -1,10 +1,13 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
+using Application.Modules.Projects;
 using Dapper;
 using Domain.Entities;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
 
 namespace Persistence.Repositories;
+
+// TODO: ProjectDto, Handle such situations as update
 
 public class ProjectRepository
     : BaseRepository<Project, Guid>, IProjectRepository
@@ -17,13 +20,20 @@ public class ProjectRepository
     {
         using var connection = ConnectionFactory.Create();
 
-        var query = @"SELECT COUNT(1) FROM [Project] p
+        var query = @"
+            SELECT COUNT(1) 
+            FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] u ON u.Id = pm.UserId
             WHERE p.Name = @Name AND pm.UserId = @UserId";
 
         var result = await connection
-            .ExecuteScalarAsync<bool>(query, new { Name = projectName, UserId = userId });
+            .ExecuteScalarAsync<bool>(query,
+                new
+                { 
+                    Name = projectName,
+                    UserId = userId 
+                });
 
         return result;
     }
@@ -36,23 +46,69 @@ public class ProjectRepository
         var projectId = await connection
             .InsertAsync<Guid, Project>(project);
 
-        await connection.ExecuteAsync(
-            @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId) 
-                VALUES (@UserId, @ProjectId, @RoleId)",
-            new { UserId = project.CreatedBy, ProjectId = projectId, RoleId = roleId });
+        var query = @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId) 
+            VALUES (@UserId, @ProjectId, @RoleId)";
+
+        await connection.ExecuteAsync(query,
+            new 
+            { 
+                UserId = project.CreatedBy,
+                ProjectId = projectId,
+                RoleId = roleId }
+            );
 
         return projectId;
     }
 
-    public async Task<IEnumerable<Project>> GetAllAsync(Guid userId)
+    public async Task<IEnumerable<ProjectDto>> GetAllAsync(Guid userId)
     {
         using var connection = ConnectionFactory.Create();
 
-        var query = @"SELECT p.* FROM [Project] p
+        var query = @"
+            SELECT 
+                p.Id,
+                p.Name,
+                p.Description,
+                p.CreatedAt,
+                p.UpdatedAt,
+                uc.Username AS CreatedBy,
+                uu.Username AS UpdatedBy
+            FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
+            JOIN [User] uc ON p.CreatedBy = uc.Id
+            LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
             WHERE pm.UserId = @UserId";
 
         return await connection
-            .QueryAsync<Project>(query, new { UserId = userId });
+            .QueryAsync<ProjectDto>(query,
+                new { UserId = userId });
+    }
+
+    public async Task<ProjectDto?> GetByIdAsync(Guid userId, Guid projectId)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        var query = @"
+            SELECT 
+                p.Id,
+                p.Name,
+                p.Description,
+                p.CreatedAt,
+                p.UpdatedAt,
+                uc.Username AS CreatedBy,
+                uu.Username AS UpdatedBy
+            FROM [Project] p
+            JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
+            JOIN [User] uc ON p.CreatedBy = uc.Id
+            LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
+            WHERE pm.UserId = @UserId AND pm.ProjectId = p.Id";
+
+        return await connection
+            .QueryFirstOrDefaultAsync<ProjectDto>(query, 
+                new 
+                {
+                    UserId = userId,
+                    ProjectId = projectId
+                });
     }
 }
