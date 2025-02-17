@@ -33,7 +33,7 @@ public sealed class UserController : BaseController
             .Send(new GetUserQuery(id), token);
 
         return result.IsFailure
-            ? HandlerFailure(result)
+            ? HandleFailure(result)
             : Ok(result.Value);
     }
 
@@ -46,7 +46,7 @@ public sealed class UserController : BaseController
             .Send(new GetAllUsersQuery(), token);
 
         return result.IsFailure
-            ? HandlerFailure(result)
+            ? HandleFailure(result)
             : Ok(result.Value);
     }
 }

@@ -30,7 +30,7 @@ public class RoleController : BaseController
             .Send(new GetAllRolesQuery(), token);
 
         return result.IsFailure
-            ? HandlerFailure(result)
+            ? HandleFailure(result)
             : Ok(result.Value);
     }
 }

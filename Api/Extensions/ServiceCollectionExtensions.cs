@@ -1,4 +1,5 @@
 ﻿using Api.OptionsSetup;
+using Infrastructure;
 using Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -27,6 +28,7 @@ public static class ServiceCollectionExtensions
         services.ConfigureOptions<JwtOptionsSetup>();
         services.ConfigureOptions<JwtBearerOptionsSetup>();
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+        services.Configure<ClientOptions>(configuration.GetSection("ClientSettings"));
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddJwtBearer(x =>

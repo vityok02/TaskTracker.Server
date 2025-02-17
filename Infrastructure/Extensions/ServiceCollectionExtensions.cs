@@ -11,6 +11,10 @@ public static class ServiceCollectionExtensions
         return services
             .AddScoped<IJwtProvider, JwtProvider>()
             .AddScoped<IDateTimeService, DateTimeService>()
-            .AddScoped<IPasswordHasher, PasswordHasher>();
+            .AddScoped<IPasswordHasher, PasswordHasher>()
+            .AddScoped<IResetTokenService, ResetTokenProvider>()
+            .AddScoped<IEmailService, EmailService>()
+            .AddScoped<IUserManager, UserManager>()
+            ;
     }
 }

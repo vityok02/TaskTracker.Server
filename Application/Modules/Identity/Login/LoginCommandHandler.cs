@@ -7,7 +7,7 @@ using Domain.Shared;
 namespace Application.Modules.Identity.Login;
 
 internal sealed class LoginCommandHandler
-    : ICommandHandler<LoginCommand, TokenResponse>
+    : ICommandHandler<LoginCommand, TokenDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtProvider _jwtProvider;
@@ -23,7 +23,7 @@ internal sealed class LoginCommandHandler
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<Result<TokenResponse>> Handle(
+    public async Task<Result<TokenDto>> Handle(
         LoginCommand command,
         CancellationToken cancellationToken)
     {

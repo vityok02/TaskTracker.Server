@@ -1,8 +1,12 @@
 ﻿using Api.Controllers.Base;
 using Api.Controllers.Identity.Requests;
+using Api.Controllers.Identity.Responses;
+using Api.Controllers.Project;
 using Application.Modules.Identity;
 using Application.Modules.Identity.Login;
 using Application.Modules.Identity.Register;
+using Application.Modules.Identity.ResetPassword;
+using Application.Modules.Identity.SetPassword;
 using Application.Modules.Users.Identity.RegisterUser;
 using AutoMapper;
 using MediatR;
@@ -37,7 +41,7 @@ public class IdentityController : BaseController
 
         if (result.IsFailure)
         {
-            return HandlerFailure(result);
+            return HandleFailure(result);
         }
 
         var uri = LinkGenerator.GetPathByName(
@@ -49,10 +53,10 @@ public class IdentityController : BaseController
     }
 
     [HttpPost("login")]
-    [ProducesResponseType<TokenResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<TokenDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login(
-        [FromBody] LoginRequest loginRequest,
+        [FromBody] Requests.LoginRequest loginRequest,
         CancellationToken token)
     {
         var loginCommand = Mapper
@@ -62,7 +66,41 @@ public class IdentityController : BaseController
             .Send(loginCommand, token);
 
         return result.IsFailure
-            ? HandlerFailure(result)
-            : Ok(result.Value);
+            ? HandleFailure(result)
+            : Ok(Mapper.Map<TokenResponse>(result.Value));
+    }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType<ResetPasswordResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResetPassword(
+        [FromBody] ResetPasswordRequest resetPasswordRequest)
+    {
+        var resetPasswordCommand = Mapper
+            .Map<ResetPasswordCommand>(resetPasswordRequest);
+
+        var result = await Sender
+            .Send(resetPasswordCommand);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(Mapper.Map<ResetPasswordResponse>(result.Value));
+    }
+
+    [HttpPost("set-password")]
+    [ProducesResponseType<TokenResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword(
+        [FromBody] SetPasswordRequest setPasswordRequest)
+    {
+        var setPasswordCommand = Mapper
+            .Map<SetPasswordCommand>(setPasswordRequest);
+
+        var result = await Sender
+            .Send(setPasswordCommand);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(Mapper.Map<TokenResponse>(result.Value));
     }
 }

@@ -5,5 +5,5 @@ namespace Application.Abstract.Interfaces;
 
 public interface IJwtProvider
 {
-    TokenResponse Generate(User user);
+    TokenDto Generate(User user);
 }

@@ -43,7 +43,7 @@ public class ProjectController : BaseController
             .Send(command, token);
 
         return result.IsFailure
-            ? HandlerFailure(result)
+            ? HandleFailure(result)
             : CreatedAtAction(
                 nameof(GetProject),
                 new { projectId = result.Value.Id },
@@ -64,7 +64,7 @@ public class ProjectController : BaseController
             .Send(query, token);
 
         return result.IsFailure
-            ? HandlerFailure(result)
+            ? HandleFailure(result)
             : Ok(Mapper.Map<ProjectResponse>(result.Value));
     }
 
@@ -79,7 +79,7 @@ public class ProjectController : BaseController
             .Send(query, token);
 
         return result.IsFailure
-            ? HandlerFailure(result)
+            ? HandleFailure(result)
             : Ok(Mapper.Map<IEnumerable<ProjectResponse>>(result.Value));
     }
 }
