@@ -19,8 +19,6 @@ namespace Api.Controllers;
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
 public class ProjectMemberController : BaseController
 {
-    private Guid UserId => User.GetUserIdFromClaims();
-
     public ProjectMemberController(
         ISender sender,
         LinkGenerator linkGenerator,
@@ -83,7 +81,7 @@ public class ProjectMemberController : BaseController
         CancellationToken token)
     {
         var query = new GetAllMembersQuery(
-            UserId,
+            User.GetUserId(),
             projectId);
 
         var result = await Sender

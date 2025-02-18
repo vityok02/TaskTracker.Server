@@ -16,8 +16,6 @@ namespace Api.Controllers.Project;
 [Route("projects")]
 public class ProjectController : BaseController
 {
-    private Guid UserId => HttpContext.User.GetUserIdFromClaims();
-
     public ProjectController(
         ISender sender,
         LinkGenerator linkGenerator,
@@ -35,7 +33,7 @@ public class ProjectController : BaseController
         CancellationToken token)
     {
         var command = new CreateProjectCommand(
-            UserId,
+            User.GetUserId(),
             projectRequest.Name,
             projectRequest.Description);
 
@@ -58,7 +56,7 @@ public class ProjectController : BaseController
         [FromRoute] Guid projectId,
         CancellationToken token)
     {
-        var query = new GetProjectQuery(UserId, projectId);
+        var query = new GetProjectQuery(User.GetUserId(), projectId);
 
         var result = await Sender
             .Send(query, token);
@@ -73,7 +71,7 @@ public class ProjectController : BaseController
     public async Task<IActionResult> GetAllProjects(
         CancellationToken token)
     {
-        var query = new GetAllProjectsQuery(UserId);
+        var query = new GetAllProjectsQuery(User.GetUserId());
 
         var result = await Sender
             .Send(query, token);
