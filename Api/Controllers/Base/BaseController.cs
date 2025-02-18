@@ -20,7 +20,7 @@ public abstract class BaseController : Controller
         Mapper = mapper;
     }
 
-    protected IActionResult HandlerFailure(Result result)
+    protected IActionResult HandleFailure(Result result)
     {
         return result.Error.Code switch
         {
@@ -29,6 +29,12 @@ public abstract class BaseController : Controller
                     "Validation Error", StatusCodes.Status400BadRequest,
                     result.Error,
                     validationResult.Errors)),
+
+            ErrorTypes.InvalidToken => BadRequest(
+                CreateProblemDetails(
+                    "Invalid Token",
+                    StatusCodes.Status400BadRequest,
+                    result.Error)),
 
             ErrorTypes.Unauthorized => Unauthorized(
                 CreateProblemDetails(

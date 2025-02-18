@@ -19,7 +19,7 @@ internal sealed class JwtProvider : IJwtProvider
         _options = options.Value;
     }
 
-    public TokenResponse Generate(User user)
+    public TokenDto Generate(User user)
     {
         var claims = new Claim[]
         {
