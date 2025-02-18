@@ -2,7 +2,9 @@
 using Api.Controllers.Identity.Requests;
 using Api.Controllers.Identity.Responses;
 using Api.Controllers.Project;
+using Api.Extensions;
 using Application.Modules.Identity;
+using Application.Modules.Identity.ChangePassword;
 using Application.Modules.Identity.Login;
 using Application.Modules.Identity.Register;
 using Application.Modules.Identity.ResetPassword;
@@ -10,6 +12,7 @@ using Application.Modules.Identity.SetPassword;
 using Application.Modules.Users.Identity.RegisterUser;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Identity;
@@ -102,5 +105,27 @@ public class IdentityController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : Ok(Mapper.Map<TokenResponse>(result.Value));
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ChangePassword(
+        [FromBody] ChangePasswordRequest changePasswordRequest)
+    {
+        var changePasswordCommand = new ChangePasswordCommand(
+            User.GetUserId(),
+            changePasswordRequest.CurrentPassword,
+            changePasswordRequest.NewPassword,
+            changePasswordRequest.ConfirmedPassword);
+
+        var result = await Sender
+            .Send(changePasswordCommand);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
     }
 }
