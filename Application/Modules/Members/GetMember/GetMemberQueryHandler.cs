@@ -7,7 +7,7 @@ using Domain.Shared;
 namespace Application.Modules.Members.GetMember;
 
 internal sealed class GetMemberQueryHandler
-    : IQueryHandler<GetMemberQuery, MemberResponse>
+    : IQueryHandler<GetMemberQuery, ProjectMemberDto>
 {
     private readonly IProjectMemberRepository _memberRepository;
     private readonly IMapper _mapper;
@@ -18,7 +18,7 @@ internal sealed class GetMemberQueryHandler
         _mapper = mapper;
     }
 
-    public async Task<Result<MemberResponse>> Handle(
+    public async Task<Result<ProjectMemberDto>> Handle(
         GetMemberQuery query,
         CancellationToken cancellationToken)
     {
@@ -27,10 +27,10 @@ internal sealed class GetMemberQueryHandler
 
         if (member is null)
         {
-            return Result<MemberResponse>
+            return Result<ProjectMemberDto>
                 .Failure(ProjectMemberErrors.NotFound);
         }
 
-        return _mapper.Map<MemberResponse>(member);
+        return _mapper.Map<ProjectMemberDto>(member);
     }
 }

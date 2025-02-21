@@ -1,7 +1,7 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
-using Application.Modules.Projects;
 using Dapper;
 using Domain.Entities;
+using Domain.Models;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
 
@@ -60,7 +60,7 @@ public class ProjectRepository
         return projectId;
     }
 
-    public async Task<IEnumerable<ProjectDto>> GetAllAsync(Guid userId)
+    public async Task<IEnumerable<ProjectModel>> GetAllAsync(Guid userId)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -80,11 +80,11 @@ public class ProjectRepository
             WHERE pm.UserId = @UserId";
 
         return await connection
-            .QueryAsync<ProjectDto>(query,
+            .QueryAsync<ProjectModel>(query,
                 new { UserId = userId });
     }
 
-    public async Task<ProjectDto?> GetByIdAsync(Guid userId, Guid projectId)
+    public async Task<ProjectModel?> GetByIdAsync(Guid userId, Guid projectId)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -104,7 +104,7 @@ public class ProjectRepository
             WHERE pm.UserId = @UserId AND pm.ProjectId = p.Id";
 
         return await connection
-            .QueryFirstOrDefaultAsync<ProjectDto>(query, 
+            .QueryFirstOrDefaultAsync<ProjectModel>(query, 
                 new 
                 {
                     UserId = userId,

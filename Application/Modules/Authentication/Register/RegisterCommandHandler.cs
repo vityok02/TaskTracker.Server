@@ -1,6 +1,7 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Shared;
@@ -13,15 +14,18 @@ internal sealed class RegisterCommandHandler
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtProvider _jwtProvider;
+    private readonly IMapper _mapper;
 
     public RegisterCommandHandler(
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
-        IJwtProvider jwtProvider)
+        IJwtProvider jwtProvider,
+        IMapper mapper)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _jwtProvider = jwtProvider;
+        _mapper = mapper;
     }
 
     public async Task<Result<RegisterDto>> Handle(
@@ -57,6 +61,6 @@ internal sealed class RegisterCommandHandler
         var token = _jwtProvider
             .Generate(user);
 
-        return new RegisterDto(id, token);
+        return new RegisterDto(id, _mapper.Map<TokenDto>(token));
     }
 }

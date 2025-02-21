@@ -5,10 +5,10 @@ using Domain.Shared;
 namespace Application.Modules.Users.GetAllUsers;
 
 public sealed record GetAllUsersQuery()
-    : IQuery<IEnumerable<UserResponse>>;
+    : IQuery<IEnumerable<UserDto>>;
 
 internal sealed class GetAllUsersQueryHandler
-    : IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>
+    : IQueryHandler<GetAllUsersQuery, IEnumerable<UserDto>>
 {
     private readonly IUserRepository _userRepository;
 
@@ -17,7 +17,7 @@ internal sealed class GetAllUsersQueryHandler
         _userRepository = userRepository;
     }
 
-    public async Task<Result<IEnumerable<UserResponse>>> Handle(
+    public async Task<Result<IEnumerable<UserDto>>> Handle(
         GetAllUsersQuery request,
         CancellationToken cancellationToken)
     {
@@ -25,7 +25,7 @@ internal sealed class GetAllUsersQueryHandler
             .GetAllAsync();
 
         return users
-            .Select(u => new UserResponse(u.Id, u.UserName, u.Email))
+            .Select(u => new UserDto(u.Id, u.UserName, u.Email))
             .ToArray();
     }
 }

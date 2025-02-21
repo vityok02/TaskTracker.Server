@@ -8,6 +8,6 @@ public sealed class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<User, UserResponse>();
+        CreateMap<User, UserDto>();
     }
 }
