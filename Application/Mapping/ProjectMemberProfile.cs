@@ -8,6 +8,6 @@ public sealed class ProjectMemberProfile : Profile
 {
     public ProjectMemberProfile()
     {
-        CreateMap<ProjectMember, MemberResponse>();
+        CreateMap<ProjectMember, ProjectMemberDto>();
     }
 }

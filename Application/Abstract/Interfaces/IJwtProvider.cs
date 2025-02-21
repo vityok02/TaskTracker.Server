@@ -1,9 +1,10 @@
-﻿using Application.Modules.Identity;
+﻿using Application.Modules.Authentication;
 using Domain.Entities;
+using Domain.Models;
 
 namespace Application.Abstract.Interfaces;
 
 public interface IJwtProvider
 {
-    TokenDto Generate(User user);
+    TokenModel Generate(User user);
 }

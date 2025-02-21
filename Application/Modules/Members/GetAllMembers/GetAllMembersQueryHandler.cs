@@ -6,7 +6,7 @@ using Domain.Shared;
 namespace Application.Modules.Members.GetAllMembers;
 
 internal sealed class GetAllMembersQueryHandler
-    : IQueryHandler<GetAllMembersQuery, IEnumerable<MemberResponse>>
+    : IQueryHandler<GetAllMembersQuery, IEnumerable<ProjectMemberDto>>
 {
     private readonly IProjectMemberRepository _memberRepository;
     private readonly IMapper _mapper;
@@ -19,7 +19,7 @@ internal sealed class GetAllMembersQueryHandler
         _mapper = mapper;
     }
 
-    public async Task<Result<IEnumerable<MemberResponse>>> Handle(
+    public async Task<Result<IEnumerable<ProjectMemberDto>>> Handle(
         GetAllMembersQuery query,
         CancellationToken cancellationToken)
     {
@@ -27,7 +27,7 @@ internal sealed class GetAllMembersQueryHandler
             .GetAllAsync(query.UserId, query.ProjectId);
 
         return members
-            .Select(_mapper.Map<MemberResponse>)
+            .Select(_mapper.Map<ProjectMemberDto>)
             .ToArray();
     }
 }

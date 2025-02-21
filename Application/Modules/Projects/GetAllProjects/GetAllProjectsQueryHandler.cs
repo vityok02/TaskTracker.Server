@@ -9,20 +9,24 @@ internal sealed class GetAllProjectsQueryHandler
     : IQueryHandler<GetAllProjectsQuery, IEnumerable<ProjectDto>>
 {
     private readonly IProjectRepository _projectRepository;
+    private readonly IMapper _mapper;
 
     public GetAllProjectsQueryHandler(
-        IProjectRepository projectRepository)
+        IProjectRepository projectRepository,
+        IMapper mapper)
     {
         _projectRepository = projectRepository;
+        _mapper = mapper;
     }
 
     public async Task<Result<IEnumerable<ProjectDto>>> Handle(
         GetAllProjectsQuery query,
         CancellationToken cancellationToken)
     {
-        var projects = await _projectRepository.GetAllAsync(query.MemberId);
+        var projects = await _projectRepository
+            .GetAllAsync(query.MemberId);
 
         return Result<IEnumerable<ProjectDto>>
-            .Success(projects);
+            .Success(_mapper.Map<IEnumerable<ProjectDto>>(projects));
     }
 }

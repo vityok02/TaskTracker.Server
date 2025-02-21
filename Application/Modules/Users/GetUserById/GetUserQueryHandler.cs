@@ -7,7 +7,7 @@ using Domain.Shared;
 namespace Application.Modules.Users.GetUserById;
 
 internal sealed class GetUserQueryHandler
-    : IQueryHandler<GetUserQuery, UserResponse>
+    : IQueryHandler<GetUserQuery, UserDto>
 {
     private readonly IUserRepository _userRepository;
 
@@ -16,16 +16,16 @@ internal sealed class GetUserQueryHandler
         _userRepository = userRepository;
     }
 
-    public async Task<Result<UserResponse>> Handle(
+    public async Task<Result<UserDto>> Handle(
         GetUserQuery query,
         CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(query.UserId);
 
         return user is null
-            ? Result<UserResponse>
+            ? Result<UserDto>
                 .Failure(UserErrors.NotFound)
-            : Result<UserResponse>
-                .Success(new UserResponse(user.Id, user.UserName, user.Email));
+            : Result<UserDto>
+                .Success(new UserDto(user.Id, user.UserName, user.Email));
     }
 }

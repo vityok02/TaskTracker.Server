@@ -1,4 +1,6 @@
-﻿using Api.Controllers.Base;
+﻿using Api.Controllers.Abstract;
+using Api.Controllers.Project.Requests;
+using Api.Controllers.Project.Responses;
 using Api.Extensions;
 using Api.Filters;
 using Application.Modules.Projects.CreateProject;
@@ -56,7 +58,9 @@ public class ProjectController : BaseController
         [FromRoute] Guid projectId,
         CancellationToken token)
     {
-        var query = new GetProjectQuery(User.GetUserId(), projectId);
+        var query = new GetProjectQuery(
+            User.GetUserId(),
+            projectId);
 
         var result = await Sender
             .Send(query, token);

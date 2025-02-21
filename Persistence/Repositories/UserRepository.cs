@@ -13,14 +13,19 @@ public class UserRepository
         : base(connectionFactory)
     { }
 
-    public async Task<bool> IsEmailUniqueAsync(string email)
+    public async Task<User?> GetUserByEmailOrNameAsync(string email, string username)
     {
         using var connection = ConnectionFactory.Create();
 
-        var query = @"SELECT COUNT(1) FROM [User] WHERE Email = @Email";
+        var query = @"SELECT * FROM [User] WHERE Email = @Email OR Username = @Username";
 
         return await connection
-            .ExecuteScalarAsync<bool>(query, new { Email = email });
+            .QueryFirstOrDefaultAsync<User>(
+            query, new
+            { 
+                Email = email,
+                Username = username 
+            });
     }
 
     public async Task<User?> GetByEmailAsync(string email)
@@ -35,7 +40,7 @@ public class UserRepository
         return user;
     }
 
-    public async Task<User?> GetByUserNameAsync(string userName)
+    public async Task<User?> GetByNameAsync(string userName)
     {
         using var connection = ConnectionFactory.Create();
 

@@ -1,6 +1,5 @@
-﻿using Application.Abstract.Interfaces.Base;
-using Application.Modules.Projects;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Domain.Models;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
@@ -10,7 +9,7 @@ public interface IProjectRepository
 
     Task<Guid> CreateAsync(Project project, Guid roleId);
 
-    Task<IEnumerable<ProjectDto>> GetAllAsync(Guid userId);
+    Task<IEnumerable<ProjectModel>> GetAllAsync(Guid userId);
 
-    Task<ProjectDto?> GetByIdAsync(Guid userId, Guid projectId);
+    Task<ProjectModel?> GetByIdAsync(Guid userId, Guid projectId);
 }

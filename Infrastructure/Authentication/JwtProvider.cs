@@ -1,6 +1,7 @@
 ﻿using Application.Abstract.Interfaces;
-using Application.Modules.Identity;
+using Application.Modules.Authentication;
 using Domain.Entities;
+using Domain.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,14 +13,14 @@ namespace Infrastructure.Authentication;
 internal sealed class JwtProvider : IJwtProvider
 {
     private readonly JwtOptions _options;
-    private TimeSpan ExpiresIn => TimeSpan.FromHours(24);
+    private static TimeSpan ExpiresIn => TimeSpan.FromHours(24);
 
     public JwtProvider(IOptions<JwtOptions> options)
     {
         _options = options.Value;
     }
 
-    public TokenDto Generate(User user)
+    public TokenModel Generate(User user)
     {
         var claims = new Claim[]
         {

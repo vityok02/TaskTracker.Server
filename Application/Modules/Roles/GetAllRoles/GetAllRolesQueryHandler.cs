@@ -6,7 +6,7 @@ using Domain.Shared;
 namespace Application.Modules.Roles.GetAllRoles;
 
 internal sealed class GetAllRolesQueryHandler
-    : IQueryHandler<GetAllRolesQuery, IEnumerable<RoleResponse>>
+    : IQueryHandler<GetAllRolesQuery, IEnumerable<RoleDto>>
 {
     private readonly IRoleRepository _roleRepository;
     private readonly IMapper _mapper;
@@ -19,14 +19,14 @@ internal sealed class GetAllRolesQueryHandler
         _mapper = mapper;
     }
 
-    public async Task<Result<IEnumerable<RoleResponse>>> Handle(
+    public async Task<Result<IEnumerable<RoleDto>>> Handle(
         GetAllRolesQuery request,
         CancellationToken cancellationToken)
     {
         var roles = await _roleRepository.GetAllAsync();
 
         return roles
-            .Select(_mapper.Map<RoleResponse>)
+            .Select(_mapper.Map<RoleDto>)
             .ToArray();
     }
 }

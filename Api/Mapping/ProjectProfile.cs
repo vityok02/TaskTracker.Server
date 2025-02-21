@@ -1,4 +1,4 @@
-﻿using Api.Controllers.Project;
+﻿using Api.Controllers.Project.Responses;
 using Application.Modules.Projects;
 using AutoMapper;
 
