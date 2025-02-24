@@ -4,9 +4,12 @@ using Api.Controllers.Project.Responses;
 using Api.Extensions;
 using Api.Filters;
 using Application.Modules.Projects.CreateProject;
+using Application.Modules.Projects.Delete_project;
 using Application.Modules.Projects.GetAllProjects;
 using Application.Modules.Projects.GetProjectById;
+using Application.Modules.Projects.UpdateProject;
 using AutoMapper;
+using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -83,5 +86,46 @@ public class ProjectController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : Ok(Mapper.Map<IEnumerable<ProjectResponse>>(result.Value));
+    }
+
+    [ProjectMember(Roles.Admin)]
+    [HttpPut("{projectId:guid}")]
+    [ProducesResponseType<ProjectResponse>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateProject(
+        [FromRoute] Guid projectId,
+        [FromBody] UpdateProjectRequest projectRequest,
+        CancellationToken token)
+    {
+        var command = new UpdateProjectCommand(
+            User.GetUserId(),
+            projectId,
+            projectRequest.Name,
+            projectRequest.Description);
+
+        var result = await Sender
+            .Send(command, token);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
+    }
+
+    [ProjectMember(Roles.Admin)]
+    [HttpDelete("{projectId:guid}")]
+    [ProducesResponseType<ProjectResponse>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteProject(
+        [FromRoute] Guid projectId,
+        CancellationToken token)
+    {
+        var command = new DeleteProjectCommand(projectId);
+
+        var result = await Sender
+            .Send(command, token);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
     }
 }

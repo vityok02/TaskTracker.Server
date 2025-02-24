@@ -2,7 +2,7 @@
 
 namespace Infrastructure;
 
-public class DateTimeService : IDateTimeService
+public class DateTimeService : IDateTimeProvider
 {
     public DateTime GetCurrentTime()
         => DateTime.UtcNow;

@@ -7,8 +7,6 @@ using Persistence.Repositories.Base;
 
 namespace Persistence.Repositories;
 
-// TODO: ProjectDto, Handle such situations as update
-
 public class ProjectRepository
     : BaseRepository<Project, Guid>, IProjectRepository
 {
@@ -28,11 +26,12 @@ public class ProjectRepository
             WHERE p.Name = @Name AND pm.UserId = @UserId";
 
         var result = await connection
-            .ExecuteScalarAsync<bool>(query,
+            .ExecuteScalarAsync<bool>(
+                query,
                 new
-                { 
+                {
                     Name = projectName,
-                    UserId = userId 
+                    UserId = userId
                 });
 
         return result;
@@ -49,13 +48,14 @@ public class ProjectRepository
         var query = @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId) 
             VALUES (@UserId, @ProjectId, @RoleId)";
 
-        await connection.ExecuteAsync(query,
-            new 
-            { 
+        await connection.ExecuteAsync(
+            query,
+            new
+            {
                 UserId = project.CreatedBy,
                 ProjectId = projectId,
-                RoleId = roleId }
-            );
+                RoleId = roleId
+            });
 
         return projectId;
     }
@@ -80,11 +80,12 @@ public class ProjectRepository
             WHERE pm.UserId = @UserId";
 
         return await connection
-            .QueryAsync<ProjectModel>(query,
+            .QueryAsync<ProjectModel>(
+                query,
                 new { UserId = userId });
     }
 
-    public async Task<ProjectModel?> GetByIdAsync(Guid userId, Guid projectId)
+    public async Task<ProjectModel?> GetModelByUserIdAndProjectIdAsync(Guid userId, Guid projectId)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -95,7 +96,9 @@ public class ProjectRepository
                 p.Description,
                 p.CreatedAt,
                 p.UpdatedAt,
+                uc.Id AS CreatedById,
                 uc.Username AS CreatedBy,
+                uc.Id AS UpdatedById,
                 uu.Username AS UpdatedBy
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
@@ -104,11 +107,32 @@ public class ProjectRepository
             WHERE pm.UserId = @UserId AND pm.ProjectId = p.Id";
 
         return await connection
-            .QueryFirstOrDefaultAsync<ProjectModel>(query, 
-                new 
+            .QueryFirstOrDefaultAsync<ProjectModel>(
+                query,
+                new
                 {
                     UserId = userId,
                     ProjectId = projectId
                 });
+    }
+
+    public override async Task UpdateAsync(Project project)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        await connection.UpdateAsync(project);
+    }
+
+    public override async Task DeleteAsync(Guid id)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        var query = @"
+            DELETE FROM [ProjectMember] WHERE ProjectId = @ProjectId
+            DELETE FROM [Project] WHERE Id = @ProjectId";
+
+        await connection.ExecuteAsync(
+            query,
+            new { ProjectId = id });
     }
 }

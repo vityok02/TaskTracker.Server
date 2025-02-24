@@ -12,5 +12,6 @@ public sealed class ProjectProfile : Profile
     {
         CreateMap<CreateProjectCommand, Project>();
         CreateMap<ProjectModel, ProjectDto>();
+        CreateMap<ProjectModel, Project>();
     }
 }
