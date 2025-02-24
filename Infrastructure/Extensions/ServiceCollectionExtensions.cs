@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddScoped<IJwtProvider, JwtProvider>()
-            .AddScoped<IDateTimeService, DateTimeService>()
+            .AddScoped<IDateTimeProvider, DateTimeService>()
             .AddScoped<IPasswordHasher, PasswordHasher>()
             .AddScoped<IResetTokenService, ResetTokenProvider>()
             .AddScoped<IEmailService, EmailService>()

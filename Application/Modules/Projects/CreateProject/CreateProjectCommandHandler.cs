@@ -14,14 +14,14 @@ internal sealed class CreateProjectCommandHandler
 {
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
-    private readonly IDateTimeService _dateTimeService;
+    private readonly IDateTimeProvider _dateTimeService;
     private readonly IMapper _mapper;
     private readonly IRoleRepository _roleRepository;
 
     public CreateProjectCommandHandler(
         IUserRepository userRepository,
         IProjectRepository projectRepository,
-        IDateTimeService dateTimeService,
+        IDateTimeProvider dateTimeService,
         IMapper mapper,
         IRoleRepository roleRepository)
     {

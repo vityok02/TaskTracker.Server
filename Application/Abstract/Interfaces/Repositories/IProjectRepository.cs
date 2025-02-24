@@ -1,9 +1,10 @@
-﻿using Domain.Entities;
+﻿using Application.Abstract.Interfaces.Base;
+using Domain.Entities;
 using Domain.Models;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
-public interface IProjectRepository
+public interface IProjectRepository : IRepository<Project, Guid>
 {
     Task<bool> ExistsByNameAsync(Guid userId, string projectName);
 
@@ -11,5 +12,5 @@ public interface IProjectRepository
 
     Task<IEnumerable<ProjectModel>> GetAllAsync(Guid userId);
 
-    Task<ProjectModel?> GetByIdAsync(Guid userId, Guid projectId);
+    Task<ProjectModel?> GetModelByUserIdAndProjectIdAsync(Guid userId, Guid projectId);
 }
