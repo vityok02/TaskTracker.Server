@@ -104,7 +104,7 @@ public class ProjectRepository
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
-            WHERE pm.UserId = @UserId AND pm.ProjectId = p.Id";
+            WHERE pm.UserId = @UserId AND pm.ProjectId = @ProjectId";
 
         return await connection
             .QueryFirstOrDefaultAsync<ProjectModel>(
