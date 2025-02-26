@@ -73,6 +73,7 @@ public class ProjectController : BaseController
             : Ok(Mapper.Map<ProjectResponse>(result.Value));
     }
 
+    [ProjectMember]
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProjectResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllProjects(

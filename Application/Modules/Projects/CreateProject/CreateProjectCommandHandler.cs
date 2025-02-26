@@ -56,7 +56,8 @@ internal sealed class CreateProjectCommandHandler
                 .Failure(ProjectErrors.AlreadyExists);
         }
 
-        var role = await _roleRepository.GetByNameAsync(Domain.Constants.Roles.Admin);
+        var role = await _roleRepository
+            .GetByNameAsync(Domain.Constants.Roles.Admin);
 
         if (role is null)
         {
@@ -66,7 +67,9 @@ internal sealed class CreateProjectCommandHandler
 
         var project = _mapper.Map<Project>(command);
 
-        project.CreatedAt = _dateTimeService.GetCurrentTime();
+        project.CreatedAt = _dateTimeService
+            .GetCurrentTime();
+
         project.CreatedBy = command.UserId;
 
         var projectId = await _projectRepository
