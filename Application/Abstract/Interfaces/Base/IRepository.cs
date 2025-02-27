@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Abstract;
 
 namespace Application.Abstract.Interfaces.Base;
 

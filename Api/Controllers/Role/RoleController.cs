@@ -14,9 +14,8 @@ public class RoleController : BaseController
 {
     public RoleController(
         ISender sender,
-        LinkGenerator linkGenerator,
         IMapper mapper)
-        : base(sender, linkGenerator, mapper)
+        : base(sender, mapper)
     {
     }
 

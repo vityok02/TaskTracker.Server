@@ -1,6 +1,6 @@
 ﻿namespace Domain.Models;
 
-public class ProjectModel
+public class ProjectModel : AuditableModel
 {
     public Guid Id { get; set; }
 
@@ -8,16 +8,5 @@ public class ProjectModel
 
     public string? Description { get; set; }
 
-    public string CreatedBy { get; set; } = string.Empty;
-
-    public DateTime CreatedAt { get; set; }
-
-    public string? UpdatedBy { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
-
-    public Guid CreatedById { get; set; }
-
-    public Guid? UpdatedById { get; set; }
+    public List<ProjectStateModel> States = [];
 }
-

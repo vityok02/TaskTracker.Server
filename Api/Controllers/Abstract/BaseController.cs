@@ -8,16 +8,13 @@ namespace Api.Controllers.Abstract;
 public abstract class BaseController : Controller
 {
     protected readonly ISender Sender;
-    protected readonly LinkGenerator LinkGenerator;
     protected readonly IMapper Mapper;
 
     protected BaseController(
         ISender sender,
-        LinkGenerator linkGenerator,
         IMapper mapper)
     {
         Sender = sender;
-        LinkGenerator = linkGenerator;
         Mapper = mapper;
     }
 

@@ -82,10 +82,18 @@ internal sealed class CreateProjectCommandHandler
             Id = projectId,
             Name = project.Name,
             Description = project.Description,
-            CreatedBy = user.UserName,
+            CreatedBy = user.Id,
             CreatedAt = project.CreatedAt,
             UpdatedBy = null,
-            UpdatedAt = null
+            UpdatedAt = null,
+            States = ProjectDefaults
+                .GetDefaultStates(projectId)
+                .Select(s => new ProjectStateDto
+                {
+                    Id = s.Id,
+                    Number = s.Number,
+                    Name = s.Name,
+                })
         };
 
         return Result<ProjectDto>

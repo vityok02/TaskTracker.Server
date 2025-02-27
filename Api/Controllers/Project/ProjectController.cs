@@ -4,7 +4,7 @@ using Api.Controllers.Project.Responses;
 using Api.Extensions;
 using Api.Filters;
 using Application.Modules.Projects.CreateProject;
-using Application.Modules.Projects.Delete_project;
+using Application.Modules.Projects.DeleteProject;
 using Application.Modules.Projects.GetAllProjects;
 using Application.Modules.Projects.GetProjectById;
 using Application.Modules.Projects.UpdateProject;
@@ -23,9 +23,8 @@ public class ProjectController : BaseController
 {
     public ProjectController(
         ISender sender,
-        LinkGenerator linkGenerator,
         IMapper mapper)
-        : base(sender, linkGenerator, mapper)
+        : base(sender, mapper)
     {
     }
 
@@ -34,7 +33,7 @@ public class ProjectController : BaseController
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> CreateProject(
-        [FromBody] ProjectRequest projectRequest,
+        [FromBody] CreateProjectRequest projectRequest,
         CancellationToken token)
     {
         var command = new CreateProjectCommand(
@@ -73,7 +72,6 @@ public class ProjectController : BaseController
             : Ok(Mapper.Map<ProjectResponse>(result.Value));
     }
 
-    [ProjectMember]
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProjectResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllProjects(

@@ -1,6 +1,9 @@
-﻿namespace Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-public class AppTask : BaseEntity
+namespace Domain.Entities;
+
+[Table("Task")]
+public class AppTask : AuditableEntity
 {
     public string Name { get; set; } = string.Empty;
 

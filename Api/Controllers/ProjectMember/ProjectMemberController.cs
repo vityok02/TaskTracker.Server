@@ -1,6 +1,6 @@
 ﻿using Api.Controllers.Abstract;
 using Api.Controllers.ProjectMember.Requests;
-using Api.Controllers.ProjectMember.Requests.Responses;
+using Api.Controllers.ProjectMember.Responses;
 using Api.Extensions;
 using Api.Filters;
 using Application.Modules.Members.AddMember;
@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.ProjectMember;
 
-[Authorize]
 [ProjectMember]
 [Route("projects/{projectId:guid}/members")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
@@ -22,9 +21,8 @@ public class ProjectMemberController : BaseController
 {
     public ProjectMemberController(
         ISender sender,
-        LinkGenerator linkGenerator,
         IMapper mapper)
-        : base(sender, linkGenerator, mapper)
+        : base(sender, mapper)
     {
     }
 
@@ -36,7 +34,7 @@ public class ProjectMemberController : BaseController
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> AddMember(
         [FromRoute] Guid projectId,
-        [FromBody] RoleRequest roleRequest,
+        [FromBody] AddMemberRoleRequest roleRequest,
         CancellationToken token)
     {
         var command = new AddMemberCommand(

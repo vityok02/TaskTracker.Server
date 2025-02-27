@@ -1,9 +1,11 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
+using Application.Modules.Projects;
 using Dapper;
 using Domain.Entities;
 using Domain.Models;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
+using System.Linq;
 
 namespace Persistence.Repositories;
 
@@ -39,23 +41,34 @@ public class ProjectRepository
 
     public async Task<Guid> CreateAsync(Project project, Guid roleId)
     {
+        // Posible refactor: combine queries
+
         using var connection = ConnectionFactory
             .Create();
 
         var projectId = await connection
             .InsertAsync<Guid, Project>(project);
 
-        var query = @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId) 
-            VALUES (@UserId, @ProjectId, @RoleId)";
+        var states = ProjectDefaults.GetDefaultStates(projectId);
 
-        await connection.ExecuteAsync(
-            query,
-            new
-            {
-                UserId = project.CreatedBy,
-                ProjectId = projectId,
-                RoleId = roleId
-            });
+        string query = (@"INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
+            VALUES(@UserId, @ProjectId, @RoleId)");
+
+        var insertStatesSql = @"INSERT INTO State(Id, Number, Name, ProjectId)
+            VALUES (@Id, @Number, @Name, @ProjectId);";
+
+        await connection
+            .ExecuteAsync(insertStatesSql, states);
+
+        await connection
+            .ExecuteAsync(
+                query,
+                new
+                {
+                    UserId = project.CreatedBy,
+                    ProjectId = projectId,
+                    RoleId = roleId
+                });
 
         return projectId;
     }
@@ -66,23 +79,35 @@ public class ProjectRepository
 
         var query = @"
             SELECT 
-                p.Id,
+                p.Id AS Id,
                 p.Name,
                 p.Description,
                 p.CreatedAt,
                 p.UpdatedAt,
-                uc.Username AS CreatedBy,
-                uu.Username AS UpdatedBy
+                uc.Id AS CreatedBy,
+                uc.Username AS CreatedByName,
+                uu.Id AS UpdatedBy,
+                uu.Username AS UpdatedByName,
+                s.Id AS Id,
+                s.Name AS Name,
+                s.Number AS Number
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
+            JOIN [State] s ON s.ProjectId = p.Id
             WHERE pm.UserId = @UserId";
 
-        return await connection
-            .QueryAsync<ProjectModel>(
-                query,
-                new { UserId = userId });
+        var lookup = new Dictionary<Guid, ProjectModel>();
+
+        await connection.QueryAsync<ProjectModel, ProjectStateModel, ProjectModel>(
+            query,
+            (project, state) => MapProjectStates(project, state, lookup),
+            new { UserId = userId },
+            splitOn: "Id"
+        );
+
+        return lookup.Values;
     }
 
     public async Task<ProjectModel?> GetModelByUserIdAndProjectIdAsync(Guid userId, Guid projectId)
@@ -96,24 +121,31 @@ public class ProjectRepository
                 p.Description,
                 p.CreatedAt,
                 p.UpdatedAt,
-                uc.Id AS CreatedById,
-                uc.Username AS CreatedBy,
-                uc.Id AS UpdatedById,
-                uu.Username AS UpdatedBy
+                uc.Id AS CreatedBy,
+                uc.Username AS CreatedByName,
+                uu.Id AS UpdatedBy,
+                uu.Username AS UpdatedByName,
+                s.Id AS Id,
+                s.Name AS Name,
+                s.Number AS Number
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
+            JOIN [State] s ON s.ProjectId = p.Id
             WHERE pm.UserId = @UserId AND pm.ProjectId = @ProjectId";
 
-        return await connection
-            .QueryFirstOrDefaultAsync<ProjectModel>(
-                query,
-                new
-                {
-                    UserId = userId,
-                    ProjectId = projectId
-                });
+        var lookup = new Dictionary<Guid, ProjectModel>();
+
+        await connection.QueryAsync<ProjectModel, ProjectStateModel, ProjectModel>(
+            query,
+            (project, state) => MapProjectStates(project, state, lookup),
+            new { UserId = userId, ProjectId = projectId },
+            splitOn: "Id"
+        );
+
+        return lookup.Values
+            .FirstOrDefault();
     }
 
     public override async Task UpdateAsync(Project project)
@@ -134,5 +166,21 @@ public class ProjectRepository
         await connection.ExecuteAsync(
             query,
             new { ProjectId = id });
+    }
+
+    private static ProjectModel MapProjectStates(
+    ProjectModel project,
+    ProjectStateModel state,
+    Dictionary<Guid, ProjectModel> lookup)
+    {
+        if (!lookup.TryGetValue(project.Id, out var existingProject))
+        {
+            existingProject = project;
+            existingProject.States = [];
+            lookup.Add(existingProject.Id, existingProject);
+        }
+
+        existingProject.States.Add(state);
+        return existingProject;
     }
 }

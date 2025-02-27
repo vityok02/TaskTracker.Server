@@ -3,7 +3,7 @@ using Application.Abstract.Messaging;
 using Domain.Errors;
 using Domain.Shared;
 
-namespace Application.Modules.Projects.Delete_project;
+namespace Application.Modules.Projects.DeleteProject;
 
 internal sealed class DeleteProjectCommandHandler
     : ICommandHandler<DeleteProjectCommand>

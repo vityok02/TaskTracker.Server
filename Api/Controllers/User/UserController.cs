@@ -15,9 +15,8 @@ public sealed class UserController : BaseController
 {
     public UserController(
         ISender sender,
-        LinkGenerator linkGenerator,
         IMapper mapper)
-        : base(sender, linkGenerator, mapper)
+        : base(sender, mapper)
     {
     }
 
