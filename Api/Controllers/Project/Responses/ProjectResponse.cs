@@ -1,10 +1,14 @@
-﻿namespace Api.Controllers.Project.Responses;
+﻿using Api.Controllers.Abstract;
 
-public record ProjectResponse(
-    Guid Id,
-    string Name,
-    string? Description,
-    string CreatedBy,
-    DateTime CreatedAt,
-    string? UpdatedBy,
-    DateTime? UpdatedAt);
+namespace Api.Controllers.Project.Responses;
+
+public class ProjectResponse : AuditableResponse
+{
+    public Guid Id { get; init; }
+
+    public string Name { get; init; } = string.Empty;
+
+    public string? Description { get; init; }
+
+    public IEnumerable<ProjectStateResponse> States { get; init; } = [];
+}

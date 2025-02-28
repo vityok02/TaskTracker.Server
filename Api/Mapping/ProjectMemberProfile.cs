@@ -1,4 +1,4 @@
-﻿using Api.Controllers.ProjectMember.Requests.Responses;
+﻿using Api.Controllers.ProjectMember.Responses;
 using Application.Modules.Members;
 using AutoMapper;
 
@@ -9,6 +9,7 @@ public class ProjectMemberProfile : Profile
     public ProjectMemberProfile()
     {
         CreateMap<ProjectMemberDto, ProjectMemberResponse>();
+
         CreateMap<IEnumerable<ProjectMemberDto>, IEnumerable<ProjectMemberResponse>>();
     }
 }

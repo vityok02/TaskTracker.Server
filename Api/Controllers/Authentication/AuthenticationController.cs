@@ -18,12 +18,15 @@ namespace Api.Controllers.Authentication;
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
 public class AuthenticationController : BaseController
 {
+    private readonly LinkGenerator _linkGenerator;
+
     public AuthenticationController(
         ISender sender,
-        LinkGenerator linkGenerator,
-        IMapper mapper)
-        : base(sender, linkGenerator, mapper)
+        IMapper mapper,
+        LinkGenerator linkGenerator)
+        : base(sender, mapper)
     {
+        _linkGenerator = linkGenerator;
     }
 
     [HttpPost("register")]
@@ -44,7 +47,7 @@ public class AuthenticationController : BaseController
             return HandleFailure(result);
         }
 
-        var uri = LinkGenerator.GetPathByName(
+        var uri = _linkGenerator.GetPathByName(
             HttpContext,
             "GetUser",
             new { result.Value.Id });

@@ -8,6 +8,8 @@ public class ProjectProfile : Profile
 {
     public ProjectProfile()
     {
+        CreateMap<ProjectStateDto, ProjectStateResponse>();
+
         CreateMap<ProjectDto, ProjectResponse>();
     }
 }

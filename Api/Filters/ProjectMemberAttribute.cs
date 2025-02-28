@@ -21,6 +21,14 @@ public sealed class ProjectMemberAttribute
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
+        var user = context.HttpContext.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            context.Result = new UnauthorizedResult();
+            return;
+        }
+
         var memberRepository = context.HttpContext.RequestServices
             .GetRequiredService<IProjectMemberRepository>();
 
@@ -32,7 +40,7 @@ public sealed class ProjectMemberAttribute
 
         if (member is null)
         {
-            context.Result = new ForbidResult();
+            context.Result = new NotFoundResult();
             return;
         }
 
@@ -40,6 +48,8 @@ public sealed class ProjectMemberAttribute
         {
             return;
         }
+
+        // TODO: include role query in memberRepository.GetAsync()
 
         var role = await memberRepository
             .GetMemberRole(userId, projectId);

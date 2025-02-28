@@ -1,6 +1,6 @@
 ﻿using Application.Abstract.Interfaces.Base;
 using Dapper;
-using Domain.Entities;
+using Domain.Abstract;
 using Persistence.Abstractions;
 
 namespace Persistence.Repositories.Base;

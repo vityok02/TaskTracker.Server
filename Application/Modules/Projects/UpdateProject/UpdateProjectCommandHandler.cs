@@ -38,12 +38,6 @@ internal sealed class UpdateProjectCommandHandler
                 .Failure(ProjectErrors.NotFound);
         }
 
-        if (!HasChanges(projectModel, command))
-        {
-            return Result
-                .Success();
-        }
-
         if (exists && !string.Equals(
             projectModel.Name,
             command.Name,
@@ -58,7 +52,7 @@ internal sealed class UpdateProjectCommandHandler
             Id = projectModel.Id,
             Name = command.Name,
             Description = command.Description,
-            CreatedBy = projectModel.CreatedById,
+            CreatedBy = projectModel.CreatedBy,
             CreatedAt = projectModel.CreatedAt,
             UpdatedBy = command.UserId,
             UpdatedAt = _dateTimeProvider.GetCurrentTime(),
@@ -68,11 +62,5 @@ internal sealed class UpdateProjectCommandHandler
             .UpdateAsync(updatedProject);
 
         return Result.Success();
-    }
-
-    private static bool HasChanges(ProjectModel project, UpdateProjectCommand command)
-    {
-        return project.Name != command.Name
-            || project.Description != command.Description;
     }
 }

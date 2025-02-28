@@ -16,6 +16,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IProjectRepository, ProjectRepository>()
             .AddScoped<IProjectMemberRepository, ProjectMemberRepository>()
             .AddScoped<IRoleRepository, RoleRepository>()
+            .AddScoped<ITaskRepository, TaskRepository>()
+            .AddScoped<IStateRepository, StateRepository>()
             .AddSingleton<IConnectionStringProvider, ConnectionStringProvider>()
             ;
 
