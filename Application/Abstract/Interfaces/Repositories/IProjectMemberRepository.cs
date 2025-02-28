@@ -5,11 +5,11 @@ namespace Application.Abstract.Interfaces.Repositories;
 
 public interface IProjectMemberRepository
 {
-    Task<ProjectMember?> GetAsync(Guid userId, Guid projectId);
+    Task<ProjectMemberEntity?> GetAsync(Guid userId, Guid projectId);
 
-    Task<Role> GetMemberRole(Guid userId, Guid projectId);
+    Task<RoleEntity> GetMemberRole(Guid userId, Guid projectId);
 
     Task CreateMember(Guid userId, Guid projectId, Guid roleId);
 
-    Task<IEnumerable<ProjectMember>> GetAllAsync(Guid userId, Guid projectId);
+    Task<IEnumerable<ProjectMemberEntity>> GetAllAsync(Guid userId, Guid projectId);
 }

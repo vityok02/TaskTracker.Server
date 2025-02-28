@@ -1,9 +1,7 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using Domain.Entities;
 using Domain.Errors;
-using Domain.Models;
 using Domain.Shared;
 
 namespace Application.Modules.Projects.UpdateProject;
@@ -26,20 +24,20 @@ internal sealed class UpdateProjectCommandHandler
         UpdateProjectCommand command,
         CancellationToken cancellationToken)
     {
-        var projectModel = await _projectRepository
-            .GetModelByUserIdAndProjectIdAsync(command.UserId, command.ProjectId);
+        var project = await _projectRepository
+            .GetByIdAsync(command.ProjectId);
 
         var exists = await _projectRepository
-            .ExistsByNameAsync(command.UserId, command.Name);
+            .ExistsByNameAsync(command.Name);
 
-        if (projectModel is null)
+        if (project is null)
         {
             return Result
                 .Failure(ProjectErrors.NotFound);
         }
 
         if (exists && !string.Equals(
-            projectModel.Name,
+            project.Name,
             command.Name,
             StringComparison.OrdinalIgnoreCase))
         {
@@ -47,19 +45,14 @@ internal sealed class UpdateProjectCommandHandler
                 .Failure(ProjectErrors.AlreadyExists);
         }
 
-        var updatedProject = new Project
-        {
-            Id = projectModel.Id,
-            Name = command.Name,
-            Description = command.Description,
-            CreatedBy = projectModel.CreatedBy,
-            CreatedAt = projectModel.CreatedAt,
-            UpdatedBy = command.UserId,
-            UpdatedAt = _dateTimeProvider.GetCurrentTime(),
-        };
+        project.Name = command.Name;
+        project.Description = command.Description;
+        project.UpdatedAt = _dateTimeProvider
+            .GetCurrentTime();
+        project.UpdatedBy = command.UserId;
 
         await _projectRepository
-            .UpdateAsync(updatedProject);
+            .UpdateAsync(project);
 
         return Result.Success();
     }

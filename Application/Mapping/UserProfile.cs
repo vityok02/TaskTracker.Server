@@ -8,6 +8,6 @@ public sealed class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<User, UserDto>();
+        CreateMap<UserEntity, UserDto>();
     }
 }

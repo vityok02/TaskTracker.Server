@@ -3,11 +3,11 @@ using Domain.Entities;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
-public interface IUserRepository : IRepository<User, Guid>
+public interface IUserRepository : IRepository<UserEntity, Guid>
 {
-    Task<User?> GetByEmailAsync(string email);
+    Task<UserEntity?> GetByEmailAsync(string email);
 
-    Task<User?> GetUserByEmailOrNameAsync(string email, string username);
+    Task<UserEntity?> GetUserByEmailOrNameAsync(string email, string username);
 
-    Task<User?> GetByNameAsync(string userName);
+    Task<UserEntity?> GetByNameAsync(string userName);
 }

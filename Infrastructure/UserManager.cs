@@ -23,7 +23,7 @@ public class UserManager : IUserManager
     }
 
     public async Task<Result> ChangePasswordAsync(
-        User user,
+        UserEntity user,
         string currentPassword,
         string newPassword)
     {
@@ -54,7 +54,7 @@ public class UserManager : IUserManager
     }
 
     public async Task<Result> ResetPasswordAsync(
-        User user,
+        UserEntity user,
         string token,
         string password)
     {

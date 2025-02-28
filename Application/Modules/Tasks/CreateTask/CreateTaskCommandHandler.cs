@@ -39,7 +39,7 @@ internal sealed class CreateTaskCommandHandler
                 .Failure(TaskErrors.AlreadyExists);
         }
 
-        AppTask task = new()
+        TaskEntity task = new()
         {
             Id = Guid.NewGuid(),
             Name = command.Name,
@@ -50,8 +50,11 @@ internal sealed class CreateTaskCommandHandler
             ProjectId = command.ProjectId
         };
 
-        TaskModel createdTask = await _taskRepository
+        var taskId = await _taskRepository
             .CreateAsync(task);
+
+        var createdTask = await _taskRepository
+            .GetExtendedByIdAsync(taskId);
 
         return Result<TaskDto>
             .Success(_mapper.Map<TaskDto>(createdTask));

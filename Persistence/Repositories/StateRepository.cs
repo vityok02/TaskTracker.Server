@@ -8,7 +8,7 @@ using Persistence.Repositories.Base;
 namespace Persistence.Repositories;
 
 public class StateRepository
-    : BaseRepository<State, Guid>, IStateRepository
+    : BaseRepository<StateEntity, Guid>, IStateRepository
 {
     private const string SelectQuery = @"
             SELECT s.Id, s.Number, s.Name, s.Description, s.CreatedBy, s.CreatedAt, s.UpdatedBy, s.UpdatedAt,

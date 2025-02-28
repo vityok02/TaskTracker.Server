@@ -26,7 +26,7 @@ internal sealed class GetTaskByIdQueryHandler
         CancellationToken cancellationToken)
     {
         var task = await _taskRepository
-            .GetModelByIdAsync(query.TaskId);
+            .GetExtendedByIdAsync(query.TaskId);
 
         if (task?.ProjectId != query.ProjectId)
         {

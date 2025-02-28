@@ -59,7 +59,7 @@ internal sealed class AddMemberCommandHandler
         }
 
         var project = await _projectRepository
-            .GetModelByUserIdAndProjectIdAsync(user.Id, command.ProjectId);
+            .GetExtendedByIdAsync(command.ProjectId);
 
         if (project is null)
         {

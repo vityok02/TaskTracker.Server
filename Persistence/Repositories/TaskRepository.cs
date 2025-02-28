@@ -8,7 +8,7 @@ using Persistence.Repositories.Base;
 
 namespace Persistence.Repositories;
 
-public class TaskRepository : BaseRepository<AppTask, Guid>, ITaskRepository
+public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
 {
     public TaskRepository(ISqlConnectionFactory connectionFactory)
         : base(connectionFactory)
@@ -34,22 +34,6 @@ public class TaskRepository : BaseRepository<AppTask, Guid>, ITaskRepository
                 });
     }
 
-    public new async Task<TaskModel> CreateAsync(AppTask task)
-    {
-        using var connection = ConnectionFactory.Create();
-
-        var query = $@"
-            INSERT INTO [Task] (Id, Name, Description, ProjectId, StateId, CreatedBy, CreatedAt)
-            VALUES (@Id, @Name, @Description, @ProjectId, @StateId, @CreatedBy, @CreatedAt)
-
-            {GetSelectQuery("t.Id = @Id")}";
-
-        return await connection
-            .QuerySingleAsync<TaskModel>(
-            query,
-            task);
-    }
-
     public async Task<IEnumerable<TaskModel>> GetAllByProjectIdAsync(Guid ProjectId)
     {
         using var connection = ConnectionFactory.Create();
@@ -62,7 +46,7 @@ public class TaskRepository : BaseRepository<AppTask, Guid>, ITaskRepository
                 new { ProjectId });
     }
 
-    async Task<TaskModel?> ITaskRepository.GetModelByIdAsync(Guid id)
+    async Task<TaskModel?> ITaskRepository.GetExtendedByIdAsync(Guid id)
     {
         using var connection = ConnectionFactory.Create();
 

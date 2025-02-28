@@ -6,5 +6,5 @@ namespace Application.Abstract.Interfaces;
 
 public interface IJwtProvider
 {
-    TokenModel Generate(User user);
+    TokenModel Generate(UserEntity user);
 }

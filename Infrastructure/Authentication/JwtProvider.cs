@@ -20,7 +20,7 @@ internal sealed class JwtProvider : IJwtProvider
         _options = options.Value;
     }
 
-    public TokenModel Generate(User user)
+    public TokenModel Generate(UserEntity user)
     {
         var claims = new Claim[]
         {

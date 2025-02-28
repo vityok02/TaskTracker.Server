@@ -7,20 +7,20 @@ using Persistence.Repositories.Base;
 namespace Persistence.Repositories;
 
 public class UserRepository
-    : BaseRepository<User, Guid>, IUserRepository
+    : BaseRepository<UserEntity, Guid>, IUserRepository
 {
     public UserRepository(ISqlConnectionFactory connectionFactory)
         : base(connectionFactory)
     { }
 
-    public async Task<User?> GetUserByEmailOrNameAsync(string email, string username)
+    public async Task<UserEntity?> GetUserByEmailOrNameAsync(string email, string username)
     {
         using var connection = ConnectionFactory.Create();
 
         var query = @"SELECT * FROM [User] WHERE Email = @Email OR Username = @Username";
 
         return await connection
-            .QueryFirstOrDefaultAsync<User>(
+            .QueryFirstOrDefaultAsync<UserEntity>(
             query, new
             { 
                 Email = email,
@@ -28,26 +28,26 @@ public class UserRepository
             });
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<UserEntity?> GetByEmailAsync(string email)
     {
         using var connection = ConnectionFactory.Create();
 
         var query = @"SELECT * FROM [User] WHERE Email = @Email";
 
         var user = await connection
-            .QueryFirstOrDefaultAsync<User>(query, new { Email = email });
+            .QueryFirstOrDefaultAsync<UserEntity>(query, new { Email = email });
 
         return user;
     }
 
-    public async Task<User?> GetByNameAsync(string userName)
+    public async Task<UserEntity?> GetByNameAsync(string userName)
     {
         using var connection = ConnectionFactory.Create();
 
         var query = @"SELECT * FROM [User] WHERE UserName = @UserName";
 
         var user = await connection
-            .QuerySingleOrDefaultAsync<User>(query, new { UserName = userName });
+            .QuerySingleOrDefaultAsync<UserEntity>(query, new { UserName = userName });
 
         return user;
     }
