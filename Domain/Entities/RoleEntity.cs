@@ -1,8 +1,10 @@
 ﻿using Domain.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-public class Role : BaseEntity
+[Table("Role")]
+public class RoleEntity : BaseEntity
 {
     public string Name { get; set; } = string.Empty;
 

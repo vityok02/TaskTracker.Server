@@ -1,8 +1,10 @@
 ﻿using Domain.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-public class User : BaseEntity
+[Table("User")]
+public class UserEntity : BaseEntity
 {
     public string UserName { get; set; } = string.Empty;
 

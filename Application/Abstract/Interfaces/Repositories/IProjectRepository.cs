@@ -4,13 +4,13 @@ using Domain.Models;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
-public interface IProjectRepository : IRepository<Project, Guid>
+public interface IProjectRepository : IRepository<ProjectEntity, Guid>
 {
-    Task<bool> ExistsByNameAsync(Guid userId, string projectName);
+    Task<bool> ExistsByNameAsync(string projectName);
 
-    Task<Guid> CreateAsync(Project project, Guid roleId);
+    Task<Guid> CreateAsync(ProjectEntity project, Guid roleId);
 
-    Task<IEnumerable<ProjectModel>> GetAllAsync(Guid userId);
+    Task<IEnumerable<ProjectModel>> GetAllByUserIdAsync(Guid userId);
 
-    Task<ProjectModel?> GetModelByUserIdAndProjectIdAsync(Guid userId, Guid projectId);
+    Task<ProjectModel?> GetExtendedByIdAsync(Guid projectId);
 }

@@ -1,6 +1,9 @@
-﻿namespace Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-public class State : AuditableEntity
+namespace Domain.Entities;
+
+[Table("State")]
+public class StateEntity : AuditableEntity
 {
     public int Number { get; set; }
 

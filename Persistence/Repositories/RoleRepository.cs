@@ -7,14 +7,14 @@ using Persistence.Repositories.Base;
 namespace Persistence.Repositories;
 
 public class RoleRepository
-    : BaseRepository<Role, Guid>, IRoleRepository
+    : BaseRepository<RoleEntity, Guid>, IRoleRepository
 {
     public RoleRepository(ISqlConnectionFactory connectionFactory)
         : base(connectionFactory)
     {
     }
 
-    public async Task<Role?> GetByNameAsync(string name)
+    public async Task<RoleEntity?> GetByNameAsync(string name)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -22,6 +22,6 @@ public class RoleRepository
             WHERE [Name] = @Name";
 
         return await connection
-            .QueryFirstAsync<Role>(query, new { Name = name });
+            .QueryFirstAsync<RoleEntity>(query, new { Name = name });
     }
 }

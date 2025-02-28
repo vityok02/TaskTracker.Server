@@ -6,7 +6,5 @@ public class Activity : AuditableEntity
 
     public string Details { get; set; } = string.Empty;
 
-    public User User { get; set; }
-
     public Guid ProjectId { get; set; }
 }

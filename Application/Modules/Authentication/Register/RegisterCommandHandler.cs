@@ -47,7 +47,7 @@ internal sealed class RegisterCommandHandler
         var hashedPassword = _passwordHasher
             .Hash(command.Password);
 
-        var user = new User
+        var user = new UserEntity
         {
             Id = Guid.NewGuid(),
             UserName = command.Username,

@@ -61,7 +61,6 @@ public class ProjectController : BaseController
         CancellationToken token)
     {
         var query = new GetProjectQuery(
-            User.GetUserId(),
             projectId);
 
         var result = await Sender

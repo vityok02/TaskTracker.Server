@@ -4,7 +4,7 @@ using Domain.Models;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
-public interface IStateRepository : IRepository<State, Guid>
+public interface IStateRepository : IRepository<StateEntity, Guid>
 {
     Task<bool> ExistsByProjectIdAndNameAsync(Guid projectId, string name);
     Task<bool> ExistsForProject(Guid stateId, Guid projectId);

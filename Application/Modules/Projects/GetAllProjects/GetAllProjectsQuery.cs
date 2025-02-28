@@ -2,5 +2,5 @@
 
 namespace Application.Modules.Projects.GetAllProjects;
 
-public sealed record GetAllProjectsQuery(Guid MemberId)
+public sealed record GetAllProjectsQuery(Guid UserId)
     : IQuery<IEnumerable<ProjectDto>>;

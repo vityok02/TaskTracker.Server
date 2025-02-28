@@ -8,6 +8,6 @@ public sealed class RoleProfile : Profile
 {
     public RoleProfile()
     {
-        CreateMap<Role, RoleDto>();
+        CreateMap<RoleEntity, RoleDto>();
     }
 }

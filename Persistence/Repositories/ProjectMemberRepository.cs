@@ -35,7 +35,7 @@ public class ProjectMemberRepository
                 new { UserId = userId, ProjectId = projectId, RoleId = roleId });
     }
 
-    public async Task<IEnumerable<ProjectMember>> GetAllAsync(
+    public async Task<IEnumerable<ProjectMemberEntity>> GetAllAsync(
         Guid userId,
         Guid projectId)
     {
@@ -44,11 +44,11 @@ public class ProjectMemberRepository
         var query = SelectQuery;
 
         return await connection
-            .QueryAsync<ProjectMember>(query,
+            .QueryAsync<ProjectMemberEntity>(query,
                 new { UserId = userId, ProjectId = projectId });
     }
 
-    public async Task<ProjectMember?> GetAsync(
+    public async Task<ProjectMemberEntity?> GetAsync(
         Guid userId,
         Guid projectId)
     {
@@ -57,11 +57,11 @@ public class ProjectMemberRepository
         var query = SelectQuery;
 
         return await connection
-            .QueryFirstOrDefaultAsync<ProjectMember>(query,
+            .QueryFirstOrDefaultAsync<ProjectMemberEntity>(query,
                 new { UserId = userId, ProjectId = projectId });
     }
 
-    public async Task<Role> GetMemberRole(
+    public async Task<RoleEntity> GetMemberRole(
         Guid userId,
         Guid projectId)
     {
@@ -72,7 +72,7 @@ public class ProjectMemberRepository
             WHERE pm.UserId = @UserId AND pm.ProjectId = @ProjectId";
 
         return await connection
-            .QueryFirstAsync<Role>(query, 
+            .QueryFirstAsync<RoleEntity>(query, 
                 new { UserId = userId, ProjectId = projectId });
     }
 }

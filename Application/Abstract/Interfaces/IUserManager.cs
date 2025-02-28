@@ -6,6 +6,6 @@ namespace Application.Abstract.Interfaces;
 public interface IUserManager
 {
     string GeneratePasswordResetToken(Guid userId);
-    Task<Result> ResetPasswordAsync(User user, string token, string password);
-    Task<Result> ChangePasswordAsync(User user, string currentPassword, string newPassword);
+    Task<Result> ResetPasswordAsync(UserEntity user, string token, string password);
+    Task<Result> ChangePasswordAsync(UserEntity user, string currentPassword, string newPassword);
 }

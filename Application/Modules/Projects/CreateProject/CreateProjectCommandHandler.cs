@@ -2,7 +2,6 @@
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using AutoMapper;
-using Domain.Constants;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Shared;
@@ -48,7 +47,7 @@ internal sealed class CreateProjectCommandHandler
         }
 
         bool projectExists = await _projectRepository
-            .ExistsByNameAsync(command.UserId, command.Name);
+            .ExistsByNameAsync(command.Name);
 
         if (projectExists)
         {
@@ -65,17 +64,15 @@ internal sealed class CreateProjectCommandHandler
                 .Failure(RoleErrors.NotFound);
         }
 
-        var project = _mapper.Map<Project>(command);
+        var project = _mapper.Map<ProjectEntity>(command);
 
+        project.Id = Guid.NewGuid();
         project.CreatedAt = _dateTimeService
             .GetCurrentTime();
-
         project.CreatedBy = command.UserId;
 
         var projectId = await _projectRepository
             .CreateAsync(project, role.Id);
-
-        project.Id = projectId;
 
         var projectDto = new ProjectDto
         {

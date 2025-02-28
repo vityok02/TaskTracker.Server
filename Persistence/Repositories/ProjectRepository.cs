@@ -10,13 +10,13 @@ using System.Linq;
 namespace Persistence.Repositories;
 
 public class ProjectRepository
-    : BaseRepository<Project, Guid>, IProjectRepository
+    : BaseRepository<ProjectEntity, Guid>, IProjectRepository
 {
     public ProjectRepository(ISqlConnectionFactory connectionFactory)
         : base(connectionFactory)
     { }
 
-    public async Task<bool> ExistsByNameAsync(Guid userId, string projectName)
+    public async Task<bool> ExistsByNameAsync(string projectName)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -25,21 +25,20 @@ public class ProjectRepository
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] u ON u.Id = pm.UserId
-            WHERE p.Name = @Name AND pm.UserId = @UserId";
+            WHERE p.Name = @Name";
 
         var result = await connection
             .ExecuteScalarAsync<bool>(
                 query,
                 new
                 {
-                    Name = projectName,
-                    UserId = userId
+                    Name = projectName
                 });
 
         return result;
     }
 
-    public async Task<Guid> CreateAsync(Project project, Guid roleId)
+    public async Task<Guid> CreateAsync(ProjectEntity project, Guid roleId)
     {
         // Posible refactor: combine queries
 
@@ -47,7 +46,7 @@ public class ProjectRepository
             .Create();
 
         var projectId = await connection
-            .InsertAsync<Guid, Project>(project);
+            .InsertAsync<Guid, ProjectEntity>(project);
 
         var states = ProjectDefaults.GetDefaultStates(projectId);
 
@@ -73,7 +72,7 @@ public class ProjectRepository
         return projectId;
     }
 
-    public async Task<IEnumerable<ProjectModel>> GetAllAsync(Guid userId)
+    public async Task<IEnumerable<ProjectModel>> GetAllByUserIdAsync(Guid userId)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -110,7 +109,7 @@ public class ProjectRepository
         return lookup.Values;
     }
 
-    public async Task<ProjectModel?> GetModelByUserIdAndProjectIdAsync(Guid userId, Guid projectId)
+    public async Task<ProjectModel?> GetExtendedByIdAsync(Guid projectId)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -133,14 +132,14 @@ public class ProjectRepository
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
             JOIN [State] s ON s.ProjectId = p.Id
-            WHERE pm.UserId = @UserId AND pm.ProjectId = @ProjectId";
+            WHERE pm.ProjectId = @ProjectId";
 
         var lookup = new Dictionary<Guid, ProjectModel>();
 
         await connection.QueryAsync<ProjectModel, ProjectStateModel, ProjectModel>(
             query,
             (project, state) => MapProjectStates(project, state, lookup),
-            new { UserId = userId, ProjectId = projectId },
+            new { ProjectId = projectId },
             splitOn: "Id"
         );
 
@@ -148,7 +147,7 @@ public class ProjectRepository
             .FirstOrDefault();
     }
 
-    public override async Task UpdateAsync(Project project)
+    public override async Task UpdateAsync(ProjectEntity project)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -160,7 +159,6 @@ public class ProjectRepository
         using var connection = ConnectionFactory.Create();
 
         var query = @"
-            DELETE FROM [ProjectMember] WHERE ProjectId = @ProjectId
             DELETE FROM [Project] WHERE Id = @ProjectId";
 
         await connection.ExecuteAsync(

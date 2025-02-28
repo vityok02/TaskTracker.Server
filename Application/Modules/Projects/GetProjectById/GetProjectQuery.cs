@@ -3,7 +3,5 @@
 namespace Application.Modules.Projects.GetProjectById;
 
 public sealed record GetProjectQuery(
-    Guid UserId,
-    Guid ProjectId
-    )
+    Guid ProjectId)
     : IQuery<ProjectDto>;

@@ -10,13 +10,13 @@ public sealed class ProjectProfile : Profile
 {
     public ProjectProfile()
     {
-        CreateMap<CreateProjectCommand, Project>();
+        CreateMap<CreateProjectCommand, ProjectEntity>();
 
         CreateMap<ProjectStateModel, ProjectStateDto>();
 
         CreateMap<ProjectModel, ProjectDto>()
             .ForMember(dest => dest.States, opt => opt.MapFrom(src => src.States.AsEnumerable()));
 
-        CreateMap<ProjectModel, Project>();
+        CreateMap<ProjectModel, ProjectEntity>();
     }
 }

@@ -2,5 +2,8 @@
 
 namespace Application.Modules.Projects.CreateProject;
 
-public sealed record CreateProjectCommand(Guid UserId, string Name, string? Description)
+public sealed record CreateProjectCommand(
+    Guid UserId,
+    string Name,
+    string? Description)
     : ICommand<ProjectDto>;

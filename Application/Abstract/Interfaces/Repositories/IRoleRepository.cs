@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
-public interface IRoleRepository : IRepository<Role, Guid>
+public interface IRoleRepository : IRepository<RoleEntity, Guid>
 {
-    Task<Role?> GetByNameAsync(string name);
+    Task<RoleEntity?> GetByNameAsync(string name);
 }
