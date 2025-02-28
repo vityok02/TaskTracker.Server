@@ -1,7 +1,6 @@
 ﻿namespace Api.Controllers.Task.Requests;
 
-public record UpdateTaskRequest(
-    Guid Id,
+public record TaskRequest(
     string Name,
     string? Description,
     Guid StateId);

@@ -33,7 +33,7 @@ public class TaskController : BaseController
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateTask(
         [FromRoute] Guid projectId,
-        [FromBody] CreateTaskRequest taskRequest,
+        [FromBody] TaskRequest taskRequest,
         CancellationToken token)
     {
         var command = new CreateTaskCommand(
@@ -96,7 +96,7 @@ public class TaskController : BaseController
     public async Task<IActionResult> UpdateTask(
         [FromRoute] Guid projectId,
         [FromRoute] Guid taskId,
-        [FromBody] UpdateTaskRequest taskRequest,
+        [FromBody] TaskRequest taskRequest,
         CancellationToken token)
     {
         var command = new UpdateTaskCommand(
