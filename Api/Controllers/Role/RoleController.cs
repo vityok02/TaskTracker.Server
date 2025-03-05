@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Role;
 
 [Authorize]
-[Route("roles")]
+[Route("/projects/{projectId:guid}/roles")]
 public class RoleController : BaseController
 {
     public RoleController(

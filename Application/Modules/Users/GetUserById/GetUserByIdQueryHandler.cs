@@ -6,18 +6,18 @@ using Domain.Shared;
 
 namespace Application.Modules.Users.GetUserById;
 
-internal sealed class GetUserQueryHandler
-    : IQueryHandler<GetUserQuery, UserDto>
+internal sealed class GetUserByIdQueryHandler
+    : IQueryHandler<GetUserByIdQuery, UserDto>
 {
     private readonly IUserRepository _userRepository;
 
-    public GetUserQueryHandler(IUserRepository userRepository)
+    public GetUserByIdQueryHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
 
     public async Task<Result<UserDto>> Handle(
-        GetUserQuery query,
+        GetUserByIdQuery query,
         CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(query.UserId);

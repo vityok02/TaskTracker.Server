@@ -2,6 +2,7 @@
 using Domain.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using static Api.Common.ProblemDetailsFactory;
 
 namespace Api.Controllers.Abstract;
 
@@ -65,31 +66,4 @@ public abstract class BaseController : Controller
                     result.Error))
         };
     }
-
-    private static ProblemDetails CreateProblemDetails(
-        string title,
-        int status,
-        Error error,
-        Error[]? errors = null) =>
-        new()
-        {
-            Title = title,
-            Type = error.Code,
-            Detail = error.Message,
-            Status = status,
-            Extensions = { { nameof(errors), errors } }
-        };
-
-    private static ProblemDetails CreateProblemDetails(
-    string title,
-    int status,
-    Error error) =>
-    new()
-    {
-        Title = title,
-        Type = error.Code,
-        Detail = error.Message,
-        Status = status,
-        Extensions = { { "resouceType", error.Code.Split(',')[0] } }
-    };
 }

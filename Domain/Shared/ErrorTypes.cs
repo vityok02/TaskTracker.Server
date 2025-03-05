@@ -2,6 +2,7 @@
 
 public static class ErrorTypes
 {
+    public const string Forbidden = "Forbidden";
     public const string ValidationError = "ValidationError";
     public const string NotFound = "NotFound";
     public const string Unauthorized = "Unauthorized";

@@ -4,7 +4,6 @@ using Application.Abstract.Messaging;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Errors;
-using Domain.Models;
 using Domain.Shared;
 
 namespace Application.Modules.Tasks.CreateTask;

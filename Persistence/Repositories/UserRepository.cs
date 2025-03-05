@@ -20,11 +20,11 @@ public class UserRepository
         var query = @"SELECT * FROM [User] WHERE Email = @Email OR Username = @Username";
 
         return await connection
-            .QueryFirstOrDefaultAsync<UserEntity>(
+            .QuerySingleOrDefaultAsync<UserEntity>(
             query, new
-            { 
+            {
                 Email = email,
-                Username = username 
+                Username = username
             });
     }
 
@@ -35,20 +35,18 @@ public class UserRepository
         var query = @"SELECT * FROM [User] WHERE Email = @Email";
 
         var user = await connection
-            .QueryFirstOrDefaultAsync<UserEntity>(query, new { Email = email });
+            .QuerySingleOrDefaultAsync<UserEntity>(query, new { Email = email });
 
         return user;
     }
 
-    public async Task<UserEntity?> GetByNameAsync(string userName)
+    public async Task<IEnumerable<UserEntity>> GetByNameContainsAsync(string userName)
     {
         using var connection = ConnectionFactory.Create();
 
-        var query = @"SELECT * FROM [User] WHERE UserName = @UserName";
+        var query = @"SELECT TOP (8) * FROM [User] WHERE Username LIKE @Username";
 
-        var user = await connection
-            .QuerySingleOrDefaultAsync<UserEntity>(query, new { UserName = userName });
-
-        return user;
+        return await connection
+            .QueryAsync<UserEntity>(query, new { Username = $"%{userName}%" });
     }
 }

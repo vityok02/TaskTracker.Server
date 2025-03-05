@@ -24,4 +24,19 @@ public class RoleRepository
         return await connection
             .QueryFirstAsync<RoleEntity>(query, new { Name = name });
     }
+
+    public async Task<RoleEntity> GetMemberRole(
+    Guid userId,
+    Guid projectId)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        var query = @"SELECT r.* FROM [Role] r
+            JOIN [ProjectMember] pm ON r.Id = pm.RoleId
+            WHERE pm.UserId = @UserId AND pm.ProjectId = @ProjectId";
+
+        return await connection
+            .QueryFirstAsync<RoleEntity>(query,
+                new { UserId = userId, ProjectId = projectId });
+    }
 }

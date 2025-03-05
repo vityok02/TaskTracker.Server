@@ -1,4 +1,6 @@
-﻿using Application.Abstract.Interfaces.Repositories;
+﻿using Api.Common;
+using Application.Abstract.Interfaces.Repositories;
+using Domain.Errors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
@@ -21,26 +23,57 @@ public sealed class ProjectMemberAttribute
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        var user = context.HttpContext.User;
+        var contextUser = context.HttpContext.User;
 
-        if (!user.Identity?.IsAuthenticated ?? true)
+        if (!contextUser.Identity?.IsAuthenticated ?? true)
         {
-            context.Result = new UnauthorizedResult();
+            context.Result = new UnauthorizedObjectResult(
+                ProblemDetailsFactory
+                    .CreateProblemDetails(
+                        "Unauthorized",
+                        StatusCodes.Status401Unauthorized,
+                        UserErrors.Unauthorized));
+
             return;
         }
 
+        var userId = GetUserId(context.HttpContext);
+
+        var userReposiotry = context.HttpContext.RequestServices
+            .GetRequiredService<IUserRepository>();
+
+        var user = await userReposiotry
+            .GetByIdAsync(userId);
+
+        if (user is null)
+        {
+            context.Result = new NotFoundObjectResult(
+                ProblemDetailsFactory
+                    .CreateProblemDetails(
+                        "Not Found",
+                        StatusCodes.Status404NotFound,
+                        UserErrors.NotFound));
+
+            return;
+        }
+
+        var projectId = GetProjectId(context.HttpContext);
+
         var memberRepository = context.HttpContext.RequestServices
             .GetRequiredService<IProjectMemberRepository>();
-
-        var userId = GetUserId(context.HttpContext);
-        var projectId = GetProjectId(context.HttpContext);
 
         var member = await memberRepository
             .GetAsync(userId, projectId);
 
         if (member is null)
         {
-            context.Result = new NotFoundResult();
+            context.Result = new NotFoundObjectResult(
+                ProblemDetailsFactory
+                    .CreateProblemDetails(
+                        "Not Found",
+                        StatusCodes.Status404NotFound,
+                        ProjectMemberErrors.NotFound));
+
             return;
         }
 
@@ -49,14 +82,14 @@ public sealed class ProjectMemberAttribute
             return;
         }
 
-        // TODO: include role query in memberRepository.GetAsync()
-
-        var role = await memberRepository
-            .GetMemberRole(userId, projectId);
-
-        if (role?.Name != _role)
+        if (member.RoleName != _role)
         {
-            context.Result = new ForbidResult();
+            context.Result = new ForbiddenObjectResult(
+                ProblemDetailsFactory
+                    .CreateProblemDetails(
+                        "Forbidden",
+                        StatusCodes.Status403Forbidden,
+                        UserErrors.Forbidden));
         }
     }
 

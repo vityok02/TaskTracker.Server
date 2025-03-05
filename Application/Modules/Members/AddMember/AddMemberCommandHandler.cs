@@ -1,5 +1,6 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
+using AutoMapper;
 using Domain.Errors;
 using Domain.Shared;
 
@@ -12,17 +13,20 @@ internal sealed class AddMemberCommandHandler
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IRoleRepository _roleRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly IMapper _mapper;
 
     public AddMemberCommandHandler(
         IUserRepository userRepository,
         IProjectMemberRepository projectMemberRepository,
         IRoleRepository roleRepository,
-        IProjectRepository projectRepository)
+        IProjectRepository projectRepository,
+        IMapper mapper)
     {
         _userRepository = userRepository;
         _projectMemberRepository = projectMemberRepository;
         _roleRepository = roleRepository;
         _projectRepository = projectRepository;
+        _mapper = mapper;
     }
 
     public async Task<Result<ProjectMemberDto>> Handle(
@@ -30,6 +34,14 @@ internal sealed class AddMemberCommandHandler
         CancellationToken cancellationToken)
     {
         // TODO: refactor code. Many requests to the database.
+        var member = await _projectMemberRepository
+            .GetAsync(command.UserId, command.ProjectId);
+
+        if (member is not null)
+        {
+            return Result<ProjectMemberDto>
+                .Failure(ProjectMemberErrors.AlreadyExists);
+        }
 
         var user = await _userRepository
             .GetByIdAsync(command.UserId);
@@ -38,15 +50,6 @@ internal sealed class AddMemberCommandHandler
         {
             return Result<ProjectMemberDto>
                 .Failure(UserErrors.NotFound);
-        }
-
-        var member = await _projectMemberRepository
-            .GetAsync(command.UserId, command.ProjectId);
-
-        if (member is not null)
-        {
-            return Result<ProjectMemberDto>
-                .Failure(ProjectMemberErrors.AlreadyExists);
         }
 
         var role = await _roleRepository
@@ -67,10 +70,10 @@ internal sealed class AddMemberCommandHandler
                 .Failure(ProjectErrors.NotFound);
         }
 
-        await _projectMemberRepository
-            .CreateMember(command.UserId, command.ProjectId, command.RoleId);
+        var projectMember = await _projectMemberRepository
+            .CreateAsync(command.UserId, command.ProjectId, command.RoleId);
 
-        return new ProjectMemberDto(
-            user.Id, user.UserName, project.Name, role.Name);
+        return Result<ProjectMemberDto>.Success(
+            _mapper.Map<ProjectMemberDto>(projectMember));
     }
 }

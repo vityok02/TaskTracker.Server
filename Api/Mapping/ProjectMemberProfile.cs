@@ -9,7 +9,5 @@ public class ProjectMemberProfile : Profile
     public ProjectMemberProfile()
     {
         CreateMap<ProjectMemberDto, ProjectMemberResponse>();
-
-        CreateMap<IEnumerable<ProjectMemberDto>, IEnumerable<ProjectMemberResponse>>();
     }
 }

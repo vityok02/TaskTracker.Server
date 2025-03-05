@@ -37,6 +37,20 @@ public abstract class BaseRepository<TEntity, TId>
         return await connection.GetListAsync<TEntity>();
     }
 
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object whereConditions)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        return await connection.GetListAsync<TEntity>(whereConditions);
+    }
+
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(string whereConditions, object parameters)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        return await connection.GetListAsync<TEntity>(whereConditions);
+    }
+
     public virtual async Task<TEntity?> GetByIdAsync(TId id)
     {
         using var connection = ConnectionFactory.Create();

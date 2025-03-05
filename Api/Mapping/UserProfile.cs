@@ -9,6 +9,5 @@ public class UserProfile : Profile
     public UserProfile()
     {
         CreateMap<UserDto, UserResponse>();
-        CreateMap<IEnumerable<UserDto>, IEnumerable<UserResponse>>();
     }
 }

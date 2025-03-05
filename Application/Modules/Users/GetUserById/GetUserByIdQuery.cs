@@ -2,5 +2,5 @@
 
 namespace Application.Modules.Users.GetUserById;
 
-public sealed record GetUserQuery(Guid UserId)
+public sealed record GetUserByIdQuery(Guid UserId)
     : IQuery<UserDto>;

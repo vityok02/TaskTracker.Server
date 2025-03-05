@@ -1,15 +1,13 @@
-﻿using Application.Abstract.Interfaces.Base;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Domain.Models;
 
 namespace Application.Abstract.Interfaces.Repositories;
 
 public interface IProjectMemberRepository
 {
-    Task<ProjectMemberEntity?> GetAsync(Guid userId, Guid projectId);
+    Task<ProjectMemberModel> CreateAsync(Guid userId, Guid projectId, Guid roleId);
 
-    Task<RoleEntity> GetMemberRole(Guid userId, Guid projectId);
+    Task<ProjectMemberModel?> GetAsync(Guid userId, Guid projectId);
 
-    Task CreateMember(Guid userId, Guid projectId, Guid roleId);
-
-    Task<IEnumerable<ProjectMemberEntity>> GetAllAsync(Guid userId, Guid projectId);
+    Task<IEnumerable<ProjectMemberModel>> GetAllAsync(Guid projectId);
 }

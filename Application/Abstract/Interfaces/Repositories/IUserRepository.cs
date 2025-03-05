@@ -9,5 +9,5 @@ public interface IUserRepository : IRepository<UserEntity, Guid>
 
     Task<UserEntity?> GetUserByEmailOrNameAsync(string email, string username);
 
-    Task<UserEntity?> GetByNameAsync(string userName);
+    Task<IEnumerable<UserEntity>> GetByNameContainsAsync(string userName);
 }
