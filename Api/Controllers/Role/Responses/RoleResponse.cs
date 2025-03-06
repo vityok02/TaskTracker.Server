@@ -1,3 +1,3 @@
 ﻿namespace Api.Controllers.Role.Responses;
 
-public record RoleResponse(Guid UserId, Guid RoleId);
+public record RoleResponse(Guid Id, string Name, string? Description);

@@ -4,12 +4,13 @@ using Api.Controllers.ProjectMember.Responses;
 using Api.Extensions;
 using Api.Filters;
 using Application.Modules.Members.AddMember;
+using Application.Modules.Members.DeleteMember;
 using Application.Modules.Members.GetAllMembers;
 using Application.Modules.Members.GetMember;
+using Application.Modules.Members.UpdateMember;
 using AutoMapper;
 using Domain.Constants;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.ProjectMember;
@@ -17,6 +18,7 @@ namespace Api.Controllers.ProjectMember;
 [ProjectMember]
 [Route("projects/{projectId:guid}/members")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
 public class ProjectMemberController : BaseController
 {
     public ProjectMemberController(
@@ -30,16 +32,15 @@ public class ProjectMemberController : BaseController
     [HttpPost]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> AddMember(
+    public async Task<IActionResult> Create(
         [FromRoute] Guid projectId,
-        [FromBody] AddMemberRoleRequest roleRequest,
+        [FromBody] MemberRequest roleRequest,
         CancellationToken token)
     {
         var command = new AddMemberCommand(
-            roleRequest.UserId,
             projectId,
+            roleRequest.UserId,
             roleRequest.RoleId);
 
         var result = await Sender
@@ -48,15 +49,14 @@ public class ProjectMemberController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : CreatedAtAction(
-                nameof(GetMember),
-                new { memberId = result.Value.UserId },
+                nameof(GetById),
+                new { projectId, memberId = result.Value.UserId },
                 Mapper.Map<ProjectMemberResponse>(result.Value));
     }
 
-    [HttpGet("{memberId:guid}", Name = nameof(GetMember))]
+    [HttpGet("{memberId:guid}", Name = nameof(GetById))]
     [ProducesResponseType<ProjectMemberResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetMember(
+    public async Task<IActionResult> GetById(
         [FromRoute] Guid projectId,
         [FromRoute] Guid memberId,
         CancellationToken token)
@@ -75,7 +75,7 @@ public class ProjectMemberController : BaseController
 
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProjectMemberResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllMembers(
+    public async Task<IActionResult> GetAll(
         [FromRoute] Guid projectId,
         CancellationToken token)
     {
@@ -89,5 +89,45 @@ public class ProjectMemberController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : Ok(Mapper.Map<IEnumerable<ProjectMemberResponse>>(result.Value));
+    }
+
+    [HttpPut("{memberId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task <IActionResult> Update(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid memberId,
+        [FromBody] MemberRequest request,
+        CancellationToken token)
+    {
+        var command = new UpdateMemberCommand(
+            projectId,
+            memberId,
+            request.RoleId);
+
+        var result = await Sender
+            .Send(command, token);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok();
+    }
+
+    [HttpDelete("{memberId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task <IActionResult> Delete(
+        Guid projectId,
+        Guid memberId,
+        CancellationToken token)
+    {
+        var command = new DeleteMemberCommand(
+            projectId,
+            memberId);
+
+        var result = await Sender
+            .Send(command, token);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok();
     }
 }

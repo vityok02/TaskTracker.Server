@@ -63,7 +63,7 @@ public sealed class ProjectMemberAttribute
             .GetRequiredService<IProjectMemberRepository>();
 
         var member = await memberRepository
-            .GetAsync(userId, projectId);
+            .GetExtendedAsync(userId, projectId);
 
         if (member is null)
         {

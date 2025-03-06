@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Role;
 
 [Authorize]
-[Route("/projects/{projectId:guid}/roles")]
+[Route("/roles")]
 public class RoleController : BaseController
 {
     public RoleController(
@@ -29,6 +29,6 @@ public class RoleController : BaseController
 
         return result.IsFailure
             ? HandleFailure(result)
-            : Ok(result.Value);
+            : Ok(Mapper.Map<IEnumerable<RoleResponse>>(result.Value));
     }
 }

@@ -6,7 +6,7 @@ namespace Application.Abstract.Interfaces.Repositories;
 
 public interface IProjectRepository : IRepository<ProjectEntity, Guid>
 {
-    Task<bool> ExistsByNameAsync(string projectName);
+    Task<bool> ExistsByNameAsync(Guid userId, string projectName);
 
     Task<Guid> CreateAsync(ProjectEntity project, Guid roleId);
 

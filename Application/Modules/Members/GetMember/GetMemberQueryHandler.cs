@@ -23,7 +23,7 @@ internal sealed class GetMemberQueryHandler
         CancellationToken cancellationToken)
     {
         var member = await _memberRepository
-            .GetAsync(query.UserId, query.ProjectId);
+            .GetExtendedAsync(query.UserId, query.ProjectId);
 
         if (member is null)
         {

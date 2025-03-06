@@ -16,7 +16,7 @@ public class ProjectRepository
         : base(connectionFactory)
     { }
 
-    public async Task<bool> ExistsByNameAsync(string projectName)
+    public async Task<bool> ExistsByNameAsync(Guid userId, string projectName)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -25,14 +25,15 @@ public class ProjectRepository
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] u ON u.Id = pm.UserId
-            WHERE p.Name = @Name";
+            WHERE p.Name = @Name AND pm.UserId = @UserId";
 
         var result = await connection
             .ExecuteScalarAsync<bool>(
                 query,
                 new
                 {
-                    Name = projectName
+                    Name = projectName,
+                    UserId = userId
                 });
 
         return result;

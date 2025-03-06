@@ -1,5 +1,6 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Dapper;
+using Domain.Entities;
 using Domain.Models;
 using Persistence.Abstractions;
 
@@ -50,9 +51,24 @@ public class ProjectMemberRepository
                 new { ProjectId = projectId });
     }
 
-    public async Task<ProjectMemberModel?> GetAsync(
+    public async Task<ProjectMemberEntity?> GetAsync(
         Guid userId,
         Guid projectId)
+    {
+        using var connection = _connectionFactory.Create();
+
+        var query = @"
+            SELECT * FROM ProjectMember pm 
+            WHERE pm.ProjectId = @ProjectId AND pm.UserId = @UserId";
+
+        return await connection
+            .QueryFirstOrDefaultAsync<ProjectMemberEntity>(query,
+                new { UserId = userId, ProjectId = projectId });
+    }
+
+    public async Task<ProjectMemberModel?> GetExtendedAsync(
+    Guid userId,
+    Guid projectId)
     {
         using var connection = _connectionFactory.Create();
 
@@ -73,4 +89,27 @@ public class ProjectMemberRepository
             JOIN [User] u ON u.Id = pm.UserId
             JOIN [Role] r ON r.Id = pm.RoleId
             WHERE {whereClause}";
+
+    public async Task UpdateAsync(ProjectMemberEntity projectMember)
+    {
+        using var connection = _connectionFactory.Create();
+
+        var query = @"UPDATE ProjectMember
+            SET RoleId = @RoleId
+            WHERE UserId = @UserId AND ProjectId = @ProjectId";
+
+        await connection
+            .ExecuteAsync(query, projectMember);
+    }
+
+    public async Task DeleteAsync(ProjectMemberEntity projectMember)
+    {
+        using var connection = _connectionFactory.Create();
+
+        var query = @"DELETE FROM ProjectMember
+            WHERE UserId = @UserId AND ProjectId = @ProjectId";
+
+        await connection
+            .ExecuteAsync(query, projectMember);
+    }
 }

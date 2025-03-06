@@ -28,7 +28,7 @@ internal sealed class UpdateProjectCommandHandler
             .GetByIdAsync(command.ProjectId);
 
         var exists = await _projectRepository
-            .ExistsByNameAsync(command.Name);
+            .ExistsByNameAsync(command.UserId, command.Name);
 
         if (project is null)
         {

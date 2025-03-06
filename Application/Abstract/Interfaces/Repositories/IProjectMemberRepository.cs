@@ -7,7 +7,13 @@ public interface IProjectMemberRepository
 {
     Task<ProjectMemberModel> CreateAsync(Guid userId, Guid projectId, Guid roleId);
 
-    Task<ProjectMemberModel?> GetAsync(Guid userId, Guid projectId);
+    Task<ProjectMemberEntity?> GetAsync(Guid userId, Guid projectId);
+
+    Task<ProjectMemberModel?> GetExtendedAsync(Guid userId, Guid projectId);
 
     Task<IEnumerable<ProjectMemberModel>> GetAllAsync(Guid projectId);
+
+    Task UpdateAsync(ProjectMemberEntity projectMember);
+
+    Task DeleteAsync(ProjectMemberEntity projectMember);
 }
