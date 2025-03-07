@@ -1,5 +1,4 @@
-﻿using Application.Abstract.Interfaces;
-using Dapper;
+﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Persistence.Abstractions;
 

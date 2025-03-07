@@ -115,7 +115,7 @@ public class ProjectRepository
         using var connection = ConnectionFactory.Create();
 
         var query = @"
-            SELECT 
+            SELECT DISTINCT
                 p.Id,
                 p.Name,
                 p.Description,
@@ -132,7 +132,7 @@ public class ProjectRepository
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
-            JOIN [State] s ON s.ProjectId = p.Id
+            LEFT JOIN [State] s ON s.ProjectId = p.Id
             WHERE pm.ProjectId = @ProjectId";
 
         var lookup = new Dictionary<Guid, ProjectModel>();
@@ -172,14 +172,15 @@ public class ProjectRepository
     ProjectStateModel state,
     Dictionary<Guid, ProjectModel> lookup)
     {
-        if (!lookup.TryGetValue(project.Id, out var existingProject))
+        if (!lookup.TryGetValue(project.Id, out ProjectModel? value))
         {
-            existingProject = project;
-            existingProject.States = [];
-            lookup.Add(existingProject.Id, existingProject);
+            value = project;
+            lookup[project.Id] = value;
         }
 
-        existingProject.States.Add(state);
-        return existingProject;
+        value.States ??= new List<ProjectStateModel>();
+        value.States.Add(state);
+
+        return project;
     }
 }
