@@ -3,4 +3,6 @@ CREATE TABLE [User] (
 	Username NVARCHAR(50) UNIQUE NOT NULL,
 	Email NVARCHAR(50) UNIQUE NOT NULL,
 	Password NVARCHAR(100) NOT NULL,
+
+    INDEX IX_User_Username (Username)
 )

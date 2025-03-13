@@ -41,8 +41,6 @@ public class ProjectRepository
 
     public async Task<Guid> CreateAsync(ProjectEntity project, Guid roleId)
     {
-        // Posible refactor: combine queries
-
         using var connection = ConnectionFactory
             .Create();
 
@@ -96,7 +94,8 @@ public class ProjectRepository
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
             JOIN [State] s ON s.ProjectId = p.Id
-            WHERE pm.UserId = @UserId";
+            WHERE pm.UserId = @UserId
+            ORDER BY p.CreatedAt";
 
         var lookup = new Dictionary<Guid, ProjectModel>();
 

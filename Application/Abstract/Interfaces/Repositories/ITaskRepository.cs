@@ -8,7 +8,7 @@ public interface ITaskRepository : IRepository<TaskEntity, Guid>
 {
     Task<bool> ExistsByNameForProjectAsync(string name, Guid projectId);
 
-    Task<IEnumerable<TaskModel>> GetAllByProjectIdAsync(Guid ProjectId);
+    Task<IEnumerable<TaskModel>> GetAllExtendedAsync(Guid ProjectId);
 
     Task<TaskModel?> GetExtendedByIdAsync(Guid id);
 }

@@ -34,11 +34,12 @@ public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
                 });
     }
 
-    public async Task<IEnumerable<TaskModel>> GetAllByProjectIdAsync(Guid ProjectId)
+    public async Task<IEnumerable<TaskModel>> GetAllExtendedAsync(Guid ProjectId)
     {
         using var connection = ConnectionFactory.Create();
 
-        var query = GetSelectQuery("p.Id = @ProjectId");
+        var query = $@"{GetSelectQuery("p.Id = @ProjectId")}
+            ORDER BY t.CreatedAt";
 
         return await connection
             .QueryAsync<TaskModel>(
@@ -58,7 +59,7 @@ public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
                 new { Id = id });
     }
 
-    private static string GetSelectQuery(string whereClause) => $@"
+    private static string GetSelectQuery(string whereCondition) => $@"
             SELECT t.Id, t.Name, t.Description, t.StateId, t.ProjectId,
                 t.CreatedAt, t.CreatedBy, t.UpdatedAt, t.UpdatedBy,
                 p.Name AS ProjectName,
@@ -70,5 +71,5 @@ public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
             JOIN [State] s ON s.Id = t.StateId
             JOIN [User] uc ON uc.Id = t.CreatedBy
             LEFT JOIN [User] uu ON uu.Id = t.UpdatedBy
-            WHERE {whereClause}";
+            WHERE {whereCondition}";
 }

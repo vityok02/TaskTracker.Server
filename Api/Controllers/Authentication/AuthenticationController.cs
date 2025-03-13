@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Authentication;
 
-[Route("users")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
 public class AuthenticationController : BaseController
 {

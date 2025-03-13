@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.ProjectMember;
 
-[ProjectMember]
 [Route("projects/{projectId:guid}/members")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
@@ -54,6 +53,7 @@ public class ProjectMemberController : BaseController
                 Mapper.Map<ProjectMemberResponse>(result.Value));
     }
 
+    [ProjectMember]
     [HttpGet("{memberId:guid}", Name = nameof(GetById))]
     [ProducesResponseType<ProjectMemberResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetById(
@@ -73,6 +73,7 @@ public class ProjectMemberController : BaseController
             : Ok(Mapper.Map<ProjectMemberResponse>(result.Value));
     }
 
+    [ProjectMember]
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProjectMemberResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(
@@ -91,6 +92,7 @@ public class ProjectMemberController : BaseController
             : Ok(Mapper.Map<IEnumerable<ProjectMemberResponse>>(result.Value));
     }
 
+    [ProjectMember(Roles.Admin)]
     [HttpPut("{memberId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task <IActionResult> Update(
@@ -112,6 +114,7 @@ public class ProjectMemberController : BaseController
             : Ok();
     }
 
+    [ProjectMember(Roles.Admin)]
     [HttpDelete("{memberId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task <IActionResult> Delete(
