@@ -62,6 +62,12 @@ public abstract class BaseController : Controller
                         StatusCodes.Status409Conflict,
                         result.Error)),
 
+                ErrorType.InvalidOperation => BadRequest(
+                    CreateProblemDetails(
+                        "Bad Request",
+                        StatusCodes.Status400BadRequest,
+                        result.Error)),
+
                 _ => BadRequest(
                     CreateProblemDetails(
                         "Bad Request",

@@ -13,7 +13,6 @@ namespace Api.Controllers.User;
 
 [Authorize]
 [Route("users")]
-[ApiController]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 public sealed class UserController : BaseController
 {
@@ -27,7 +26,7 @@ public sealed class UserController : BaseController
     [HttpGet("{id:guid}")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetUserById(
+    public async Task<IActionResult> GetByIdAsync(
         [FromRoute] Guid id,
         CancellationToken token)
     {
@@ -42,7 +41,7 @@ public sealed class UserController : BaseController
     [HttpGet("search")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetUserByName(
+    public async Task<IActionResult> GetSeveralByNameAsync(
         [FromQuery] string username,
         CancellationToken token)
     {
@@ -56,7 +55,7 @@ public sealed class UserController : BaseController
 
     [HttpGet]
     [ProducesResponseType<IEnumerable<UserResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllUsers(
+    public async Task<IActionResult> GetAllAsync(
         [FromQuery] string? username,
         CancellationToken token)
     {

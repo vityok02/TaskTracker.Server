@@ -21,6 +21,8 @@ namespace Api.Controllers.Task;
 [Route("projects/{projectId:guid}/tasks")]
 public class TaskController : BaseController
 {
+    private const string GetByIdAction = "GetTaskById";
+
     public TaskController(
         ISender sender,
         IMapper mapper)
@@ -31,7 +33,7 @@ public class TaskController : BaseController
     [HttpPost]
     [ProducesResponseType<TaskResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateTask(
+    public async Task<IActionResult> CreateAsync(
         [FromRoute] Guid projectId,
         [FromBody] TaskRequest taskRequest,
         CancellationToken token)
@@ -49,7 +51,7 @@ public class TaskController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : CreatedAtAction(
-                nameof(GetTask),
+                GetByIdAction,
                 new { 
                     projectId,
                     taskId = result.Value.Id
@@ -57,9 +59,10 @@ public class TaskController : BaseController
                 Mapper.Map<TaskResponse>(result.Value));
     }
 
-    [HttpGet("{taskId:guid}", Name = nameof(GetTask))]
+    [HttpGet("{taskId:guid}")]
+    [ActionName(GetByIdAction)]
     [ProducesResponseType<TaskResponse>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetTask(
+    public async Task<IActionResult> GetByIdAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid taskId,
         CancellationToken token)
@@ -76,7 +79,7 @@ public class TaskController : BaseController
 
     [HttpGet]
     [ProducesResponseType<IEnumerable<TaskResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllTasks(
+    public async Task<IActionResult> GetAllAsync(
         [FromRoute] Guid projectId,
         CancellationToken token)
     {
@@ -93,7 +96,7 @@ public class TaskController : BaseController
     [HttpPut("{taskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateTask(
+    public async Task<IActionResult> UpdateAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid taskId,
         [FromBody] TaskRequest taskRequest,
@@ -118,7 +121,7 @@ public class TaskController : BaseController
 
     [HttpDelete("{taskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteTask(
+    public async Task<IActionResult> DeleteAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid taskId,
         CancellationToken token)

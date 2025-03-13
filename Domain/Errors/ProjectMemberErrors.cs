@@ -9,4 +9,7 @@ public static class ProjectMemberErrors
 
     public static Error AlreadyExists
         => new("ProjectMember.AlreadyExists", "Project member already exists.");
+
+    public static Error CannotDeleteYourself
+        => new("ProjectMember.InvalidOperation", "You cannot delete yourself from the project.");
 }

@@ -31,7 +31,7 @@ public class AuthenticationController : BaseController
     [HttpPost("register")]
     [ProducesResponseType<RegisterResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> Register(
+    public async Task<IActionResult> RegisterAsync(
         [FromBody] RegisterRequest registerRequest,
         CancellationToken token)
     {
@@ -59,7 +59,7 @@ public class AuthenticationController : BaseController
     [HttpPost("login")]
     [ProducesResponseType<RegisterResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Login(
+    public async Task<IActionResult> LoginAsync(
         [FromBody] LoginRequest loginRequest,
         CancellationToken token)
     {
@@ -77,7 +77,7 @@ public class AuthenticationController : BaseController
     [HttpPost("reset-password")]
     [ProducesResponseType<ResetPasswordResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ResetPassword(
+    public async Task<IActionResult> ResetPasswordAsync(
         [FromBody] ResetPasswordRequest resetPasswordRequest)
     {
         var resetPasswordCommand = Mapper
@@ -94,7 +94,7 @@ public class AuthenticationController : BaseController
     [HttpPost("set-password")]
     [ProducesResponseType<TokenResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ResetPassword(
+    public async Task<IActionResult> SetPasswordAsync(
         [FromBody] SetPasswordRequest setPasswordRequest)
     {
         var setPasswordCommand = Mapper
@@ -113,7 +113,7 @@ public class AuthenticationController : BaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ChangePassword(
+    public async Task<IActionResult> ChangePasswordAsync(
         [FromBody] ChangePasswordRequest changePasswordRequest)
     {
         var changePasswordCommand = new ChangePasswordCommand(

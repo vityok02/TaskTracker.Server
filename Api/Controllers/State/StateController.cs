@@ -21,7 +21,7 @@ public class StateController : BaseController
 
     [HttpGet]
     [ProducesResponseType<IEnumerable<StateResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllStates(
+    public async Task<IActionResult> GetAllAsync(
         [FromRoute] Guid projectId)
     {
         var query = new GetAllStatesQuery(projectId);

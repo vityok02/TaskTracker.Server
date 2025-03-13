@@ -21,6 +21,7 @@ namespace Api.Controllers.Project;
 [Route("projects")]
 public class ProjectController : BaseController
 {
+    public const string GetByIdAction = "GetProjectById";
     public ProjectController(
         ISender sender,
         IMapper mapper)
@@ -32,7 +33,7 @@ public class ProjectController : BaseController
     [ProducesResponseType<ProjectResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> CreateProject(
+    public async Task<IActionResult> CreateAsync(
         [FromBody] CreateProjectRequest projectRequest,
         CancellationToken token)
     {
@@ -47,16 +48,16 @@ public class ProjectController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : CreatedAtAction(
-                nameof(GetProject),
+                GetByIdAction,
                 new { projectId = result.Value.Id },
                 Mapper.Map<ProjectResponse>(result.Value));
     }
 
-    [ProjectMember]
-    [HttpGet("{projectId:guid}", Name = nameof(GetProject))]
+    [HttpGet("{projectId:guid}")]
+    [ActionName(GetByIdAction)]
     [ProducesResponseType<ProjectResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetProject(
+    public async Task<IActionResult> GetByIdAsync(
         [FromRoute] Guid projectId,
         CancellationToken token)
     {
@@ -73,7 +74,7 @@ public class ProjectController : BaseController
 
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProjectResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllProjects(
+    public async Task<IActionResult> GetAllAsync(
         CancellationToken token)
     {
         var query = new GetAllProjectsQuery(User.GetUserId());

@@ -21,7 +21,7 @@ public class RoleController : BaseController
 
     [HttpGet]
     [ProducesResponseType<IEnumerable<RoleResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllRoles(
+    public async Task<IActionResult> GetAllAsync(
         CancellationToken token)
     {
         var result = await Sender

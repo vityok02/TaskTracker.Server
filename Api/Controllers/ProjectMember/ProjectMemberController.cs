@@ -15,11 +15,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.ProjectMember;
 
+[ProjectMember]
 [Route("projects/{projectId:guid}/members")]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
 public class ProjectMemberController : BaseController
 {
+    private const string GetByIdAction = "GetProjectMemberById";
+
     public ProjectMemberController(
         ISender sender,
         IMapper mapper)
@@ -32,7 +35,7 @@ public class ProjectMemberController : BaseController
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> Create(
+    public async Task<IActionResult> CreateAsync(
         [FromRoute] Guid projectId,
         [FromBody] MemberRequest roleRequest,
         CancellationToken token)
@@ -48,15 +51,16 @@ public class ProjectMemberController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : CreatedAtAction(
-                nameof(GetById),
+                GetByIdAction,
                 new { projectId, memberId = result.Value.UserId },
                 Mapper.Map<ProjectMemberResponse>(result.Value));
     }
 
     [ProjectMember]
-    [HttpGet("{memberId:guid}", Name = nameof(GetById))]
+    [ActionName(GetByIdAction)]
+    [HttpGet("{memberId:guid}")]
     [ProducesResponseType<ProjectMemberResponse>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetById(
+    public async Task<IActionResult> GetByIdAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid memberId,
         CancellationToken token)
@@ -76,7 +80,7 @@ public class ProjectMemberController : BaseController
     [ProjectMember]
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProjectMemberResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(
+    public async Task<IActionResult> GetAllAsync(
         [FromRoute] Guid projectId,
         CancellationToken token)
     {
@@ -95,7 +99,7 @@ public class ProjectMemberController : BaseController
     [ProjectMember(Roles.Admin)]
     [HttpPut("{memberId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task <IActionResult> Update(
+    public async Task <IActionResult> UpdateAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid memberId,
         [FromBody] MemberRequest request,
@@ -111,26 +115,27 @@ public class ProjectMemberController : BaseController
 
         return result.IsFailure
             ? HandleFailure(result)
-            : Ok();
+            : NoContent();
     }
 
     [ProjectMember(Roles.Admin)]
     [HttpDelete("{memberId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task <IActionResult> Delete(
+    public async Task <IActionResult> DeleteAsync(
         Guid projectId,
         Guid memberId,
         CancellationToken token)
     {
         var command = new DeleteMemberCommand(
             projectId,
-            memberId);
+            memberId,
+            User.GetUserId());
 
         var result = await Sender
             .Send(command, token);
 
         return result.IsFailure
             ? HandleFailure(result)
-            : Ok();
+            : NoContent();
     }
 }
