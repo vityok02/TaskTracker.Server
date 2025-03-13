@@ -1,6 +1,7 @@
 ﻿using Api.OptionsSetup;
 using Infrastructure;
 using Infrastructure.Authentication;
+using Infrastructure.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -14,7 +15,8 @@ public static class ServiceCollectionExtensions
         services
             .AddAutoMapper(AssemblyReference.Assembly)
             .AddEndpointsApiExplorer()
-            .AddSwaggerGen()
+            .AddSwaggerGen(c =>
+                c.SchemaFilter<ProblemDetailsSchemaFilter>())
             .AddControllers()
             ;
 

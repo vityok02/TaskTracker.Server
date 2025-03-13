@@ -21,49 +21,65 @@ public abstract class BaseController : Controller
 
     protected IActionResult HandleFailure(Result result)
     {
-        return result.Error.Code switch
+        if (Enum.TryParse<ErrorType>(result.Error.Code, out var errorType))
         {
-            ErrorTypes.ValidationError when result is IValidationResult validationResult => BadRequest(
-                CreateProblemDetails(
-                    "Validation Error", StatusCodes.Status400BadRequest,
-                    result.Error,
-                    validationResult.Errors)),
+            return errorType switch
+            {
+                ErrorType.ValidationError when result is IValidationResult validationResult => BadRequest(
+                    CreateProblemDetails(
+                        "Validation Error",
+                        StatusCodes.Status400BadRequest,
+                        result.Error,
+                        validationResult.Errors)),
 
-            ErrorTypes.InvalidToken => BadRequest(
-                CreateProblemDetails(
-                    "Invalid Token",
-                    StatusCodes.Status400BadRequest,
-                    result.Error)),
+                ErrorType.InvalidToken => BadRequest(
+                    CreateProblemDetails(
+                        "Invalid Token",
+                        StatusCodes.Status400BadRequest,
+                        result.Error)),
 
-            ErrorTypes.Unauthorized => Unauthorized(
-                CreateProblemDetails(
-                    "Unauthorized",
-                    StatusCodes.Status401Unauthorized,
-                    result.Error)),
+                ErrorType.Unauthorized => Unauthorized(
+                    CreateProblemDetails(
+                        "Unauthorized",
+                        StatusCodes.Status401Unauthorized,
+                        result.Error)),
 
-            ErrorTypes.InvalidCredentials => Unauthorized(
-                CreateProblemDetails(
-                    "Invalid Credentials",
-                    StatusCodes.Status401Unauthorized,
-                    result.Error)),
+                ErrorType.InvalidCredentials => Unauthorized(
+                    CreateProblemDetails(
+                        "Invalid Credentials",
+                        StatusCodes.Status401Unauthorized,
+                        result.Error)),
 
-            var code when code.EndsWith(ErrorTypes.NotFound) => NotFound(
-                CreateProblemDetails(
-                    "Not Found",
-                    StatusCodes.Status404NotFound,
-                    result.Error)),
+                ErrorType.NotFound => NotFound(
+                    CreateProblemDetails(
+                        "Not Found",
+                        StatusCodes.Status404NotFound,
+                        result.Error)),
 
-            var code when code.EndsWith(ErrorTypes.Conflict) => Conflict(
-                CreateProblemDetails(
-                    "Conflict",
-                    StatusCodes.Status409Conflict,
-                    result.Error)),
+                ErrorType.AlreadyExists => Conflict(
+                    CreateProblemDetails(
+                        "Conflict",
+                        StatusCodes.Status409Conflict,
+                        result.Error)),
 
-            _ => BadRequest(
-                CreateProblemDetails(
-                    "Bad Request",
-                    StatusCodes.Status400BadRequest,
-                    result.Error))
-        };
+                _ => BadRequest(
+                    CreateProblemDetails(
+                        "Bad Request",
+                        StatusCodes.Status400BadRequest,
+                        result.Error))
+            };
+        }
+
+        if (result.Error.Code.EndsWith(ErrorType.NotFound.ToString()))
+        {
+            return NotFound(CreateProblemDetails("Not Found", StatusCodes.Status404NotFound, result.Error));
+        }
+
+        if (result.Error.Code.EndsWith(ErrorType.AlreadyExists.ToString()))
+        {
+            return Conflict(CreateProblemDetails("Conflict", StatusCodes.Status409Conflict, result.Error));
+        }
+
+        return BadRequest(CreateProblemDetails("Bad Request", StatusCodes.Status400BadRequest, result.Error));
     }
 }
