@@ -41,6 +41,8 @@ public class ProjectRepository
 
     public async Task<Guid> CreateAsync(ProjectEntity project, Guid roleId)
     {
+        // TODO: add transaction
+
         using var connection = ConnectionFactory
             .Create();
 
@@ -49,8 +51,8 @@ public class ProjectRepository
 
         var states = ProjectDefaults.GetDefaultStates(projectId);
 
-        string query = (@"INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
-            VALUES(@UserId, @ProjectId, @RoleId)");
+        string query = @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
+            VALUES(@UserId, @ProjectId, @RoleId)";
 
         var insertStatesSql = @"INSERT INTO State(Id, Number, Name, ProjectId)
             VALUES (@Id, @Number, @Name, @ProjectId);";
