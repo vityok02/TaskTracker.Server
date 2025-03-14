@@ -10,5 +10,5 @@ public class ProjectResponse : AuditableResponse
 
     public string? Description { get; init; }
 
-    public IEnumerable<ProjectStateResponse> States { get; init; } = [];
+    public IEnumerable<ProjectResponse> States { get; init; } = [];
 }

@@ -15,7 +15,7 @@ public class CommentRepository
     {
     }
 
-    public async Task<CommentModel?> GetByIdExtendedAsync(Guid id)
+    public async Task<CommentModel?> GetExtendedByIdAsync(Guid id)
     {
         using var connection = ConnectionFactory.Create();
 
