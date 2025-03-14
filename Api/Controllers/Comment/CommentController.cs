@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Comment;
 
 [ProjectMember]
+[ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+[ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
 [Route("/projects/{projectId:guid}/tasks/{taskId:guid}/comments")]
 public class CommentController : BaseController
 {
