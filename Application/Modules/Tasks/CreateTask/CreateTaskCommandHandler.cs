@@ -12,17 +12,20 @@ internal sealed class CreateTaskCommandHandler
     : ICommandHandler<CreateTaskCommand, TaskDto>
 {
     private readonly ITaskRepository _taskRepository;
+    private readonly IStateRepository _stateRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IMapper _mapper;
 
     public CreateTaskCommandHandler(
         ITaskRepository taskRepository,
         IDateTimeProvider dateTimeProvider,
-        IMapper mapper)
+        IMapper mapper,
+        IStateRepository stateRepository)
     {
         _taskRepository = taskRepository;
         _dateTimeProvider = dateTimeProvider;
         _mapper = mapper;
+        _stateRepository = stateRepository;
     }
 
     public async Task<Result<TaskDto>> Handle(
@@ -36,6 +39,15 @@ internal sealed class CreateTaskCommandHandler
         {
             return Result<TaskDto>
                 .Failure(TaskErrors.AlreadyExists);
+        }
+
+        var stateExists = await _stateRepository
+            .ExistsForProject(command.StateId, command.ProjectId);
+
+        if (!stateExists)
+        {
+            return Result<TaskDto>
+                .Failure(StateErrors.NotFound);
         }
 
         TaskEntity task = new()
