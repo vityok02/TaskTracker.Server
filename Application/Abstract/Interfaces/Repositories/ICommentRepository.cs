@@ -9,5 +9,5 @@ public interface ICommentRepository
 {
     Task<IEnumerable<CommentModel>> GetAllExtendedByTaskIdAsync(Guid taskId);
 
-    Task<CommentModel?> GetByIdExtendedAsync(Guid id);
+    Task<CommentModel?> GetExtendedByIdAsync(Guid id);
 }

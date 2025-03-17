@@ -49,7 +49,7 @@ public class ProjectRepository
         var projectId = await connection
             .InsertAsync<Guid, ProjectEntity>(project);
 
-        var states = ProjectDefaults.GetDefaultStates(projectId);
+        var states = ProjectDefaults.GetDefaultStates(projectId, project.CreatedBy);
 
         string query = @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
             VALUES(@UserId, @ProjectId, @RoleId)";

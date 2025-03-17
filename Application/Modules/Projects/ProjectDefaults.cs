@@ -4,13 +4,36 @@ namespace Application.Modules.Projects;
 
 public static class ProjectDefaults
 {
-    public static IEnumerable<StateEntity> GetDefaultStates(Guid projectId)
+    public static IEnumerable<StateEntity> GetDefaultStates(Guid projectId, Guid userId)
     {
         IEnumerable<StateEntity> states =
         [
-            new StateEntity { Id = Guid.NewGuid(), Number = 1, Name = "To Do", ProjectId = projectId },
-            new StateEntity { Id = Guid.NewGuid(), Number = 2, Name = "In Progress", ProjectId = projectId },
-            new StateEntity { Id = Guid.NewGuid(), Number = 3, Name = "Done", ProjectId = projectId }
+            new StateEntity
+            {
+                Id = Guid.NewGuid(),
+                Number = 1,
+                Name = "To Do",
+                ProjectId = projectId,
+                CreatedBy = userId
+            },
+
+            new StateEntity
+            {
+                Id = Guid.NewGuid(),
+                Number = 2,
+                Name = "In Progress",
+                ProjectId = projectId,
+                CreatedBy = userId
+            },
+
+            new StateEntity
+            {
+                Id = Guid.NewGuid(),
+                Number = 3,
+                Name = "Done",
+                ProjectId = projectId,
+                CreatedBy = userId
+            }
         ];
 
         return states;

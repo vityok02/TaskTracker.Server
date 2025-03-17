@@ -1,6 +1,4 @@
-﻿using Domain.Abstract;
-
-namespace Domain.Models;
+﻿namespace Domain.Models;
 
 public class AuditableModel
 {

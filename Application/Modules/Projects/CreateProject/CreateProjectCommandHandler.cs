@@ -84,7 +84,7 @@ internal sealed class CreateProjectCommandHandler
             UpdatedBy = null,
             UpdatedAt = null,
             States = ProjectDefaults
-                .GetDefaultStates(projectId)
+                .GetDefaultStates(projectId, user.Id)
                 .Select(s => new ProjectStateDto
                 {
                     Id = s.Id,

@@ -3,18 +3,15 @@ using Application.Abstract.Messaging;
 using AutoMapper;
 using Domain.Shared;
 
-namespace Application.Modules.States;
+namespace Application.Modules.States.GetProjectStates;
 
-public record GetAllStatesQuery(Guid ProjectId)
-    : ICommand<IEnumerable<StateDto>>;
-
-internal sealed class GetAllStatesQueryHandler
-    : ICommandHandler<GetAllStatesQuery, IEnumerable<StateDto>>
+internal sealed class GetProjectStatesQueryHandler
+    : ICommandHandler<GetProjectStatesQuery, IEnumerable<StateDto>>
 {
     private readonly IStateRepository _stateRepository;
     private readonly IMapper _mapper;
 
-    public GetAllStatesQueryHandler(
+    public GetProjectStatesQueryHandler(
         IStateRepository stateRepository,
         IMapper mapper)
     {
@@ -23,7 +20,7 @@ internal sealed class GetAllStatesQueryHandler
     }
 
     public async Task<Result<IEnumerable<StateDto>>> Handle(
-        GetAllStatesQuery request,
+        GetProjectStatesQuery request,
         CancellationToken cancellationToken)
     {
         var states = await _stateRepository

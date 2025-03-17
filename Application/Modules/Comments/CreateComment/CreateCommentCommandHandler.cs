@@ -54,7 +54,13 @@ internal sealed class CreateCommentCommandHandler
             .CreateAsync(commentEntity);
 
         var commentModel = await _commentRepository
-            .GetByIdExtendedAsync(commandId);
+            .GetExtendedByIdAsync(commandId);
+
+        if (commentModel is null)
+        {
+            return Result<CommentDto>
+                .Failure(CommentErrors.NotFound);
+        }
 
         return Result<CommentDto>
             .Success(_mapper.Map<CommentDto>(commentModel));

@@ -23,12 +23,15 @@ internal sealed class GetCommentByIdQueryHandler
         CancellationToken cancellationToken)
     {
         var comment = await _commentRepository
-            .GetByIdExtendedAsync(query.CommentId);
+            .GetExtendedByIdAsync(query.CommentId);
 
-        return comment is null
-            ? Result<CommentDto>
-                .Failure(CommentErrors.NotFound)
-            : Result<CommentDto>
-                .Success(_mapper.Map<CommentDto>(comment));
+        if (comment is null)
+        {
+            return Result<CommentDto>
+                .Failure(CommentErrors.NotFound);
+        }
+
+        return Result<CommentDto>
+            .Success(_mapper.Map<CommentDto>(comment));
     }
 }

@@ -6,7 +6,11 @@ namespace Application.Abstract.Interfaces.Repositories;
 
 public interface IStateRepository : IRepository<StateEntity, Guid>
 {
-    Task<bool> ExistsByProjectIdAndNameAsync(Guid projectId, string name);
     Task<bool> ExistsForProject(Guid stateId, Guid projectId);
+
     Task<IEnumerable<StateModel>> GetAllByProjectIdAsync(Guid projectId);
+
+    Task<StateModel?> GetExtendedByIdAsync(Guid id);
+
+    Task<int> GetLastStateNumberAsync(Guid ProjectId);
 }
