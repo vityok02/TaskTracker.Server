@@ -100,7 +100,6 @@ public class StateController : BaseController
             stateId,
             stateRequest.Name,
             stateRequest.Description,
-            stateRequest.Number,
             User.GetUserId());
 
         var result = await Sender

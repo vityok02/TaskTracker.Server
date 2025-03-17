@@ -1,4 +1,5 @@
 ﻿using Api.Controllers.Abstract;
+using Api.Controllers.State.Responses;
 
 namespace Api.Controllers.Project.Responses;
 
@@ -10,5 +11,5 @@ public class ProjectResponse : AuditableResponse
 
     public string? Description { get; init; }
 
-    public IEnumerable<ProjectResponse> States { get; init; } = [];
+    public IEnumerable<ProjectStateResponse> States { get; init; } = [];
 }

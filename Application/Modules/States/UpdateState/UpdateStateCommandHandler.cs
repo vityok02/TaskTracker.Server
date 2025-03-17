@@ -35,7 +35,6 @@ internal sealed class UpdateStateCommandHandler
 
         stateEntity.Name = command.Name;
         stateEntity.Description = command.Description;
-        stateEntity.Number = command.Number;
         stateEntity.UpdatedBy = command.UserId;
         stateEntity.UpdatedAt = _dateTimeProvider.GetCurrentTime();
 
