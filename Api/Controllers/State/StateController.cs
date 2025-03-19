@@ -8,6 +8,7 @@ using Application.Modules.States.DeleteState;
 using Application.Modules.States.GetProjectStates;
 using Application.Modules.States.GetStateById;
 using Application.Modules.States.UpdateState;
+using Application.Modules.States.UpdateStateNumbers;
 using AutoMapper;
 using Domain.Constants;
 using MediatR;
@@ -100,6 +101,27 @@ public class StateController : BaseController
             stateId,
             stateRequest.Name,
             stateRequest.Description,
+            User.GetUserId());
+
+        var result = await Sender
+            .Send(command, cancellationToken);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
+    }
+
+    [ProjectMember(Roles.Admin)]
+    [HttpPut("update-numbers")]
+    public async Task<IActionResult> UpdateStateNumbers(
+        [FromRoute] Guid projectId,
+        [FromBody] UpdateStateNumberRequest updateNumberRequest,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateStateNumbersCommand(
+            updateNumberRequest.StateId1,
+            updateNumberRequest.StateId2,
+            projectId,
             User.GetUserId());
 
         var result = await Sender

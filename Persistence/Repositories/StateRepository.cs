@@ -71,6 +71,57 @@ public class StateRepository
                 new { ProjectId });
     }
 
+    public async Task<(StateEntity state1, StateEntity state2)> GetBothByIdsAsync(
+        Guid stateId1, Guid stateId2)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        var query = @"
+            SELECT *
+            FROM [State]
+            WHERE Id = @StateId1 OR Id = @StateId2";
+
+        var states = (await connection
+            .QueryAsync<StateEntity>(
+                query,
+                new 
+                {
+                    StateId1 = stateId1,
+                    StateId2 = stateId2 
+                }))
+            .ToList();
+
+        return (states[0], states[1]);
+    }
+
+    public async Task UpdateBothAsync(StateEntity state1, StateEntity state2)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        var query = @"
+            UPDATE [State]
+            SET Number = @Number1, UpdatedAt = @UpdatedAt1, UpdatedBy = @UpdatedBy1
+            WHERE Id = @Id1;
+            UPDATE [State]
+            SET Number = @Number2, UpdatedAt = @UpdatedAt2, UpdatedBy = @UpdatedBy2
+            WHERE Id = @Id2;";
+
+        await connection.ExecuteAsync(
+            query,
+            new
+            {
+                Id1 = state1.Id,
+                Number1 = state1.Number,
+                UpdatedAt1 = state1.UpdatedAt,
+                UpdatedBy1 = state1.UpdatedBy,
+
+                Id2 = state2.Id,
+                Number2 = state2.Number,
+                UpdatedBy2 = state2.UpdatedBy,
+                UpdatedAt2 = state2.UpdatedAt
+            });
+    }
+
     private static string GetSelectQuery(string whereCondition) => @$"
         SELECT
             s.Id,
