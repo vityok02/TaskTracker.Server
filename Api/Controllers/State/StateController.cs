@@ -121,7 +121,7 @@ public class StateController : BaseController
     {
         var command = new ReorderStatesCommand(
             stateId,
-            ReorderStatesRequest.BeforeTaskId,
+            ReorderStatesRequest.BeforeStateId,
             projectId,
             User.GetUserId());
 
