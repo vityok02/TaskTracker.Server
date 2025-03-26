@@ -50,11 +50,15 @@ internal sealed class CreateTaskCommandHandler
                 .Failure(StateErrors.NotFound);
         }
 
+        var lastOrder = await _taskRepository
+            .GetLastOrderAsync(command.ProjectId);
+
         TaskEntity task = new()
         {
             Id = Guid.NewGuid(),
             Name = command.Name,
             Description = command.Description,
+            SortOrder = lastOrder + 1,
             CreatedBy = command.UserId,
             CreatedAt = _dateTimeProvider.GetCurrentTime(),
             StateId = command.StateId,

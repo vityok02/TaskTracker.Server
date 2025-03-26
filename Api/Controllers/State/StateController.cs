@@ -8,7 +8,7 @@ using Application.Modules.States.DeleteState;
 using Application.Modules.States.GetProjectStates;
 using Application.Modules.States.GetStateById;
 using Application.Modules.States.UpdateState;
-using Application.Modules.States.UpdateStateNumbers;
+using Application.Modules.States.UpdateStateOrders;
 using AutoMapper;
 using Domain.Constants;
 using MediatR;
@@ -112,15 +112,16 @@ public class StateController : BaseController
     }
 
     [ProjectMember(Roles.Admin)]
-    [HttpPut("update-numbers")]
-    public async Task<IActionResult> UpdateStateNumbers(
+    [HttpPatch("{stateId:guid}/order")]
+    public async Task<IActionResult> UpdateStateOrder(
         [FromRoute] Guid projectId,
-        [FromBody] UpdateStateNumberRequest updateNumberRequest,
+        [FromRoute] Guid stateId,
+        [FromBody] ReorderStatesRequest ReorderStatesRequest,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateStateNumbersCommand(
-            updateNumberRequest.StateId1,
-            updateNumberRequest.StateId2,
+        var command = new ReorderStatesCommand(
+            stateId,
+            ReorderStatesRequest.BeforeTaskId,
             projectId,
             User.GetUserId());
 

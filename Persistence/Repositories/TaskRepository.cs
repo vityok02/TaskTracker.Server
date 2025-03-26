@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Models;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
+using Z.Dapper.Plus;
 
 namespace Persistence.Repositories;
 
@@ -39,7 +40,7 @@ public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
         using var connection = ConnectionFactory.Create();
 
         var query = $@"{GetSelectQuery("p.Id = @ProjectId")}
-            ORDER BY t.CreatedAt";
+            ORDER BY t.SortOrder";
 
         return await connection
             .QueryAsync<TaskModel>(
@@ -47,7 +48,23 @@ public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
                 new { ProjectId });
     }
 
-    async Task<TaskModel?> ITaskRepository.GetExtendedByIdAsync(Guid id)
+    public async Task<IEnumerable<TaskEntity>> GetAllByStateId(Guid stateId)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        var query = @"
+            SELECT *
+            FROM [Task]
+            WHERE StateId = @StateId
+            ORDER BY SortOrder";
+
+        return await connection
+            .QueryAsync<TaskEntity>(
+                query,
+                new { StateId = stateId });
+    }
+
+    public async Task<TaskModel?> GetExtendedByIdAsync(Guid id)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -59,11 +76,33 @@ public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
                 new { Id = id });
     }
 
+    public async Task<int> GetLastOrderAsync(Guid stateId)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        var query = @"
+            SELECT MAX(t.SortOrder) 
+            FROM [Task] t
+            WHERE t.StateId = @StateId";
+
+        return await connection
+            .ExecuteScalarAsync<int>(
+                query,
+                new { StateId = stateId });
+    }
+
+    public async Task UpdateRangeAsync(IEnumerable<TaskEntity> tasks)
+    {
+        var connection = ConnectionFactory.Create();
+
+        await connection.BulkUpdateAsync(tasks);
+    }
+
     private static string GetSelectQuery(string whereCondition) => $@"
             SELECT t.Id, t.Name, t.Description, t.StateId, t.ProjectId,
-                t.CreatedAt, t.CreatedBy, t.UpdatedAt, t.UpdatedBy,
+                t.CreatedAt, t.CreatedBy, t.UpdatedAt, t.UpdatedBy, t.SortOrder,
                 p.Name AS ProjectName,
-                s.Name AS State,
+                s.Name AS StateName,
                 uc.Username AS CreatedByName,
                 uu.Username AS UpdatedByName
             FROM [Task] t

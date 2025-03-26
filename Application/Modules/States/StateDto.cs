@@ -10,5 +10,5 @@ public class StateDto : AuditableDto
 
     public string Description { get; init; } = string.Empty;
 
-    public int Number { get; init; }
+    public int SortOrder { get; init; }
 }

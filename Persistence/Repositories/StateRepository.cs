@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Models;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
+using Z.Dapper.Plus;
 
 namespace Persistence.Repositories;
 
@@ -34,7 +35,7 @@ public class StateRepository
                 });
     }
 
-    public async Task<IEnumerable<StateModel>> GetAllByProjectIdAsync(Guid projectId)
+    public async Task<IEnumerable<StateModel>> GetAllExtendedAsync(Guid projectId)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -43,6 +44,16 @@ public class StateRepository
         return await connection
             .QueryAsync<StateModel>(
                 query,
+                new { ProjectId = projectId });
+    }
+
+    public async Task<IEnumerable<StateEntity>> GetAllAsync(Guid projectId)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        return await connection
+            .GetListAsync<StateEntity>(
+                "WHERE [State].ProjectId = @ProjectId",
                 new { ProjectId = projectId });
     }
 
@@ -56,12 +67,12 @@ public class StateRepository
                 new { Id = id });
     }
 
-    public async Task<int> GetLastStateNumberAsync(Guid ProjectId)
+    public async Task<int> GetLastOrderAsync(Guid ProjectId)
     {
         using var connection = ConnectionFactory.Create();
 
         var query = @"
-            SELECT MAX(Number) 
+            SELECT MAX(Order) 
             FROM [State] 
             WHERE ProjectId = @ProjectId";
 
@@ -71,61 +82,17 @@ public class StateRepository
                 new { ProjectId });
     }
 
-    public async Task<(StateEntity state1, StateEntity state2)> GetBothByIdsAsync(
-        Guid stateId1, Guid stateId2)
+    public async Task UpdateRangeAsync(IEnumerable<StateEntity> states)
     {
         using var connection = ConnectionFactory.Create();
 
-        var query = @"
-            SELECT *
-            FROM [State]
-            WHERE Id = @StateId1 OR Id = @StateId2";
-
-        var states = (await connection
-            .QueryAsync<StateEntity>(
-                query,
-                new 
-                {
-                    StateId1 = stateId1,
-                    StateId2 = stateId2 
-                }))
-            .ToList();
-
-        return (states[0], states[1]);
-    }
-
-    public async Task UpdateBothAsync(StateEntity state1, StateEntity state2)
-    {
-        using var connection = ConnectionFactory.Create();
-
-        var query = @"
-            UPDATE [State]
-            SET Number = @Number1, UpdatedAt = @UpdatedAt1, UpdatedBy = @UpdatedBy1
-            WHERE Id = @Id1;
-            UPDATE [State]
-            SET Number = @Number2, UpdatedAt = @UpdatedAt2, UpdatedBy = @UpdatedBy2
-            WHERE Id = @Id2;";
-
-        await connection.ExecuteAsync(
-            query,
-            new
-            {
-                Id1 = state1.Id,
-                Number1 = state1.Number,
-                UpdatedAt1 = state1.UpdatedAt,
-                UpdatedBy1 = state1.UpdatedBy,
-
-                Id2 = state2.Id,
-                Number2 = state2.Number,
-                UpdatedBy2 = state2.UpdatedBy,
-                UpdatedAt2 = state2.UpdatedAt
-            });
+        await connection.BulkUpdateAsync(states);
     }
 
     private static string GetSelectQuery(string whereCondition) => @$"
         SELECT
             s.Id,
-            s.Number,
+            s.SortOrder,
             s.Name,
             s.Description,
             s.CreatedBy,

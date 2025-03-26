@@ -49,13 +49,13 @@ public class ProjectRepository
         var projectId = await connection
             .InsertAsync<Guid, ProjectEntity>(project);
 
-        var states = ProjectDefaults.GetDefaultStates(projectId, project.CreatedBy);
+        var states = ProjectDefaults.GetDefaultStates(projectId, project.CreatedBy, project.CreatedAt);
 
         string query = @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
             VALUES(@UserId, @ProjectId, @RoleId)";
 
-        var insertStatesSql = @"INSERT INTO State(Id, Number, Name, ProjectId)
-            VALUES (@Id, @Number, @Name, @ProjectId);";
+        var insertStatesSql = @"INSERT INTO State(Id, SortOrder, Name, CreatedBy, CreatedAt, ProjectId)
+            VALUES (@Id, @SortOrder, @Name, @CreatedBy, @CreatedAt, @ProjectId);";
 
         await connection
             .ExecuteAsync(insertStatesSql, states);
@@ -90,7 +90,7 @@ public class ProjectRepository
                 uu.Username AS UpdatedByName,
                 s.Id AS Id,
                 s.Name AS Name,
-                s.Number AS Number
+                s.SortOrder AS SortOrder
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id
@@ -128,7 +128,7 @@ public class ProjectRepository
                 uu.Username AS UpdatedByName,
                 s.Id AS Id,
                 s.Name AS Name,
-                s.Number AS Number
+                s.SortOrder AS SortOrder
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id

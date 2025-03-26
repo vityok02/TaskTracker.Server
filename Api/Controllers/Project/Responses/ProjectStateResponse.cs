@@ -8,5 +8,5 @@ public class ProjectStateResponse
 
     public string? Description { get; set; }
 
-    public int Number { get; set; }
+    public int SortOrder { get; set; }
 }

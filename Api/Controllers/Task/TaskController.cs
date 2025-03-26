@@ -7,7 +7,9 @@ using Application.Modules.Tasks.CreateTask;
 using Application.Modules.Tasks.DeleteTask;
 using Application.Modules.Tasks.GetAllTasks;
 using Application.Modules.Tasks.GetTaskById;
+using Application.Modules.Tasks.ReorderTasks;
 using Application.Modules.Tasks.UpdateTask;
+using Application.Modules.Tasks.UpdateTaskState;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -96,6 +98,7 @@ public class TaskController : BaseController
     [HttpPut("{taskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> UpdateAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid taskId,
@@ -108,11 +111,53 @@ public class TaskController : BaseController
             User.GetUserId(),
             taskRequest.StateId,
             taskRequest.Name,
-            taskRequest.Description
-            );
+            taskRequest.Description);
 
         var result = await Sender
             .Send(command, token);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
+    }
+
+    [HttpPatch("{taskId:guid}/state")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateStateAsync(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid taskId,
+        [FromBody] UpdateTaskStateRequest request)
+    {
+        var command = new UpdateTaskStateCommand(
+            taskId,
+            request.StateId,
+            request.BeforeTaskId,
+            projectId,
+            User.GetUserId());
+
+        var result = await Sender
+            .Send(command);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
+    }
+
+    [HttpPatch("{taskId:guid}/order")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ReorderAsync(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid taskId,
+        [FromBody] ReorderTasksRequest request)
+    {
+        var command = new ReorderTasksCommand(
+            taskId,
+            request.BeforeTaskId,
+            projectId,
+            User.GetUserId());
+
+        var result = await Sender
+            .Send(command);
 
         return result.IsFailure
             ? HandleFailure(result)
