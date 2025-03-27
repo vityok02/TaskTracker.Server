@@ -13,16 +13,18 @@ public static class ListExtensions
     {
         if (beforeTaskId.HasValue)
         {
-            var beforeIndex = tasks
-                .FindIndex(t => t.Id == beforeTaskId.Value);
-
-            if (beforeIndex >= 0)
-            {
-                tasks.Insert(beforeIndex, item);
-                return;
-            }
-
             tasks.Add(item);
+
+            return;
+        }
+
+        var beforeIndex = tasks
+            .FindIndex(t => t.Id == beforeTaskId.Value);
+
+        if (beforeIndex >= 0)
+        {
+            tasks.Insert(beforeIndex, item);
+
             return;
         }
 
