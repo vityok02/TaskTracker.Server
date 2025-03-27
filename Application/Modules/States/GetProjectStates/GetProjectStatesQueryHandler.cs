@@ -24,7 +24,7 @@ internal sealed class GetProjectStatesQueryHandler
         CancellationToken cancellationToken)
     {
         var states = await _stateRepository
-            .GetAllByProjectIdAsync(request.ProjectId);
+            .GetAllAsync(request.ProjectId);
 
         return Result<IEnumerable<StateDto>>
             .Success(_mapper.Map<IEnumerable<StateDto>>(states));

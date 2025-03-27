@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Domain.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
 [Table("Task")]
-public class TaskEntity : AuditableEntity
+public class TaskEntity : SortableEntity
 {
     public string Name { get; set; } = string.Empty;
 

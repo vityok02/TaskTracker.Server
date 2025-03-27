@@ -74,6 +74,9 @@ internal sealed class CreateProjectCommandHandler
         var projectId = await _projectRepository
             .CreateAsync(project, role.Id);
 
+        var states = ProjectDefaults
+            .GetDefaultStates(projectId, user.Id, _dateTimeService.GetCurrentTime());
+
         var projectDto = new ProjectDto
         {
             Id = projectId,
@@ -84,11 +87,11 @@ internal sealed class CreateProjectCommandHandler
             UpdatedBy = null,
             UpdatedAt = null,
             States = ProjectDefaults
-                .GetDefaultStates(projectId, user.Id)
+                .GetDefaultStates(projectId, user.Id, _dateTimeService.GetCurrentTime())
                 .Select(s => new ProjectStateDto
                 {
                     Id = s.Id,
-                    Number = s.Number,
+                    SortOrder = s.SortOrder,
                     Name = s.Name,
                 })
         };

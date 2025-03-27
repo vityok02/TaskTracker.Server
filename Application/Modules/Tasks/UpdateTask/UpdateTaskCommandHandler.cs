@@ -1,7 +1,6 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using AutoMapper;
 using Domain.Errors;
 using Domain.Shared;
 
@@ -28,8 +27,6 @@ internal sealed class UpdateTaskCommandHandler
         UpdateTaskCommand command,
         CancellationToken cancellationToken)
     {
-        // Question: Should I check if changes were made?
-
         var task = await _taskRepository
             .GetByIdAsync(command.Id);
 

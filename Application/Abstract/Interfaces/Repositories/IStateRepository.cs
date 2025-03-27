@@ -8,9 +8,13 @@ public interface IStateRepository : IRepository<StateEntity, Guid>
 {
     Task<bool> ExistsForProject(Guid stateId, Guid projectId);
 
-    Task<IEnumerable<StateModel>> GetAllByProjectIdAsync(Guid projectId);
+    Task<IEnumerable<StateModel>> GetAllExtendedAsync(Guid projectId);
+
+    Task<IEnumerable<StateEntity>> GetAllAsync(Guid projectId);
 
     Task<StateModel?> GetExtendedByIdAsync(Guid id);
 
-    Task<int> GetLastStateNumberAsync(Guid ProjectId);
+    Task<int> GetLastOrderAsync(Guid ProjectId);
+
+    Task UpdateRangeAsync(IEnumerable<StateEntity> states);
 }

@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Models;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
+using Z.Dapper.Plus;
 
 namespace Persistence.Repositories;
 
@@ -34,7 +35,7 @@ public class StateRepository
                 });
     }
 
-    public async Task<IEnumerable<StateModel>> GetAllByProjectIdAsync(Guid projectId)
+    public async Task<IEnumerable<StateModel>> GetAllExtendedAsync(Guid projectId)
     {
         using var connection = ConnectionFactory.Create();
 
@@ -43,6 +44,16 @@ public class StateRepository
         return await connection
             .QueryAsync<StateModel>(
                 query,
+                new { ProjectId = projectId });
+    }
+
+    public async Task<IEnumerable<StateEntity>> GetAllAsync(Guid projectId)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        return await connection
+            .GetListAsync<StateEntity>(
+                "WHERE [State].ProjectId = @ProjectId",
                 new { ProjectId = projectId });
     }
 
@@ -56,12 +67,12 @@ public class StateRepository
                 new { Id = id });
     }
 
-    public async Task<int> GetLastStateNumberAsync(Guid ProjectId)
+    public async Task<int> GetLastOrderAsync(Guid ProjectId)
     {
         using var connection = ConnectionFactory.Create();
 
         var query = @"
-            SELECT MAX(Number) 
+            SELECT MAX(Order) 
             FROM [State] 
             WHERE ProjectId = @ProjectId";
 
@@ -71,10 +82,17 @@ public class StateRepository
                 new { ProjectId });
     }
 
+    public async Task UpdateRangeAsync(IEnumerable<StateEntity> states)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        await connection.BulkUpdateAsync(states);
+    }
+
     private static string GetSelectQuery(string whereCondition) => @$"
         SELECT
             s.Id,
-            s.Number,
+            s.SortOrder,
             s.Name,
             s.Description,
             s.CreatedBy,

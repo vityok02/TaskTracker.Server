@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
             .AddAutoMapper(AssemblyReference.Assembly)
             .AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>))
             .AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true)
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>))
             ;
 
         return services;

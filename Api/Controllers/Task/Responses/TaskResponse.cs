@@ -1,15 +1,20 @@
-﻿namespace Api.Controllers.Task.Responses;
-public record TaskResponse(
-    Guid Id,
-    string Name,
-    string? Description,
-    Guid ProjectId,
-    string ProjectName,
-    Guid StateId,
-    string State,
-    Guid CreatedBy,
-    DateTime CreatedAt,
-    string CreatedByName,
-    Guid? UpdatedBy,
-    DateTime? UpdatedAt,
-    string? UpdatedByName);
+﻿using Api.Controllers.Abstract;
+
+namespace Api.Controllers.Task.Responses;
+
+public class TaskResponse : AuditableResponse
+{
+    public Guid Id {get; init;}
+
+    public string Name { get; init; } = string.Empty;
+
+    public string? Description {get; init; }
+
+    public int SortOrder { get; init; }
+
+    public Guid ProjectId {get; init;}
+    public string ProjectName { get; init; } = string.Empty;
+
+    public Guid StateId {get; init;}
+    public string StateName { get; init; } = string.Empty;
+}

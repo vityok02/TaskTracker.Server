@@ -10,5 +10,5 @@ public class StateResponse : AuditableResponse
 
     public string? Description { get; init; }
 
-    public int Number { get; init; }
+    public int SortOrder { get; init; }
 }

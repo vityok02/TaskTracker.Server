@@ -8,11 +8,11 @@ public class TaskModel : AuditableModel
 
     public string? Description { get; set; }
 
-    public Guid ProjectId { get; set; }
+    public int SortOrder { get; set; }
 
+    public Guid ProjectId { get; set; }
     public string ProjectName { get; set; } = string.Empty;
 
     public Guid StateId { get; set; }
-
-    public string State { get; set; } = string.Empty;
+    public string StateName { get; set; } = string.Empty;
 }

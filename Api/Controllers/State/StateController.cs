@@ -8,6 +8,7 @@ using Application.Modules.States.DeleteState;
 using Application.Modules.States.GetProjectStates;
 using Application.Modules.States.GetStateById;
 using Application.Modules.States.UpdateState;
+using Application.Modules.States.UpdateStateOrders;
 using AutoMapper;
 using Domain.Constants;
 using MediatR;
@@ -100,6 +101,28 @@ public class StateController : BaseController
             stateId,
             stateRequest.Name,
             stateRequest.Description,
+            User.GetUserId());
+
+        var result = await Sender
+            .Send(command, cancellationToken);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
+    }
+
+    [ProjectMember(Roles.Admin)]
+    [HttpPatch("{stateId:guid}/order")]
+    public async Task<IActionResult> UpdateStateOrder(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid stateId,
+        [FromBody] ReorderStatesRequest ReorderStatesRequest,
+        CancellationToken cancellationToken)
+    {
+        var command = new ReorderStatesCommand(
+            stateId,
+            ReorderStatesRequest.BeforeStateId,
+            projectId,
             User.GetUserId());
 
         var result = await Sender

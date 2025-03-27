@@ -29,15 +29,15 @@ internal sealed class CreateStateCommandHandler
         CreateStateCommand command,
         CancellationToken cancellationToken)
     {
-        var lastNumber = await _stateRepository
-            .GetLastStateNumberAsync(command.ProjectId);
+        var lastOrder = await _stateRepository
+            .GetLastOrderAsync(command.ProjectId);
 
         var stateEntity = new StateEntity
         {
             Id = Guid.NewGuid(),
             Name = command.Name,
             Description = command.Description,
-            Number = lastNumber + 1,
+            SortOrder = lastOrder + 1,
             ProjectId = command.ProjectId,
             CreatedBy = command.UserId,
             CreatedAt = _dateTimeProvider.GetCurrentTime()
