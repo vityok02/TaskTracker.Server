@@ -1,4 +1,5 @@
 ﻿using Application.Abstract.Interfaces.Base;
+using Domain.Abstract;
 using Domain.Entities;
 using Domain.Models;
 
@@ -13,4 +14,6 @@ public interface IProjectRepository : IRepository<ProjectEntity, Guid>
     Task<IEnumerable<ProjectModel>> GetAllByUserIdAsync(Guid userId);
 
     Task<ProjectModel?> GetExtendedByIdAsync(Guid projectId);
+
+    Task<PagedList<ProjectModel>> GetPagedAsync(int currentPageNumber, int pageSize, Guid userId);
 }
