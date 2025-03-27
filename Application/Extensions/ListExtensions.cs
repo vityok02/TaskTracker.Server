@@ -19,16 +19,14 @@ public static class ListExtensions
             if (beforeIndex >= 0)
             {
                 tasks.Insert(beforeIndex, item);
+                return;
             }
-            else
-            {
-                tasks.Add(item);
-            }
-        }
-        else
-        {
+
             tasks.Add(item);
+            return;
         }
+
+        tasks.Add(item);
     }
 
     public static void Reorder<T>(
