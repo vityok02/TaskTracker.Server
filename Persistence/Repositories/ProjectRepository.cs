@@ -30,7 +30,7 @@ public class ProjectRepository
             SELECT
             COUNT(*)
             FROM
-            Project
+            [Project]
 
             SELECT
                 p.Id AS Id,
@@ -62,8 +62,6 @@ public class ProjectRepository
 
         var totalCount = await reader
             .ReadFirstOrDefaultAsync<int>();
-
-        var lookup = new Dictionary<Guid, ProjectModel>();
 
         var projects = await reader
             .ReadAsync<ProjectModel>();

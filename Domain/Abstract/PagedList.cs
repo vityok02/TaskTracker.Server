@@ -28,7 +28,8 @@ public class PagedList<T>
         CurrentPageNumber = currentPageNumber;
         PageSize = pageSize;
 
-        TotalPages = (int)Math.Ceiling((double)TotalCount / (double)PageSize);
+        TotalPages = (int)Math
+            .Ceiling((double)TotalCount / (double)PageSize);
 
         HasPreviousPage = CurrentPageNumber > 1;
         HasNextPage = CurrentPageNumber < TotalPages;
