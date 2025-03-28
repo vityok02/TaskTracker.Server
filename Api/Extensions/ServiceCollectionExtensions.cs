@@ -4,6 +4,8 @@ using Infrastructure.Authentication;
 using Infrastructure.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Security.Cryptography.Xml;
 using System.Text;
 
 namespace Api.Extensions;
@@ -15,8 +17,36 @@ public static class ServiceCollectionExtensions
         services
             .AddAutoMapper(AssemblyReference.Assembly)
             .AddEndpointsApiExplorer()
-            .AddSwaggerGen(c =>
-                c.SchemaFilter<ProblemDetailsSchemaFilter>())
+            .AddSwaggerGen(options =>
+            {
+                options.SchemaFilter<ProblemDetailsSchemaFilter>();
+
+                options.AddSecurityDefinition(
+                    "Bearer",
+                    new OpenApiSecurityScheme()
+                    {
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "Bearer"
+                    });
+
+                options.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            Array.Empty<string>()
+                        }
+                    });
+            })
             .AddControllers()
             ;
 

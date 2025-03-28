@@ -6,9 +6,11 @@ using Api.Filters;
 using Application.Modules.Projects.CreateProject;
 using Application.Modules.Projects.DeleteProject;
 using Application.Modules.Projects.GetAllProjects;
+using Application.Modules.Projects.GetPagedProjects;
 using Application.Modules.Projects.GetProjectById;
 using Application.Modules.Projects.UpdateProject;
 using AutoMapper;
+using Domain.Abstract;
 using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +20,7 @@ namespace Api.Controllers.Project;
 
 [Authorize]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
-[Route("projects")]
+[Route("/projects")]
 public class ProjectController : BaseController
 {
     public const string GetByIdAction = "GetProjectById";
@@ -73,18 +75,23 @@ public class ProjectController : BaseController
     }
 
     [HttpGet]
-    [ProducesResponseType<IEnumerable<ProjectResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PagedList<ProjectResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllAsync(
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         CancellationToken token)
     {
-        var query = new GetAllProjectsQuery(User.GetUserId());
+        var query = new GetPagedProjectsQuery(
+            page,
+            pageSize,
+            User.GetUserId());
 
         var result = await Sender
             .Send(query, token);
 
         return result.IsFailure
             ? HandleFailure(result)
-            : Ok(Mapper.Map<IEnumerable<ProjectResponse>>(result.Value));
+            : Ok(Mapper.Map<PagedList<ProjectResponse>>(result.Value));
     }
 
     [ProjectMember(Roles.Admin)]

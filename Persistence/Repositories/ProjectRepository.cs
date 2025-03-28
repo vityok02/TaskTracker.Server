@@ -1,11 +1,11 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Application.Modules.Projects;
 using Dapper;
+using Domain.Abstract;
 using Domain.Entities;
 using Domain.Models;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
-using System.Linq;
 
 namespace Persistence.Repositories;
 
@@ -15,6 +15,60 @@ public class ProjectRepository
     public ProjectRepository(ISqlConnectionFactory connectionFactory)
         : base(connectionFactory)
     { }
+
+    public async Task<PagedList<ProjectModel>> GetPagedAsync(
+        int currentPageNumber,
+        int pageSize,
+        Guid userId)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        int skip = (currentPageNumber - 1) * pageSize;
+        int take = pageSize;
+
+        var query = @"
+            SELECT
+            COUNT(*)
+            FROM
+            [Project]
+
+            SELECT
+                p.Id AS Id,
+                p.Name,
+                p.Description,
+                p.CreatedAt,
+                p.UpdatedAt,
+                uc.Id AS CreatedBy,
+                uc.Username AS CreatedByName,
+                uu.Id AS UpdatedBy,
+                uu.Username AS UpdatedByName
+            FROM [Project] p
+            JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
+            JOIN [User] uc ON p.CreatedBy = uc.Id
+            LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
+            WHERE pm.UserId = @UserId
+            ORDER BY p.CreatedAt
+            OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
+
+        var reader = await connection
+            .QueryMultipleAsync(
+                query,
+                new
+                {
+                    Skip = skip,
+                    Take = take,
+                    UserId = userId
+                });
+
+        var totalCount = await reader
+            .ReadFirstOrDefaultAsync<int>();
+
+        var projects = await reader
+            .ReadAsync<ProjectModel>();
+
+        return new PagedList<ProjectModel>(
+            totalCount, projects, currentPageNumber, pageSize);
+    }
 
     public async Task<bool> ExistsByNameAsync(Guid userId, string projectName)
     {

@@ -1,6 +1,7 @@
 ﻿using Application.Modules.Projects;
 using Application.Modules.Projects.CreateProject;
 using AutoMapper;
+using Domain.Abstract;
 using Domain.Entities;
 using Domain.Models;
 
@@ -18,5 +19,7 @@ public sealed class ProjectProfile : Profile
             .ForMember(dest => dest.States, opt => opt.MapFrom(src => src.States.AsEnumerable()));
 
         CreateMap<ProjectModel, ProjectEntity>();
+
+        CreateMap<PagedList<ProjectModel>, PagedList<ProjectDto>>();
     }
 }
