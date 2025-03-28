@@ -42,10 +42,10 @@ public class ProjectRepository
                 uc.Username AS CreatedByName,
                 uu.Id AS UpdatedBy,
                 uu.Username AS UpdatedByName
-            FROM[Project] p
-            JOIN[ProjectMember] pm ON p.Id = pm.ProjectId
-            JOIN[User] uc ON p.CreatedBy = uc.Id
-            LEFT JOIN[User] uu ON p.UpdatedBy = uu.Id
+            FROM [Project] p
+            JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
+            JOIN [User] uc ON p.CreatedBy = uc.Id
+            LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
             WHERE pm.UserId = @UserId
             ORDER BY p.CreatedAt
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
