@@ -24,8 +24,8 @@ internal sealed class GetPagedProjectsQueryHandler
         GetPagedProjectsQuery query,
         CancellationToken cancellationToken)
     {
-        int currentPageNumber = query.CurrentPageNumber is not null or > 0
-            ? query.CurrentPageNumber.Value
+        int currentPageNumber = query.CurrentPageNumber is not null or > 0 
+            ? query.CurrentPageNumber.Value 
             : 1;
 
         int pageSize = query.PageSize is not null or > 10
