@@ -15,5 +15,11 @@ public interface IProjectRepository : IRepository<ProjectEntity, Guid>
 
     Task<ProjectModel?> GetExtendedByIdAsync(Guid projectId);
 
-    Task<PagedList<ProjectModel>> GetPagedAsync(int currentPageNumber, int pageSize, Guid userId);
+    Task<PagedList<ProjectModel>> GetPagedAsync(
+        int currentPageNumber,
+        int pageSize,
+        string? searchTerm,
+        string? sortColumn,
+        string? sortOrder,
+        Guid userId);
 }

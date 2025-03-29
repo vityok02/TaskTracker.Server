@@ -19,6 +19,9 @@ public class ProjectRepository
     public async Task<PagedList<ProjectModel>> GetPagedAsync(
         int currentPageNumber,
         int pageSize,
+        string? searchTerm,
+        string? sortColumn,
+        string? sortOrder,
         Guid userId)
     {
         using var connection = ConnectionFactory.Create();
@@ -26,11 +29,23 @@ public class ProjectRepository
         int skip = (currentPageNumber - 1) * pageSize;
         int take = pageSize;
 
-        var query = @"
+        sortColumn = sortColumn switch
+        {
+            "Name" => "p.Name",
+            "CreatedAt" => "p.CreatedAt",
+            "UpdatedAt" => "p.UpdatedAt",
+            _ => "p.CreatedAt"
+        };
+
+        sortOrder = sortOrder?.ToLower() == "desc"
+            ? "DESC"
+            : "ASC";
+
+        var query = @$"
             SELECT
             COUNT(*)
-            FROM
-            [Project]
+            FROM [Project] p
+            WHERE p.Name LIKE @SearchTerm
 
             SELECT
                 p.Id AS Id,
@@ -46,8 +61,9 @@ public class ProjectRepository
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
-            WHERE pm.UserId = @UserId
-            ORDER BY p.CreatedAt
+            WHERE pm.UserId = @UserId 
+                AND p.Name LIKE @SearchTerm
+            ORDER BY {sortColumn} {sortOrder}
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
 
         var reader = await connection
@@ -57,7 +73,10 @@ public class ProjectRepository
                 {
                     Skip = skip,
                     Take = take,
-                    UserId = userId
+                    UserId = userId,
+                    searchTerm = $"%{searchTerm}%",
+                    SortColumn = sortColumn,
+                    SortOrder = sortOrder
                 });
 
         var totalCount = await reader

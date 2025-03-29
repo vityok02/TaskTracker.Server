@@ -5,6 +5,9 @@ namespace Application.Modules.Projects.GetPagedProjects;
 
 public sealed record GetPagedProjectsQuery(
     int? CurrentPageNumber,
-    int? PageSize,  
+    int? PageSize,
+    string? SearchTerm,
+    string? SortColumn,
+    string? SortOrder,
     Guid UserId)
     : IQuery<PagedList<ProjectDto>>;

@@ -42,6 +42,9 @@ internal sealed class GetPagedProjectsQueryHandler
             .GetPagedAsync(
                 currentPageNumber,
                 pageSize,
+                query.SearchTerm,
+                query.SortColumn,
+                query.SortOrder,
                 query.UserId);
 
         return Result<PagedList<ProjectDto>>.Success(_mapper
