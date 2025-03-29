@@ -83,9 +83,10 @@ public class TaskController : BaseController
     [ProducesResponseType<IEnumerable<TaskResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllAsync(
         [FromRoute] Guid projectId,
+        [FromQuery] string? searchTerm,
         CancellationToken token)
     {
-        var query = new GetAllTasksQuery(projectId);
+        var query = new GetAllTasksQuery(projectId, searchTerm);
 
         var result = await Sender
             .Send(query, token);

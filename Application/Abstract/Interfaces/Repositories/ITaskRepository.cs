@@ -6,11 +6,15 @@ namespace Application.Abstract.Interfaces.Repositories;
 
 public interface ITaskRepository : IRepository<TaskEntity, Guid>
 {
-    Task<bool> ExistsByNameForProjectAsync(string name, Guid projectId);
+    Task<bool> ExistsByNameForProjectAsync(
+        string name,
+        Guid projectId);
 
     Task<IEnumerable<TaskEntity>> GetAllByStateId(Guid stateId);
 
-    Task<IEnumerable<TaskModel>> GetAllExtendedAsync(Guid ProjectId);
+    Task<IEnumerable<TaskModel>> GetAllExtendedAsync(
+        Guid ProjectId,
+        string? searchTerm);
 
     Task<TaskModel?> GetExtendedByIdAsync(Guid id);
 

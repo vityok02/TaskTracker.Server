@@ -74,7 +74,7 @@ public class ProjectRepository
                     Skip = skip,
                     Take = take,
                     UserId = userId,
-                    searchTerm = $"%{searchTerm}%",
+                    SearchTerm = $"%{searchTerm}%",
                     SortColumn = sortColumn,
                     SortOrder = sortOrder
                 });
