@@ -45,7 +45,9 @@ public class ProjectRepository
             SELECT
             COUNT(*)
             FROM [Project] p
-            WHERE p.Name LIKE @SearchTerm
+            JOIN [ProjectMember] pm ON p.Id = pm.ProjectId 
+            WHERE pm.UserId = @UserId 
+                AND p.Name LIKE @SearchTerm
 
             SELECT
                 p.Id AS Id,

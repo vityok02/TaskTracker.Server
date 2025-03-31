@@ -1,5 +1,6 @@
 ﻿using Api.Common;
 using Application.Abstract.Interfaces.Repositories;
+using Domain.Constants;
 using Domain.Errors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -82,7 +83,7 @@ public sealed class ProjectMemberAttribute
             return;
         }
 
-        if (member.RoleName != _role)
+        if (!IsValidRole(member.RoleName))
         {
             context.Result = new ForbiddenObjectResult(
                 ProblemDetailsFactory
@@ -91,6 +92,19 @@ public sealed class ProjectMemberAttribute
                         StatusCodes.Status403Forbidden,
                         UserErrors.Forbidden));
         }
+    }
+
+    private bool IsValidRole(string userRole)
+    {
+        var allowedRoles = _role switch
+        {
+            Roles.Admin => [ Roles.Admin ],
+            Roles.Contributor => [ Roles.Admin, Roles.Contributor ],
+            Roles.Viewer => [ Roles.Admin, Roles.Contributor, Roles.Viewer ],
+            _ => Array.Empty<string>()
+        };
+
+        return allowedRoles.Contains(userRole);
     }
 
     private static Guid GetUserId(HttpContext context)
