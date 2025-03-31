@@ -1,5 +1,4 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
-using Azure.Core;
 using Dapper;
 using Domain.Entities;
 using Domain.Models;
@@ -9,7 +8,8 @@ using Z.Dapper.Plus;
 
 namespace Persistence.Repositories;
 
-public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
+public class TaskRepository
+    : BaseRepository<TaskEntity, Guid>, ITaskRepository
 {
     public TaskRepository(ISqlConnectionFactory connectionFactory)
         : base(connectionFactory)
@@ -35,17 +35,23 @@ public class TaskRepository : BaseRepository<TaskEntity, Guid>, ITaskRepository
                 });
     }
 
-    public async Task<IEnumerable<TaskModel>> GetAllExtendedAsync(Guid ProjectId)
+    public async Task<IEnumerable<TaskModel>> GetAllExtendedAsync(
+        Guid ProjectId,
+        string? searchTerm)
     {
         using var connection = ConnectionFactory.Create();
 
-        var query = $@"{GetSelectQuery("p.Id = @ProjectId")}
+        var query = $@"{GetSelectQuery("p.Id = @ProjectId AND t.Name LIKE @SearchTerm")}
             ORDER BY t.SortOrder";
 
         return await connection
             .QueryAsync<TaskModel>(
                 query,
-                new { ProjectId });
+                new
+                {
+                    ProjectId,
+                    SearchTerm = $"%{searchTerm}%"
+                });
     }
 
     public async Task<IEnumerable<TaskEntity>> GetAllByStateId(Guid stateId)

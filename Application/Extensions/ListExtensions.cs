@@ -11,7 +11,7 @@ public static class ListExtensions
         T item)
         where T : BaseEntity
     {
-        if (beforeTaskId.HasValue)
+        if (!beforeTaskId.HasValue)
         {
             tasks.Add(item);
 
@@ -19,7 +19,7 @@ public static class ListExtensions
         }
 
         var beforeIndex = tasks
-            .FindIndex(t => t.Id == beforeTaskId.Value);
+            .FindIndex(t => t.Id == beforeTaskId!.Value);
 
         if (beforeIndex >= 0)
         {

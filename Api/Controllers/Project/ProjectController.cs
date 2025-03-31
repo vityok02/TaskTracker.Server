@@ -5,7 +5,6 @@ using Api.Extensions;
 using Api.Filters;
 using Application.Modules.Projects.CreateProject;
 using Application.Modules.Projects.DeleteProject;
-using Application.Modules.Projects.GetAllProjects;
 using Application.Modules.Projects.GetPagedProjects;
 using Application.Modules.Projects.GetProjectById;
 using Application.Modules.Projects.UpdateProject;
@@ -79,11 +78,17 @@ public class ProjectController : BaseController
     public async Task<IActionResult> GetAllAsync(
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
+        [FromQuery] string? searchTerm,
+        [FromQuery] string? sortColumn,
+        [FromQuery] string? sortOrder,
         CancellationToken token)
     {
         var query = new GetPagedProjectsQuery(
             page,
             pageSize,
+            searchTerm,
+            sortColumn,
+            sortOrder,
             User.GetUserId());
 
         var result = await Sender
