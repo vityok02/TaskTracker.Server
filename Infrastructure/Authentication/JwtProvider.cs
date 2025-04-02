@@ -27,6 +27,7 @@ internal sealed class JwtProvider : IJwtProvider
             new(ClaimTypes.Name, user.UserName),
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
+            new(ClaimTypes.Uri, user.AvatarUrl ?? string.Empty)
         };
 
         var signingCredentials = new SigningCredentials(

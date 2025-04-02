@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddAuthConfiguration(builder.Configuration)
     .AddApplication()
-    .AddInfrastructure()
+    .AddInfrastructure(builder.Configuration)
     .AddPersistence(builder.Configuration)
     .AddApi();
 
