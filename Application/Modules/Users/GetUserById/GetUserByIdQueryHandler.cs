@@ -1,6 +1,5 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
-using AutoMapper;
 using Domain.Errors;
 using Domain.Shared;
 
@@ -20,12 +19,17 @@ internal sealed class GetUserByIdQueryHandler
         GetUserByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(query.UserId);
+        var user = await _userRepository
+            .GetByIdAsync(query.UserId);
 
         return user is null
             ? Result<UserDto>
                 .Failure(UserErrors.NotFound)
             : Result<UserDto>
-                .Success(new UserDto(user.Id, user.UserName, user.Email));
+                .Success(new UserDto(
+                    user.Id,
+                    user.UserName,
+                    user.Email,
+                    user.AvatarUrl));
     }
 }

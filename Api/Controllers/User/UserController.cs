@@ -1,9 +1,12 @@
 ﻿using Api.Controllers.Abstract;
 using Api.Controllers.User.Responses;
+using Api.Extensions;
+using Application.Abstract.Interfaces;
 using Application.Modules.Users;
 using Application.Modules.Users.GetAllUsers;
 using Application.Modules.Users.GetUserById;
 using Application.Modules.Users.SearchUserQuery;
+using Application.Modules.Users.SetAvatar;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -16,11 +19,43 @@ namespace Api.Controllers.User;
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 public sealed class UserController : BaseController
 {
+    private readonly IBlobService _blobService;
+
     public UserController(
         ISender sender,
-        IMapper mapper)
+        IMapper mapper,
+        IBlobService blobService)
         : base(sender, mapper)
     {
+        _blobService = blobService;
+    }
+
+    [HttpPost("avatar")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UploadAvatar(
+        IFormFile file,
+        CancellationToken cancellationToken)
+    {
+        if (file is null)
+        {
+            return BadRequest();
+        }
+        
+        await using var content = file
+            .OpenReadStream();
+        
+        var command = new SetAvatarCommand(
+            file.FileName,
+            content,
+            User.GetUserId());
+
+        var result = await Sender
+            .Send(command, cancellationToken);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(new { fileUrl = result.Value });
     }
 
     [HttpGet("{id:guid}")]

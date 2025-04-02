@@ -25,7 +25,7 @@ internal sealed class GetAllUsersQueryHandler
             .GetAllAsync();
 
         return users
-            .Select(u => new UserDto(u.Id, u.UserName, u.Email))
+            .Select(u => new UserDto(u.Id, u.UserName, u.Email, u.AvatarUrl))
             .ToArray();
     }
 }
