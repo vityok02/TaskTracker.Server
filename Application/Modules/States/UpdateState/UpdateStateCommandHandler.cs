@@ -3,6 +3,7 @@ using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using AutoMapper;
 using Domain.Constants;
+using Domain.Entities;
 using Domain.Errors;
 using Domain.Shared;
 

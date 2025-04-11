@@ -1,6 +1,6 @@
 ﻿using Application.Abstract.Messaging;
 
-namespace Application.Modules.States.UpdateStateOrders;
+namespace Application.Modules.States.UpdateStateOrder;
 
 public sealed record ReorderStatesCommand(
     Guid StateId,

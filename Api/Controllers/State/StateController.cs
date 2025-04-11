@@ -3,12 +3,13 @@ using Api.Controllers.State.Requests;
 using Api.Controllers.State.Responses;
 using Api.Extensions;
 using Api.Filters;
+using Application.Modules.States;
 using Application.Modules.States.CreateState;
 using Application.Modules.States.DeleteState;
 using Application.Modules.States.GetProjectStates;
 using Application.Modules.States.GetStateById;
 using Application.Modules.States.UpdateState;
-using Application.Modules.States.UpdateStateOrders;
+using Application.Modules.States.UpdateStateOrder;
 using AutoMapper;
 using Domain.Constants;
 using MediatR;
@@ -90,7 +91,7 @@ public class StateController : BaseController
     }
 
     [HttpPut("{stateId:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<StateDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateAsync(
         [FromRoute] Guid projectId,
