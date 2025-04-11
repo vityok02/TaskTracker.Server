@@ -34,12 +34,13 @@ public class StateController : BaseController
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAsync(
         [FromRoute] Guid projectId,
-        [FromBody] CreateStateRequest stateRequest,
+        [FromBody] StateRequest stateRequest,
         CancellationToken cancellationToken)
     {
         var command = new CreateStateCommand(
             stateRequest.Name,
             stateRequest.Description,
+            stateRequest.Color,
             projectId,
             User.GetUserId());
 
@@ -89,18 +90,19 @@ public class StateController : BaseController
     }
 
     [HttpPut("{stateId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid stateId,
-        [FromBody] UpdateStateRequest stateRequest,
+        [FromBody] StateRequest stateRequest,
         CancellationToken cancellationToken)
     {
         var command = new UpdateStateCommand(
             stateId,
             stateRequest.Name,
             stateRequest.Description,
+            stateRequest.Color,
             User.GetUserId());
 
         var result = await Sender
@@ -108,7 +110,7 @@ public class StateController : BaseController
 
         return result.IsFailure
             ? HandleFailure(result)
-            : NoContent();
+            : Ok(result.Value);
     }
 
     [ProjectMember(Roles.Admin)]

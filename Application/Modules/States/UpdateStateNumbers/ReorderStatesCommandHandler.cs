@@ -2,10 +2,11 @@
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using Application.Extensions;
+using Application.Modules.States.UpdateStateOrders;
 using Domain.Errors;
 using Domain.Shared;
 
-namespace Application.Modules.States.UpdateStateOrders;
+namespace Application.Modules.States.UpdateStateNumbers;
 
 internal sealed class ReorderStatesCommandHandler
     : ICommandHandler<ReorderStatesCommand>

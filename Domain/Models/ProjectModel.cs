@@ -8,5 +8,5 @@ public class ProjectModel : AuditableModel
 
     public string? Description { get; set; }
 
-    public List<ProjectStateModel> States { get; set; } = [];
+    public List<StateModel> States { get; set; } = [];
 }

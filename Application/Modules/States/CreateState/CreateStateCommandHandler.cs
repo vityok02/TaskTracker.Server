@@ -2,6 +2,7 @@
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using AutoMapper;
+using Domain.Constants;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Shared;
@@ -37,6 +38,7 @@ internal sealed class CreateStateCommandHandler
             Id = Guid.NewGuid(),
             Name = command.Name,
             Description = command.Description,
+            Color = command.Color ?? DefaultStateColor.Value,
             SortOrder = lastOrder + 1,
             ProjectId = command.ProjectId,
             CreatedBy = command.UserId,

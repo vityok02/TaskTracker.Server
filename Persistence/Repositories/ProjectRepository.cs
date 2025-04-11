@@ -165,6 +165,8 @@ public class ProjectRepository
                 uu.Username AS UpdatedByName,
                 s.Id AS Id,
                 s.Name AS Name,
+                s.Description AS Description,
+                s.Color AS Color,
                 s.SortOrder AS SortOrder
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
@@ -176,7 +178,7 @@ public class ProjectRepository
 
         var lookup = new Dictionary<Guid, ProjectModel>();
 
-        await connection.QueryAsync<ProjectModel, ProjectStateModel, ProjectModel>(
+        await connection.QueryAsync<ProjectModel, StateModel, ProjectModel>(
             query,
             (project, state) => MapProjectStates(project, state, lookup),
             new { UserId = userId },
@@ -203,6 +205,8 @@ public class ProjectRepository
                 uu.Username AS UpdatedByName,
                 s.Id AS Id,
                 s.Name AS Name,
+                s.Description AS Description,
+                s.Color AS Color,
                 s.SortOrder AS SortOrder
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
@@ -213,7 +217,7 @@ public class ProjectRepository
 
         var lookup = new Dictionary<Guid, ProjectModel>();
 
-        await connection.QueryAsync<ProjectModel, ProjectStateModel, ProjectModel>(
+        await connection.QueryAsync<ProjectModel, StateModel, ProjectModel>(
             query,
             (project, state) => MapProjectStates(project, state, lookup),
             new { ProjectId = projectId },
@@ -245,7 +249,7 @@ public class ProjectRepository
 
     private static ProjectModel MapProjectStates(
     ProjectModel project,
-    ProjectStateModel state,
+    StateModel state,
     Dictionary<Guid, ProjectModel> lookup)
     {
         if (!lookup.TryGetValue(project.Id, out ProjectModel? value))
@@ -254,7 +258,7 @@ public class ProjectRepository
             lookup[project.Id] = value;
         }
 
-        value.States ??= new List<ProjectStateModel>();
+        value.States ??= new List<StateModel>();
         value.States.Add(state);
 
         return project;
