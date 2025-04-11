@@ -1,4 +1,5 @@
 ﻿using Api.Controllers.Abstract;
+using Domain.Constants;
 
 namespace Api.Controllers.State.Responses;
 
@@ -9,6 +10,8 @@ public class StateResponse : AuditableResponse
     public string Name { get; init; } = string.Empty;
 
     public string? Description { get; init; }
+
+    public string? Color { get; init; } = DefaultStateColor.Value;
 
     public int SortOrder { get; init; }
 }

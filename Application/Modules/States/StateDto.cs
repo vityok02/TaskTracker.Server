@@ -1,4 +1,5 @@
 ﻿using Application.Abstract;
+using Domain.Constants;
 
 namespace Application.Modules.States;
 
@@ -8,7 +9,9 @@ public class StateDto : AuditableDto
 
     public string Name { get; init; } = string.Empty;
 
-    public string Description { get; init; } = string.Empty;
+    public string? Description { get; init; }
+
+    public string Color { get; init; } = DefaultStateColor.Value;
 
     public int SortOrder { get; init; }
 }

@@ -72,7 +72,7 @@ public class StateRepository
         using var connection = ConnectionFactory.Create();
 
         var query = @"
-            SELECT MAX(Order) 
+            SELECT MAX(SortOrder) 
             FROM [State] 
             WHERE ProjectId = @ProjectId";
 
@@ -95,6 +95,7 @@ public class StateRepository
             s.SortOrder,
             s.Name,
             s.Description,
+            s.Color,
             s.CreatedBy,
             s.CreatedAt,
             s.UpdatedBy,

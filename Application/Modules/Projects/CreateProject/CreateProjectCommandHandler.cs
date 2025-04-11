@@ -1,6 +1,7 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
+using Application.Modules.States;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Errors;
@@ -88,11 +89,13 @@ internal sealed class CreateProjectCommandHandler
             UpdatedAt = null,
             States = ProjectDefaults
                 .GetDefaultStates(projectId, user.Id, _dateTimeService.GetCurrentTime())
-                .Select(s => new ProjectStateDto
+                .Select(s => new StateDto
                 {
                     Id = s.Id,
-                    SortOrder = s.SortOrder,
                     Name = s.Name,
+                    Color = s.Color,
+                    Description = s.Description,
+                    SortOrder = s.SortOrder,
                 })
         };
 

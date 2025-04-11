@@ -5,7 +5,7 @@ using Application.Extensions;
 using Domain.Errors;
 using Domain.Shared;
 
-namespace Application.Modules.States.UpdateStateOrders;
+namespace Application.Modules.States.UpdateStateOrder;
 
 internal sealed class ReorderStatesCommandHandler
     : ICommandHandler<ReorderStatesCommand>

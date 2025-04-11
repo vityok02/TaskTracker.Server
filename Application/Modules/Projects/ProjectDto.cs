@@ -1,4 +1,5 @@
 ﻿using Application.Abstract;
+using Application.Modules.States;
 
 namespace Application.Modules.Projects;
 
@@ -10,5 +11,5 @@ public class ProjectDto : AuditableDto
 
     public string? Description { get; init; }
 
-    public IEnumerable<ProjectStateDto> States { get; init; } = [];
+    public IEnumerable<StateDto> States { get; init; } = [];
 }

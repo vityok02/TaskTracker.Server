@@ -3,12 +3,13 @@ using Api.Controllers.State.Requests;
 using Api.Controllers.State.Responses;
 using Api.Extensions;
 using Api.Filters;
+using Application.Modules.States;
 using Application.Modules.States.CreateState;
 using Application.Modules.States.DeleteState;
 using Application.Modules.States.GetProjectStates;
 using Application.Modules.States.GetStateById;
 using Application.Modules.States.UpdateState;
-using Application.Modules.States.UpdateStateOrders;
+using Application.Modules.States.UpdateStateOrder;
 using AutoMapper;
 using Domain.Constants;
 using MediatR;
@@ -34,12 +35,13 @@ public class StateController : BaseController
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAsync(
         [FromRoute] Guid projectId,
-        [FromBody] CreateStateRequest stateRequest,
+        [FromBody] StateRequest stateRequest,
         CancellationToken cancellationToken)
     {
         var command = new CreateStateCommand(
             stateRequest.Name,
             stateRequest.Description,
+            stateRequest.Color,
             projectId,
             User.GetUserId());
 
@@ -89,18 +91,20 @@ public class StateController : BaseController
     }
 
     [HttpPut("{stateId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<StateDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid stateId,
-        [FromBody] UpdateStateRequest stateRequest,
+        [FromBody] StateRequest stateRequest,
         CancellationToken cancellationToken)
     {
         var command = new UpdateStateCommand(
             stateId,
             stateRequest.Name,
             stateRequest.Description,
+            stateRequest.Color,
+            projectId,
             User.GetUserId());
 
         var result = await Sender
@@ -108,7 +112,7 @@ public class StateController : BaseController
 
         return result.IsFailure
             ? HandleFailure(result)
-            : NoContent();
+            : Ok(result.Value);
     }
 
     [ProjectMember(Roles.Admin)]

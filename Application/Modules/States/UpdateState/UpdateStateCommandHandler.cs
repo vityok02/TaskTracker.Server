@@ -1,26 +1,32 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
+using AutoMapper;
+using Domain.Constants;
+using Domain.Entities;
 using Domain.Errors;
 using Domain.Shared;
 
 namespace Application.Modules.States.UpdateState;
 
 internal sealed class UpdateStateCommandHandler
-    : ICommandHandler<UpdateStateCommand>
+    : ICommandHandler<UpdateStateCommand, StateDto>
 {
     private readonly IStateRepository _stateRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IMapper _mapper;
 
     public UpdateStateCommandHandler(
         IStateRepository stateRepository,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IMapper mapper)
     {
         _stateRepository = stateRepository;
         _dateTimeProvider = dateTimeProvider;
+        _mapper = mapper;
     }
 
-    public async Task<Result> Handle(
+    public async Task<Result<StateDto>> Handle(
         UpdateStateCommand command,
         CancellationToken cancellationToken)
     {
@@ -29,18 +35,29 @@ internal sealed class UpdateStateCommandHandler
 
         if (stateEntity is null)
         {
-            return Result
+            return Result<StateDto>
                 .Failure(StateErrors.NotFound);
+        }
+
+        if (stateEntity.ProjectId != command.ProjectId)
+        {
+            return Result<StateDto>
+                .Failure(StateErrors.Forbidden);
         }
 
         stateEntity.Name = command.Name;
         stateEntity.Description = command.Description;
+
+        stateEntity.Color = string.IsNullOrWhiteSpace(command.Color)
+            ? DefaultStateColor.Value : command.Color;
+
         stateEntity.UpdatedBy = command.UserId;
         stateEntity.UpdatedAt = _dateTimeProvider.GetCurrentTime();
 
         await _stateRepository
             .UpdateAsync(stateEntity);
 
-        return Result.Success();
+        return Result<StateDto>
+            .Success(_mapper.Map<StateDto>(stateEntity));
     }
 }
