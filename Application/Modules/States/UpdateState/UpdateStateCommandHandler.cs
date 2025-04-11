@@ -39,6 +39,12 @@ internal sealed class UpdateStateCommandHandler
                 .Failure(StateErrors.NotFound);
         }
 
+        if (stateEntity.ProjectId != command.ProjectId)
+        {
+            return Result<StateDto>
+                .Failure(StateErrors.Forbidden);
+        }
+
         stateEntity.Name = command.Name;
         stateEntity.Description = command.Description;
 

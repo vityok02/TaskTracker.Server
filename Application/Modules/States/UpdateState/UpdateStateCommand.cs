@@ -7,5 +7,6 @@ public sealed record UpdateStateCommand(
     string Name,
     string? Description,
     string? Color,
+    Guid ProjectId,
     Guid UserId)
     : ICommand<StateDto>;

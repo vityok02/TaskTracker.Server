@@ -104,6 +104,7 @@ public class StateController : BaseController
             stateRequest.Name,
             stateRequest.Description,
             stateRequest.Color,
+            projectId,
             User.GetUserId());
 
         var result = await Sender
