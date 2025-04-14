@@ -13,5 +13,8 @@ public class UpdateProjectCommandValidator
 
         RuleFor(x => x.Description)
             .MaximumLength(500);
+
+        RuleFor(x => x.EndDate)
+            .GreaterThanOrEqualTo(x => x.StartDate);
     }
 }

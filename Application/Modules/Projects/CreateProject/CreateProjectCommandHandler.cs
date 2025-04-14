@@ -85,8 +85,8 @@ internal sealed class CreateProjectCommandHandler
             Description = project.Description,
             CreatedBy = user.Id,
             CreatedAt = project.CreatedAt,
-            UpdatedBy = null,
-            UpdatedAt = null,
+            StartDate = project.StartDate
+                ?? _dateTimeService.GetCurrentTime(),
             States = ProjectDefaults
                 .GetDefaultStates(projectId, user.Id, _dateTimeService.GetCurrentTime())
                 .Select(s => new StateDto

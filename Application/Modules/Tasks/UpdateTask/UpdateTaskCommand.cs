@@ -4,9 +4,11 @@ namespace Application.Modules.Tasks.UpdateTask;
 
 public sealed record UpdateTaskCommand(
     Guid Id,
-    Guid ProjectId,
-    Guid UserId,
-    Guid StateId,
     string Name,
-    string? Description)
+    string? Description,
+    DateTime? StartDate,
+    DateTime? EndDate,
+    Guid UserId,
+    Guid ProjectId,
+    Guid StateId)
     : ICommand;

@@ -55,6 +55,8 @@ public class ProjectRepository
                 p.Description,
                 p.CreatedAt,
                 p.UpdatedAt,
+                p.StartDate,
+                p.EndDate,
                 uc.Id AS CreatedBy,
                 uc.Username AS CreatedByName,
                 uu.Id AS UpdatedBy,
@@ -159,6 +161,8 @@ public class ProjectRepository
                 p.Description,
                 p.CreatedAt,
                 p.UpdatedAt,
+                p.StartDate,
+                p.EndDate,
                 uc.Id AS CreatedBy,
                 uc.Username AS CreatedByName,
                 uu.Id AS UpdatedBy,
@@ -199,6 +203,8 @@ public class ProjectRepository
                 p.Description,
                 p.CreatedAt,
                 p.UpdatedAt,
+                p.StartDate,
+                p.EndDate,
                 uc.Id AS CreatedBy,
                 uc.Username AS CreatedByName,
                 uu.Id AS UpdatedBy,
@@ -258,7 +264,7 @@ public class ProjectRepository
             lookup[project.Id] = value;
         }
 
-        value.States ??= new List<StateModel>();
+        value.States ??= [];
         value.States.Add(state);
 
         return project;

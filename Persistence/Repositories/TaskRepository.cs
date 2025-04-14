@@ -106,7 +106,7 @@ public class TaskRepository
 
     private static string GetSelectQuery(string whereCondition) => $@"
             SELECT t.Id, t.Name, t.Description, t.StateId, t.ProjectId,
-                t.CreatedAt, t.CreatedBy, t.UpdatedAt, t.UpdatedBy, t.SortOrder,
+                t.CreatedAt, t.CreatedBy, t.UpdatedAt, t.UpdatedBy, t.SortOrder, t.StartDate, t.EndDate,
                 p.Name AS ProjectName,
                 s.Name AS StateName,
                 uc.Username AS CreatedByName,

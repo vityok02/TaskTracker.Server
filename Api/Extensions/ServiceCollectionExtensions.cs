@@ -49,6 +49,7 @@ public static class ServiceCollectionExtensions
             })
             .AddScoped<ICommentsHubService, CommentsHubService>()
             .AddControllers()
+            .AddNewtonsoftJson()
             ;
 
         return services;

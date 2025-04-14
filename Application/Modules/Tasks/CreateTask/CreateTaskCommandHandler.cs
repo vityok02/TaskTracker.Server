@@ -61,6 +61,8 @@ internal sealed class CreateTaskCommandHandler
             SortOrder = lastOrder + 1,
             CreatedBy = command.UserId,
             CreatedAt = _dateTimeProvider.GetCurrentTime(),
+            StartDate = command.StartDate
+                ?? _dateTimeProvider.GetCurrentTime(),
             StateId = command.StateId,
             ProjectId = command.ProjectId
         };

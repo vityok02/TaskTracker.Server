@@ -41,7 +41,8 @@ public class ProjectController : BaseController
         var command = new CreateProjectCommand(
             User.GetUserId(),
             projectRequest.Name,
-            projectRequest.Description);
+            projectRequest.Description,
+            projectRequest.StartDate);
 
         var result = await Sender
             .Send(command, token);
@@ -112,7 +113,9 @@ public class ProjectController : BaseController
             User.GetUserId(),
             projectId,
             projectRequest.Name,
-            projectRequest.Description);
+            projectRequest.Description,
+            projectRequest.StartDate,
+            projectRequest.EndDate);
 
         var result = await Sender
             .Send(command, token);

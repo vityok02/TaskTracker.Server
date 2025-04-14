@@ -5,5 +5,6 @@ namespace Application.Modules.Projects.CreateProject;
 public sealed record CreateProjectCommand(
     Guid UserId,
     string Name,
-    string? Description)
+    string? Description,
+    DateTime? StartDate)
     : ICommand<ProjectDto>;

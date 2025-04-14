@@ -1,0 +1,6 @@
+ALTER TABLE [Task]
+ADD StartDate DATETIME NULL, EndDate DATETIME NULL
+
+ALTER TABLE [Task]
+ADD CONSTRAINT CHK_Task_EndDate_After_StartDate
+CHECK (EndDate >= StartDate);
