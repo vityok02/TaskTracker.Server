@@ -6,4 +6,4 @@ public sealed record UpdateCommentCommand(
     Guid CommentId,
     string Comment,
     Guid UserId)
-    : ICommand;
+    : ICommand<CommentDto>;

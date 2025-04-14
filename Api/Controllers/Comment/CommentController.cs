@@ -3,6 +3,7 @@ using Api.Controllers.Comment.Requests;
 using Api.Controllers.Comment.Responses;
 using Api.Extensions;
 using Api.Filters;
+using Api.Services;
 using Application.Modules.Comments.CreateComment;
 using Application.Modules.Comments.DeleteComment;
 using Application.Modules.Comments.GetAllComments;
@@ -22,12 +23,15 @@ namespace Api.Controllers.Comment;
 public class CommentController : BaseController
 {
     private const string GetByIdAction = "GetCommentById";
+    private readonly ICommentsHubService _commentsHubService;
 
     public CommentController(
         ISender sender,
-        IMapper mapper)
+        IMapper mapper,
+        ICommentsHubService commentsHubService)
         : base(sender, mapper)
     {
+        _commentsHubService = commentsHubService;
     }
 
     [HttpPost]
@@ -46,17 +50,26 @@ public class CommentController : BaseController
         var result = await Sender
             .Send(command, cancellationToken);
 
-        return result.IsFailure
-            ? HandleFailure(result)
-            : CreatedAtAction(
-                GetByIdAction,
-                new
-                {
-                    projectId,
-                    taskId,
-                    commentId = result.Value.Id
-                },
-                Mapper.Map<CommentResponse>(result.Value));
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        var commentResponse = Mapper
+            .Map<CommentResponse>(result.Value);
+
+        await _commentsHubService
+            .SendCommentCreated(commentResponse);
+
+        return CreatedAtAction(
+            GetByIdAction,
+            new
+            {
+                projectId,
+                taskId,
+                commentId = result.Value.Id
+            },
+            commentResponse);
     }
 
     [HttpGet("{commentId:guid}")]
@@ -94,7 +107,7 @@ public class CommentController : BaseController
     }
 
     [HttpPut("{commentId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<CommentResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateAsync(
         [FromRoute] Guid projectId,
         [FromRoute] Guid taskId,
@@ -110,9 +123,17 @@ public class CommentController : BaseController
         var result = await Sender
             .Send(command, cancellationToken);
 
-        return result.IsFailure
-            ? HandleFailure(result)
-            : NoContent();
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        var commentResponse = Mapper
+            .Map<CommentResponse>(result.Value);
+
+        await _commentsHubService.SendCommentUpdated(commentResponse);
+
+        return Ok(commentResponse);
     }
 
     [HttpDelete("{commentId:guid}")]
@@ -130,8 +151,14 @@ public class CommentController : BaseController
         var result = await Sender
             .Send(command, cancellationToken);
 
-        return result.IsFailure
-            ? HandleFailure(result)
-            : NoContent();
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        await _commentsHubService
+            .SendCommentDeleted(commentId);
+
+        return NoContent();
     }
 }

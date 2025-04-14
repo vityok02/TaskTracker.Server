@@ -1,11 +1,11 @@
 ﻿using Api.OptionsSetup;
+using Api.Services;
 using Infrastructure;
 using Infrastructure.Authentication;
 using Infrastructure.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Security.Cryptography.Xml;
 using System.Text;
 
 namespace Api.Extensions;
@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
                         }
                     });
             })
+            .AddScoped<ICommentsHubService, CommentsHubService>()
             .AddControllers()
             ;
 

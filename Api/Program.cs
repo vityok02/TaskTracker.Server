@@ -1,4 +1,5 @@
 ﻿using Api.Extensions;
+using Api.Hubs;
 using Application.Extensions;
 using Database;
 using Infrastructure.Extensions;
@@ -67,5 +68,6 @@ app.UseAuthorization();
 app.UseSerilogRequestLogging();
 
 app.MapControllers();
+app.MapHub<CommentsHub>("/hubs/comments");
 
 await app.RunAsync();
