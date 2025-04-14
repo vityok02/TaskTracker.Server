@@ -1,4 +1,5 @@
 ﻿using Api.Extensions;
+using Api.Hubs;
 using Application.Extensions;
 using Database;
 using Infrastructure.Extensions;
@@ -14,7 +15,8 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddPersistence(builder.Configuration)
-    .AddApi();
+    .AddApi()
+    .AddSignalR();
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -67,5 +69,6 @@ app.UseAuthorization();
 app.UseSerilogRequestLogging();
 
 app.MapControllers();
+app.MapHub<CommentsHub>("/hubs/comments");
 
 await app.RunAsync();

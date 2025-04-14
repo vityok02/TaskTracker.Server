@@ -1,26 +1,30 @@
 ﻿using Application.Abstract.Interfaces;
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
+using AutoMapper;
 using Domain.Errors;
 using Domain.Shared;
 
 namespace Application.Modules.Comments.UpdateComment;
 
 internal sealed class UpdateCommentCommandHandler
-    : ICommandHandler<UpdateCommentCommand>
+    : ICommandHandler<UpdateCommentCommand, CommentDto>
 {
     private readonly ICommentRepository _commentRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IMapper _mapper;
 
     public UpdateCommentCommandHandler(
         ICommentRepository commentRepository,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IMapper mapper)
     {
         _commentRepository = commentRepository;
         _dateTimeProvider = dateTimeProvider;
+        _mapper = mapper;
     }
 
-    public async Task<Result> Handle(
+    public async Task<Result<CommentDto>> Handle(
         UpdateCommentCommand command,
         CancellationToken cancellationToken)
     {
@@ -29,13 +33,13 @@ internal sealed class UpdateCommentCommandHandler
 
         if (commentEntity is null)
         {
-            return Result
+            return Result<CommentDto>
                 .Failure(CommentErrors.NotFound);
         }
 
         if (commentEntity.CreatedBy != command.UserId)
         {
-            return Result
+            return Result<CommentDto>
                 .Failure(CommentErrors.Forbidden);
         }
 
@@ -46,6 +50,7 @@ internal sealed class UpdateCommentCommandHandler
         await _commentRepository
             .UpdateAsync(commentEntity);
 
-        return Result.Success();
+        return Result<CommentDto>
+            .Success(_mapper.Map<CommentDto>(commentEntity));
     }
 }
