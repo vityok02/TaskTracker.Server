@@ -33,7 +33,7 @@ public class CommentRepository
                 uc.AvatarUrl,
 
                 uu.Id,
-                uu.Username Name,
+                uu.Username AS Name,
                 uu.AvatarUrl
             FROM [Comment] c
             JOIN [Task] t ON c.TaskId = t.Id
@@ -74,7 +74,7 @@ public class CommentRepository
             uc.AvatarUrl,
 
             uu.Id,
-            uu.Username Name,
+            uu.Username AS Name,
             uu.AvatarUrl
         FROM [Comment] c
         JOIN [Task] t ON c.TaskId = t.Id
