@@ -11,5 +11,9 @@ public class ProjectResponse : AuditableResponse
 
     public string? Description { get; init; }
 
+    public DateTime? StartDate { get; init; }
+
+    public DateTime? EndDate { get; init; }
+
     public IEnumerable<StateResponse> States { get; init; } = [];
 }

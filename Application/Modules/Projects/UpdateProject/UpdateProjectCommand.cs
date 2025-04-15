@@ -6,5 +6,7 @@ public sealed record UpdateProjectCommand(
     Guid UserId,
     Guid ProjectId,
     string Name,
-    string? Description)
+    string? Description,
+    DateTime? StartDate,
+    DateTime? EndDate)
     : ICommand;

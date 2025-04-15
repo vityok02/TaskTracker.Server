@@ -8,5 +8,9 @@ public class ProjectModel : AuditableModel
 
     public string? Description { get; set; }
 
+    public DateTime? StartDate { get; set; }
+
+    public DateTime? EndDate { get; set; }
+
     public List<StateModel> States { get; set; } = [];
 }

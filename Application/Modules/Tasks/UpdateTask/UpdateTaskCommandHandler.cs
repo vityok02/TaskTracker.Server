@@ -60,6 +60,8 @@ internal sealed class UpdateTaskCommandHandler
         task.StateId = command.StateId;
         task.UpdatedAt = _dateTimeProvider.GetCurrentTime();
         task.UpdatedBy = command.UserId;
+        task.StartDate = command.StartDate;
+        task.EndDate = command.EndDate;
 
         await _taskRepository
             .UpdateAsync(task);

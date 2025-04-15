@@ -47,6 +47,8 @@ internal sealed class UpdateProjectCommandHandler
 
         project.Name = command.Name;
         project.Description = command.Description;
+        project.StartDate = command.StartDate;
+        project.EndDate = command.EndDate;
         project.UpdatedAt = _dateTimeProvider
             .GetCurrentTime();
         project.UpdatedBy = command.UserId;

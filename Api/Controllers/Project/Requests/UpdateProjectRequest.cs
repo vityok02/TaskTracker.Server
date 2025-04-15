@@ -2,4 +2,6 @@
 
 public record UpdateProjectRequest(
     string Name,
-    string? Description);
+    string? Description,
+    DateTime? StartDate,
+    DateTime? EndDate);

@@ -43,6 +43,7 @@ public class TaskController : BaseController
         var command = new CreateTaskCommand(
             taskRequest.Name,
             taskRequest.Description,
+            taskRequest.StartDate,
             User.GetUserId(),
             projectId,
             taskRequest.StateId);
@@ -108,11 +109,13 @@ public class TaskController : BaseController
     {
         var command = new UpdateTaskCommand(
             taskId,
-            projectId,
-            User.GetUserId(),
-            taskRequest.StateId,
             taskRequest.Name,
-            taskRequest.Description);
+            taskRequest.Description,
+            taskRequest.StartDate,
+            taskRequest.EndDate,
+            User.GetUserId(),
+            projectId,
+            taskRequest.StateId);
 
         var result = await Sender
             .Send(command, token);
