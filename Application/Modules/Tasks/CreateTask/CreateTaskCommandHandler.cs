@@ -51,7 +51,7 @@ internal sealed class CreateTaskCommandHandler
         }
 
         var lastOrder = await _taskRepository
-            .GetLastOrderAsync(command.ProjectId);
+            .GetLastOrderAsync(command.StateId);
 
         TaskEntity task = new()
         {

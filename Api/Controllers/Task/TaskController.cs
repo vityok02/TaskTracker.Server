@@ -12,7 +12,6 @@ using Application.Modules.Tasks.UpdateTask;
 using Application.Modules.Tasks.UpdateTaskState;
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Task;
@@ -124,17 +123,6 @@ public class TaskController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : NoContent();
-    }
-
-    [HttpPatch("{taskId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> PartialUpdateTask(
-        [FromRoute] Guid projectId,
-        [FromRoute] Guid taskId,
-        [FromBody] PartialUpdateTaskRequest request,
-        CancellationToken cancellationToken)
-    {
-        return NoContent();
     }
 
     [HttpPatch("{taskId:guid}/state")]
