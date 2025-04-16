@@ -2,8 +2,7 @@
 
 public class ProjectMemberModel
 {
-    public Guid UserId { get; set; }
-    public string UserName { get; set; } = string.Empty;
+    public UserInfoModel User { get; set; } = new();
 
     public Guid ProjectId { get; set; }
     public string ProjectName { get; set; } = string.Empty;

@@ -1,8 +1,9 @@
-﻿namespace Application.Modules.Members;
+﻿using Application.Common.Dtos;
+
+namespace Application.Modules.Members;
 
 public record ProjectMemberDto(
-    Guid UserId,
-    string UserName,
+    UserInfoDto User,
     Guid ProjectId,
     string ProjectName,
     Guid RoleId,
