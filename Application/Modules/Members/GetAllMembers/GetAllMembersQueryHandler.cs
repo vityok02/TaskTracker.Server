@@ -24,7 +24,7 @@ internal sealed class GetAllMembersQueryHandler
         CancellationToken cancellationToken)
     {
         var members = await _memberRepository
-            .GetAllAsync(query.ProjectId);
+            .GetAllExtendedAsync(query.ProjectId);
 
         return Result<IEnumerable<ProjectMemberDto>>
             .Success(_mapper.Map<IEnumerable<ProjectMemberDto>>(members));

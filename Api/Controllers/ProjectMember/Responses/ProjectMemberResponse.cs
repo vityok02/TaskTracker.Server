@@ -1,8 +1,9 @@
-﻿namespace Api.Controllers.ProjectMember.Responses;
+﻿using Api.Common;
+
+namespace Api.Controllers.ProjectMember.Responses;
 
 public record ProjectMemberResponse(
-    Guid UserId,
-    string UserName,
+    UserInfoResponse User,
     Guid ProjectId,
     string ProjectName,
     Guid RoleId,

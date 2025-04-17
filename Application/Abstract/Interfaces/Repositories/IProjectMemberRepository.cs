@@ -11,7 +11,7 @@ public interface IProjectMemberRepository
 
     Task<ProjectMemberModel?> GetExtendedAsync(Guid userId, Guid projectId);
 
-    Task<IEnumerable<ProjectMemberModel>> GetAllAsync(Guid projectId);
+    Task<IEnumerable<ProjectMemberModel>> GetAllExtendedAsync(Guid projectId);
 
     Task UpdateAsync(ProjectMemberEntity projectMember);
 

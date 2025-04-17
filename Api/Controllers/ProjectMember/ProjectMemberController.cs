@@ -52,7 +52,7 @@ public class ProjectMemberController : BaseController
             ? HandleFailure(result)
             : CreatedAtAction(
                 GetByIdAction,
-                new { projectId, memberId = result.Value.UserId },
+                new { projectId, memberId = result.Value.User.Id },
                 Mapper.Map<ProjectMemberResponse>(result.Value));
     }
 

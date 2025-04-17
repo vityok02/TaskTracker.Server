@@ -28,6 +28,12 @@ internal sealed class UpdateMemberCommandHandler
                 .Failure(ProjectMemberErrors.NotFound);
         }
 
+        if (member.UserId == command.UserId)
+        {
+            return Result
+                .Failure(ProjectMemberErrors.CannotUpdateYourself);
+        }
+
         member.RoleId = command.RoleId;
 
         await _projectMemberRepository

@@ -26,7 +26,7 @@ public class ProjectMemberRepository
         var insertQuery = @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
             VALUES(@UserId, @ProjectId, @RoleId)";
 
-        var selectQuery = GetSelectQuery("p.Id = @ProjectId AND u.Id = @UserId");
+        var selectQuery = GetExtendedSelectQuery("p.Id = @ProjectId AND u.Id = @UserId");
 
         var query = insertQuery + selectQuery;
 
@@ -40,15 +40,24 @@ public class ProjectMemberRepository
                 });
     }
 
-    public async Task<IEnumerable<ProjectMemberModel>> GetAllAsync(Guid projectId)
+    public async Task<IEnumerable<ProjectMemberModel>> GetAllExtendedAsync(Guid projectId)
     {
         using var connection = _connectionFactory.Create();
 
-        var query = GetSelectQuery("p.Id = @ProjectId");
+        var query = GetExtendedSelectQuery("p.Id = @ProjectId");
 
-        return await connection
-            .QueryAsync<ProjectMemberModel>(query,
-                new { ProjectId = projectId });
+        var result = await connection
+            .QueryAsync<ProjectMemberModel, UserInfoModel, ProjectMemberModel>(
+                query,
+                (member, user) =>
+                {
+                    member.User = user;
+                    return member;
+                },
+                new { ProjectId = projectId },
+                splitOn: "Id");
+
+        return result;
     }
 
     public async Task<ProjectMemberEntity?> GetAsync(
@@ -66,24 +75,31 @@ public class ProjectMemberRepository
                 new { UserId = userId, ProjectId = projectId });
     }
 
-    public async Task<ProjectMemberModel?> GetExtendedAsync(
-    Guid userId,
-    Guid projectId)
+    public async Task<ProjectMemberModel?> GetExtendedAsync(Guid userId, Guid projectId)
     {
         using var connection = _connectionFactory.Create();
 
-        var query = GetSelectQuery("p.Id = @ProjectId AND u.Id = @UserId");
+        var query = GetExtendedSelectQuery("p.Id = @ProjectId AND u.Id = @UserId");
+        
+        var result = await connection
+            .QueryAsync<ProjectMemberModel, UserInfoModel, ProjectMemberModel>(
+                query,
+                (member, user) =>
+                {
+                    member.User = user;
+                    return member;
+                },
+                new { UserId = userId, ProjectId = projectId },
+                splitOn: "Id");
 
-        return await connection
-            .QueryFirstOrDefaultAsync<ProjectMemberModel>(query,
-                new { UserId = userId, ProjectId = projectId });
+        return result.FirstOrDefault();
     }
 
-    private static string GetSelectQuery(string whereClause) => $@"
+    private static string GetExtendedSelectQuery(string whereClause) => $@"
             SELECT pm.UserId, pm.ProjectId, pm.RoleId,
-            p.Name AS ProjectName,
-            u.Username AS UserName,
-            r.Name AS RoleName
+                p.Name AS ProjectName,
+                u.Id, u.Username AS Name, u.AvatarUrl,
+                r.Name AS RoleName
             FROM [ProjectMember] pm
             JOIN [Project] p ON p.Id = pm.ProjectId
             JOIN [User] u ON u.Id = pm.UserId
