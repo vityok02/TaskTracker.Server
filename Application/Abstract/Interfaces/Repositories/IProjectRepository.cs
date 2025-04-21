@@ -11,9 +11,7 @@ public interface IProjectRepository : IRepository<ProjectEntity, Guid>
 
     Task<Guid> CreateAsync(ProjectEntity project, Guid roleId);
 
-    Task<IEnumerable<ProjectModel>> GetAllByUserIdAsync(Guid userId);
-
-    Task<ProjectModel?> GetExtendedByIdAsync(Guid projectId);
+    Task<ProjectModel?> GetExtendedByIdAsync(Guid projectId, Guid userId);
 
     Task<PagedList<ProjectModel>> GetPagedAsync(
         int currentPageNumber,

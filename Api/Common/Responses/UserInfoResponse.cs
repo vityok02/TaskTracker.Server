@@ -1,4 +1,4 @@
-﻿namespace Api.Common;
+﻿namespace Api.Common.Responses;
 
 public class UserInfoResponse
 {

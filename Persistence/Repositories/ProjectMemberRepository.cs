@@ -2,6 +2,7 @@
 using Dapper;
 using Domain.Entities;
 using Domain.Models;
+using Domain.Models.Common;
 using Persistence.Abstractions;
 
 namespace Persistence.Repositories;
@@ -47,15 +48,16 @@ public class ProjectMemberRepository
         var query = GetExtendedSelectQuery("p.Id = @ProjectId");
 
         var result = await connection
-            .QueryAsync<ProjectMemberModel, UserInfoModel, ProjectMemberModel>(
+            .QueryAsync<ProjectMemberModel, UserInfoModel, RoleEntity, ProjectMemberModel>(
                 query,
-                (member, user) =>
+                (member, user, role) =>
                 {
                     member.User = user;
+                    member.Role = role;
                     return member;
                 },
                 new { ProjectId = projectId },
-                splitOn: "Id");
+                splitOn: "Id, Id");
 
         return result;
     }
@@ -82,24 +84,25 @@ public class ProjectMemberRepository
         var query = GetExtendedSelectQuery("p.Id = @ProjectId AND u.Id = @UserId");
         
         var result = await connection
-            .QueryAsync<ProjectMemberModel, UserInfoModel, ProjectMemberModel>(
+            .QueryAsync<ProjectMemberModel, UserInfoModel, RoleEntity, ProjectMemberModel>(
                 query,
-                (member, user) =>
+                (member, user, role) =>
                 {
                     member.User = user;
+                    member.Role = role;
                     return member;
                 },
                 new { UserId = userId, ProjectId = projectId },
-                splitOn: "Id");
+                splitOn: "Id, Id");
 
         return result.FirstOrDefault();
     }
 
     private static string GetExtendedSelectQuery(string whereClause) => $@"
-            SELECT pm.UserId, pm.ProjectId, pm.RoleId,
+            SELECT pm.UserId, pm.ProjectId,
                 p.Name AS ProjectName,
                 u.Id, u.Username AS Name, u.AvatarUrl,
-                r.Name AS RoleName
+                r.Id, r.Name AS Name, r.Description
             FROM [ProjectMember] pm
             JOIN [Project] p ON p.Id = pm.ProjectId
             JOIN [User] u ON u.Id = pm.UserId
