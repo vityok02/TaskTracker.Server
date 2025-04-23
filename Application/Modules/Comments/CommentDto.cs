@@ -1,4 +1,4 @@
-﻿using Application.Common.Dtos;
+﻿using Application.Dtos;
 
 namespace Application.Modules.Comments;
 

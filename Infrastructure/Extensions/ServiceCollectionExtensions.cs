@@ -2,10 +2,12 @@
 using Azure.Storage.Blobs;
 using Infrastructure.Authentication;
 using Infrastructure.BlobStorage;
-using Microsoft.Extensions.Azure;
+using Infrastructure.Configuration;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel;
 
 namespace Infrastructure.Extensions;
 
@@ -18,7 +20,11 @@ public static class ServiceCollectionExtensions
         var blobStorageConnectionString = configuration
             .GetConnectionString("AzureBlobStorage");
 
-        return services
+        services
+            .AddSignalR(options => options.EnableDetailedErrors = true)
+                .AddMessagePackProtocol();
+
+        services
             .AddScoped<IJwtProvider, JwtProvider>()
             .AddScoped<IDateTimeProvider, DateTimeService>()
             .AddScoped<IPasswordHasher, PasswordHasher>()
@@ -27,7 +33,16 @@ public static class ServiceCollectionExtensions
             .AddScoped<IUserManager, UserManager>()
             .AddSingleton(x => new BlobServiceClient(blobStorageConnectionString))
             .AddSingleton<IBlobService, BlobService>()
-            //.AddBlobServiceClient();
+            .AddSingleton<TwilioService>()
+            .AddResponseCompression(opts =>
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    ["application/octet-stream"]))
+
             ;
+
+        services
+            .Configure<TwilioSettings>(configuration.GetSection("Twilio"));
+
+        return services;
     }
 }

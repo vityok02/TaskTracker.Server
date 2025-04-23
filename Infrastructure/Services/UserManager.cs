@@ -4,7 +4,7 @@ using Domain.Entities;
 using Domain.Errors;
 using Domain.Shared;
 
-namespace Infrastructure;
+namespace Infrastructure.Services;
 
 public class UserManager : IUserManager
 {

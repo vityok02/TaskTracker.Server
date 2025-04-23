@@ -1,7 +1,7 @@
 ﻿using Api.OptionsSetup;
-using Api.Services;
-using Infrastructure;
 using Infrastructure.Authentication;
+using Infrastructure.Configuration;
+using Infrastructure.Services;
 using Infrastructure.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
