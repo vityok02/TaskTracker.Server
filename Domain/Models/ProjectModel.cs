@@ -1,4 +1,6 @@
-﻿namespace Domain.Models;
+﻿using Domain.Entities;
+
+namespace Domain.Models;
 
 public class ProjectModel : AuditableModel
 {
@@ -13,4 +15,6 @@ public class ProjectModel : AuditableModel
     public DateTime? EndDate { get; set; }
 
     public List<StateModel> States { get; set; } = [];
+
+    public RoleEntity Role { get; set; } = new();
 }

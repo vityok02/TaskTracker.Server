@@ -118,6 +118,7 @@ public class CommentController : BaseController
         var command = new UpdateCommentCommand(
             commentId,
             commentRequest.Comment,
+            taskId,
             User.GetUserId());
 
         var result = await Sender

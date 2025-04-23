@@ -25,7 +25,7 @@ internal sealed class GetProjectQueryHandler
         CancellationToken cancellationToken)
     {
         var project = await _projectRepository
-            .GetExtendedByIdAsync(query.ProjectId);
+            .GetExtendedByIdAsync(query.ProjectId, query.UserId);
 
         if (project is null)
         {

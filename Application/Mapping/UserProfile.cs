@@ -2,7 +2,7 @@
 using Application.Modules.Users;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Models;
+using Domain.Models.Common;
 
 namespace Application.Mapping;
 

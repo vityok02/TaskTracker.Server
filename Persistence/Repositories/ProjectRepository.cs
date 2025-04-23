@@ -41,53 +41,47 @@ public class ProjectRepository
             ? "DESC"
             : "ASC";
 
-        var query = @$"
+        var totalCountQuery = @$"
             SELECT
             COUNT(*)
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId 
-            WHERE pm.UserId = @UserId 
-                AND p.Name LIKE @SearchTerm
+            WHERE pm.UserId = @UserId AND p.Name LIKE @SearchTerm";
 
-            SELECT
-                p.Id AS Id,
-                p.Name,
-                p.Description,
-                p.CreatedAt,
-                p.UpdatedAt,
-                p.StartDate,
-                p.EndDate,
-                uc.Id AS CreatedBy,
-                uc.Username AS CreatedByName,
-                uu.Id AS UpdatedBy,
-                uu.Username AS UpdatedByName
-            FROM [Project] p
-            JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
-            JOIN [User] uc ON p.CreatedBy = uc.Id
-            LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
+        var totalCount = await connection
+            .ExecuteScalarAsync<int>(
+                totalCountQuery,
+                new
+                {
+                    UserId = userId,
+                    SearchTerm = $"%{searchTerm}%"
+                });
+
+        var projectsQuery = @$"
+            {GetProjectQuery()}
             WHERE pm.UserId = @UserId 
                 AND p.Name LIKE @SearchTerm
             ORDER BY {sortColumn} {sortOrder}
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
 
-        var reader = await connection
-            .QueryMultipleAsync(
-                query,
-                new
-                {
-                    Skip = skip,
-                    Take = take,
-                    UserId = userId,
-                    SearchTerm = $"%{searchTerm}%",
-                    SortColumn = sortColumn,
-                    SortOrder = sortOrder
-                });
-
-        var totalCount = await reader
-            .ReadFirstOrDefaultAsync<int>();
-
-        var projects = await reader
-            .ReadAsync<ProjectModel>();
+        var projects = await connection
+             .QueryAsync<ProjectModel, RoleEntity, ProjectModel>(
+                 sql: projectsQuery,
+                 map: (project, role) =>
+                 {
+                     project.Role = role;
+                     return project;
+                 },
+                 param: new
+                 {
+                     Skip = skip,
+                     Take = take,
+                     UserId = userId,
+                     SearchTerm = $"%{searchTerm}%",
+                     SortColumn = sortColumn,
+                     SortOrder = sortOrder
+                 },
+                 splitOn: "Id");
 
         return new PagedList<ProjectModel>(
             totalCount, projects, currentPageNumber, pageSize);
@@ -118,44 +112,49 @@ public class ProjectRepository
 
     public async Task<Guid> CreateAsync(ProjectEntity project, Guid roleId)
     {
-        // TODO: add transaction
+        using var connection = ConnectionFactory.Create();
+        await connection.OpenAsync();
+        using var transaction = await connection.BeginTransactionAsync();
 
-        using var connection = ConnectionFactory
-            .Create();
+        try
+        {
+            var projectId = await connection.InsertAsync<Guid, ProjectEntity>(project, transaction);
 
-        var projectId = await connection
-            .InsertAsync<Guid, ProjectEntity>(project);
+            var states = ProjectDefaults.GetDefaultStates(projectId, project.CreatedBy, project.CreatedAt);
 
-        var states = ProjectDefaults.GetDefaultStates(projectId, project.CreatedBy, project.CreatedAt);
+            string insertMemberQuery = @"
+                INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
+                VALUES(@UserId, @ProjectId, @RoleId)";
 
-        string query = @"INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
-            VALUES(@UserId, @ProjectId, @RoleId)";
+            string insertStatesQuery = @"
+                INSERT INTO State(Id, SortOrder, Name, CreatedBy, CreatedAt, ProjectId)
+                VALUES (@Id, @SortOrder, @Name, @CreatedBy, @CreatedAt, @ProjectId)";
 
-        var insertStatesSql = @"INSERT INTO State(Id, SortOrder, Name, CreatedBy, CreatedAt, ProjectId)
-            VALUES (@Id, @SortOrder, @Name, @CreatedBy, @CreatedAt, @ProjectId);";
+            await connection.ExecuteAsync(insertStatesQuery, states, transaction);
 
-        await connection
-            .ExecuteAsync(insertStatesSql, states);
+            await connection.ExecuteAsync(insertMemberQuery, new
+            {
+                UserId = project.CreatedBy,
+                ProjectId = projectId,
+                RoleId = roleId
+            }, transaction);
 
-        await connection
-            .ExecuteAsync(
-                query,
-                new
-                {
-                    UserId = project.CreatedBy,
-                    ProjectId = projectId,
-                    RoleId = roleId
-                });
-
-        return projectId;
+            transaction.Commit();
+            return projectId;
+        }
+        catch
+        {
+            transaction.Rollback();
+            throw;
+        }
     }
 
-    public async Task<IEnumerable<ProjectModel>> GetAllByUserIdAsync(Guid userId)
+    public async Task<ProjectModel?> GetExtendedByIdAsync(Guid projectId, Guid userId)
     {
         using var connection = ConnectionFactory.Create();
 
         var query = @"
-            SELECT 
+            SELECT
                 p.Id AS Id,
                 p.Name,
                 p.Description,
@@ -167,38 +166,63 @@ public class ProjectRepository
                 uc.Username AS CreatedByName,
                 uu.Id AS UpdatedBy,
                 uu.Username AS UpdatedByName,
-                s.Id AS Id,
-                s.Name AS Name,
-                s.Description AS Description,
-                s.Color AS Color,
-                s.SortOrder AS SortOrder
+                s.Id,
+                s.Name,
+                s.Description,
+                s.Color,
+                s.SortOrder,
+                r.Id,
+                r.Name,
+                r.Description
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
-            JOIN [State] s ON s.ProjectId = p.Id
-            WHERE pm.UserId = @UserId
-            ORDER BY p.CreatedAt";
+            JOIN [Role] r ON r.Id = pm.RoleId
+            LEFT JOIN [State] s ON s.ProjectId = p.Id
+            WHERE pm.ProjectId = @ProjectId AND pm.UserId = @UserId";
 
         var lookup = new Dictionary<Guid, ProjectModel>();
 
-        await connection.QueryAsync<ProjectModel, StateModel, ProjectModel>(
-            query,
-            (project, state) => MapProjectStates(project, state, lookup),
-            new { UserId = userId },
-            splitOn: "Id"
+        var projects = await connection.QueryAsync<ProjectModel, StateModel, RoleEntity, ProjectModel>(
+            sql: query,
+            map: (project, state, role) => MapProject(project, state, role, lookup),
+            param: new
+            {
+                ProjectId = projectId,
+                UserId = userId
+            },
+            splitOn: "Id, Id"
         );
 
-        return lookup.Values;
+        return lookup.Values
+            .SingleOrDefault();
     }
 
-    public async Task<ProjectModel?> GetExtendedByIdAsync(Guid projectId)
-    {
-        using var connection = ConnectionFactory.Create();
+    //public override async Task UpdateAsync(ProjectEntity project)
+    //{
+    //    using var connection = ConnectionFactory.Create();
 
-        var query = @"
-            SELECT DISTINCT
-                p.Id,
+    //    await connection.UpdateAsync(project);
+    //}
+
+    //public override async Task DeleteAsync(Guid id)
+    //{
+    //    using var connection = ConnectionFactory.Create();
+
+    //    var query = @"
+    //        DELETE FROM [Project] WHERE Id = @ProjectId";
+
+    //    await connection.ExecuteAsync(
+    //        query,
+    //        new { ProjectId = id });
+    //}
+
+    private static string GetProjectQuery()
+    {
+        return @"
+            SELECT
+                p.Id AS Id,
                 p.Name,
                 p.Description,
                 p.CreatedAt,
@@ -209,60 +233,29 @@ public class ProjectRepository
                 uc.Username AS CreatedByName,
                 uu.Id AS UpdatedBy,
                 uu.Username AS UpdatedByName,
-                s.Id AS Id,
-                s.Name AS Name,
-                s.Description AS Description,
-                s.Color AS Color,
-                s.SortOrder AS SortOrder
+                r.Id,
+                r.Name,
+                r.Description
             FROM [Project] p
             JOIN [ProjectMember] pm ON p.Id = pm.ProjectId
             JOIN [User] uc ON p.CreatedBy = uc.Id
             LEFT JOIN [User] uu ON p.UpdatedBy = uu.Id
-            LEFT JOIN [State] s ON s.ProjectId = p.Id
-            WHERE pm.ProjectId = @ProjectId";
-
-        var lookup = new Dictionary<Guid, ProjectModel>();
-
-        await connection.QueryAsync<ProjectModel, StateModel, ProjectModel>(
-            query,
-            (project, state) => MapProjectStates(project, state, lookup),
-            new { ProjectId = projectId },
-            splitOn: "Id"
-        );
-
-        return lookup.Values
-            .FirstOrDefault();
+            JOIN [Role] r ON r.Id = pm.RoleId";
     }
 
-    public override async Task UpdateAsync(ProjectEntity project)
-    {
-        using var connection = ConnectionFactory.Create();
-
-        await connection.UpdateAsync(project);
-    }
-
-    public override async Task DeleteAsync(Guid id)
-    {
-        using var connection = ConnectionFactory.Create();
-
-        var query = @"
-            DELETE FROM [Project] WHERE Id = @ProjectId";
-
-        await connection.ExecuteAsync(
-            query,
-            new { ProjectId = id });
-    }
-
-    private static ProjectModel MapProjectStates(
-    ProjectModel project,
-    StateModel state,
-    Dictionary<Guid, ProjectModel> lookup)
+    private static ProjectModel MapProject(
+        ProjectModel project,
+        StateModel state,
+        RoleEntity role,
+        Dictionary<Guid, ProjectModel> lookup)
     {
         if (!lookup.TryGetValue(project.Id, out ProjectModel? value))
         {
             value = project;
             lookup[project.Id] = value;
         }
+
+        value.Role = role;
 
         value.States ??= [];
         value.States.Add(state);

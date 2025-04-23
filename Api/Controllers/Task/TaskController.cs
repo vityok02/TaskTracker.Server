@@ -11,12 +11,12 @@ using Application.Modules.Tasks.ReorderTasks;
 using Application.Modules.Tasks.UpdateTask;
 using Application.Modules.Tasks.UpdateTaskState;
 using AutoMapper;
+using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Task;
 
-[ProjectMember]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
@@ -32,6 +32,7 @@ public class TaskController : BaseController
     {
     }
 
+    [ProjectMember(Roles.Contributor)]
     [HttpPost]
     [ProducesResponseType<TaskResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -62,6 +63,7 @@ public class TaskController : BaseController
                 Mapper.Map<TaskResponse>(result.Value));
     }
 
+    [ProjectMember]
     [HttpGet("{taskId:guid}")]
     [ActionName(GetByIdAction)]
     [ProducesResponseType<TaskResponse>(StatusCodes.Status200OK)]
@@ -80,6 +82,7 @@ public class TaskController : BaseController
             : Ok(Mapper.Map<TaskResponse>(result.Value));
     }
 
+    [ProjectMember]
     [HttpGet]
     [ProducesResponseType<IEnumerable<TaskResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllAsync(
@@ -97,6 +100,7 @@ public class TaskController : BaseController
             : Ok(Mapper.Map<IEnumerable<TaskResponse>>(result.Value));
     }
 
+    [ProjectMember(Roles.Contributor)]
     [HttpPut("{taskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -125,6 +129,7 @@ public class TaskController : BaseController
             : NoContent();
     }
 
+    [ProjectMember(Roles.Contributor)]
     [HttpPatch("{taskId:guid}/state")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateStateAsync(
@@ -147,6 +152,7 @@ public class TaskController : BaseController
             : NoContent();
     }
 
+    [ProjectMember(Roles.Contributor)]
     [HttpPatch("{taskId:guid}/order")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ReorderAsync(
@@ -168,6 +174,7 @@ public class TaskController : BaseController
             : NoContent();
     }
 
+    [ProjectMember(Roles.Contributor)]
     [HttpDelete("{taskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteAsync(

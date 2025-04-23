@@ -1,4 +1,5 @@
 ﻿using Application.Abstract;
+using Application.Modules.Roles;
 using Application.Modules.States;
 
 namespace Application.Modules.Projects;
@@ -16,4 +17,6 @@ public class ProjectDto : AuditableDto
     public DateTime? EndDate { get; init; }
 
     public IEnumerable<StateDto> States { get; init; } = [];
+
+    public RoleDto? Role { get; init; }
 }

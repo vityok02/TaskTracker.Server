@@ -13,11 +13,12 @@ using Application.Modules.States.UpdateStateOrder;
 using AutoMapper;
 using Domain.Constants;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.State;
 
-[ProjectMember]
+[Authorize]
 [Route("projects/{projectId:guid}/states")]
 public class StateController : BaseController
 {
@@ -30,6 +31,7 @@ public class StateController : BaseController
     {
     }
 
+    [ProjectMember(Roles.Contributor)]
     [HttpPost]
     [ProducesResponseType<StateResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -56,6 +58,7 @@ public class StateController : BaseController
                 Mapper.Map<StateResponse>(result.Value));
     }
 
+    [ProjectMember]
     [HttpGet("{stateId:guid}")]
     [ActionName(GetByIdAction)]
     [ProducesResponseType<StateResponse>(StatusCodes.Status200OK)]
@@ -74,6 +77,7 @@ public class StateController : BaseController
             : Ok(Mapper.Map<StateResponse>(result.Value));
     }
 
+    [ProjectMember]
     [HttpGet]
     [ProducesResponseType<IEnumerable<StateResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllAsync(
@@ -90,6 +94,7 @@ public class StateController : BaseController
             : Ok(Mapper.Map<IEnumerable<StateResponse>>(result.Value));
     }
 
+    [ProjectMember(Roles.Contributor)]
     [HttpPut("{stateId:guid}")]
     [ProducesResponseType<StateDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -115,7 +120,7 @@ public class StateController : BaseController
             : Ok(result.Value);
     }
 
-    [ProjectMember(Roles.Admin)]
+    [ProjectMember(Roles.Contributor)]
     [HttpPatch("{stateId:guid}/order")]
     public async Task<IActionResult> UpdateStateOrder(
         [FromRoute] Guid projectId,

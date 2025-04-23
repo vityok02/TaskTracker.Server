@@ -2,6 +2,7 @@
 using Dapper;
 using Domain.Entities;
 using Domain.Models;
+using Domain.Models.Common;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
 

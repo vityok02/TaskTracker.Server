@@ -37,6 +37,12 @@ internal sealed class UpdateCommentCommandHandler
                 .Failure(CommentErrors.NotFound);
         }
 
+        if (commentEntity.TaskId != command.TaskId)
+        {
+            return Result<CommentDto>
+                .Failure(CommentErrors.Forbidden);
+        }
+
         if (commentEntity.CreatedBy != command.UserId)
         {
             return Result<CommentDto>
@@ -50,7 +56,10 @@ internal sealed class UpdateCommentCommandHandler
         await _commentRepository
             .UpdateAsync(commentEntity);
 
+        var commentModel = await _commentRepository
+            .GetExtendedByIdAsync(command.CommentId);
+
         return Result<CommentDto>
-            .Success(_mapper.Map<CommentDto>(commentEntity));
+            .Success(_mapper.Map<CommentDto>(commentModel));
     }
 }

@@ -83,7 +83,7 @@ public sealed class ProjectMemberAttribute
             return;
         }
 
-        if (!IsValidRole(member.RoleName))
+        if (!IsValidRole(member.Role.Name))
         {
             context.Result = new ForbiddenObjectResult(
                 ProblemDetailsFactory
