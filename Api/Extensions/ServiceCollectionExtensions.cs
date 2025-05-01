@@ -61,7 +61,6 @@ public static class ServiceCollectionExtensions
         services.ConfigureOptions<JwtOptionsSetup>();
         services.ConfigureOptions<JwtBearerOptionsSetup>();
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
-        services.Configure<ClientOptions>(configuration.GetSection("ClientSettings"));
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddJwtBearer(x =>
