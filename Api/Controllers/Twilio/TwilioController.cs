@@ -1,9 +1,12 @@
-﻿using Infrastructure.Services;
+﻿using Api.Extensions;
+using Api.Filters;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Twilio;
 
-[Route("api/twilio")]
+[ProjectMember]
+[Route("/projects/{projectId:guid}/videochat")]
 public class TwilioController : ControllerBase
 {
     private readonly TwilioService _twilioService;
@@ -15,7 +18,7 @@ public class TwilioController : ControllerBase
 
     [HttpGet("token")]
     public IActionResult GetToken() =>
-         new JsonResult(_twilioService.GetTwilioJwt(User.Identity.Name));
+         new JsonResult(_twilioService.GetTwilioJwt(User.GetUserId().ToString()));
 
     [HttpGet("rooms")]
     public async Task<IActionResult> GetRooms() =>
