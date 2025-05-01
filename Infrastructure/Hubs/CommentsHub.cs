@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace Api.Hubs;
+namespace Infrastructure.Hubs;
 
 public class CommentsHub : Hub<ICommentsHub>
 {

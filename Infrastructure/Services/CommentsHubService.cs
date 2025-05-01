@@ -1,8 +1,8 @@
-﻿using Api.Controllers.Comment.Responses;
-using Api.Hubs;
+﻿using Application.Modules.Comments;
+using Infrastructure.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Api.Services;
+namespace Infrastructure.Services;
 
 public class CommentsHubService : ICommentsHubService
 {
@@ -14,7 +14,7 @@ public class CommentsHubService : ICommentsHubService
         _hubContext = hubContext;
     }
 
-    public Task SendCommentCreated(CommentResponse comment)
+    public Task SendCommentCreated(CommentDto comment)
     {
         return _hubContext.Clients.All
             .ReceiveCommentCreated(comment);
@@ -26,7 +26,7 @@ public class CommentsHubService : ICommentsHubService
             .ReceiveCommentDeleted(commentId);
     }
 
-    public Task SendCommentUpdated(CommentResponse comment)
+    public Task SendCommentUpdated(CommentDto comment)
     {
         return _hubContext.Clients.All
             .ReceiveCommentUpdated(comment);

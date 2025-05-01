@@ -1,6 +1,6 @@
 ﻿using Application.Abstract.Interfaces;
 
-namespace Infrastructure;
+namespace Infrastructure.Services;
 
 public class DateTimeService : IDateTimeProvider
 {

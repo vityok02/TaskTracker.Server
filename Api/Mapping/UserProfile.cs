@@ -1,6 +1,6 @@
 ﻿using Api.Common.Responses;
 using Api.Controllers.User.Responses;
-using Application.Common.Dtos;
+using Application.Dtos;
 using Application.Modules.Users;
 using AutoMapper;
 

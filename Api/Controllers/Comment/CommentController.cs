@@ -3,13 +3,13 @@ using Api.Controllers.Comment.Requests;
 using Api.Controllers.Comment.Responses;
 using Api.Extensions;
 using Api.Filters;
-using Api.Services;
 using Application.Modules.Comments.CreateComment;
 using Application.Modules.Comments.DeleteComment;
 using Application.Modules.Comments.GetAllComments;
 using Application.Modules.Comments.GetCommentById;
 using Application.Modules.Comments.UpdateComment;
 using AutoMapper;
+using Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,11 +55,8 @@ public class CommentController : BaseController
             return HandleFailure(result);
         }
 
-        var commentResponse = Mapper
-            .Map<CommentResponse>(result.Value);
-
         await _commentsHubService
-            .SendCommentCreated(commentResponse);
+            .SendCommentCreated(result.Value);
 
         return CreatedAtAction(
             GetByIdAction,
@@ -69,7 +66,7 @@ public class CommentController : BaseController
                 taskId,
                 commentId = result.Value.Id
             },
-            commentResponse);
+            Mapper.Map<CommentResponse>(result.Value));
     }
 
     [HttpGet("{commentId:guid}")]
@@ -129,12 +126,10 @@ public class CommentController : BaseController
             return HandleFailure(result);
         }
 
-        var commentResponse = Mapper
-            .Map<CommentResponse>(result.Value);
+        await _commentsHubService.SendCommentUpdated(result.Value);
 
-        await _commentsHubService.SendCommentUpdated(commentResponse);
-
-        return Ok(commentResponse);
+        return Ok(Mapper
+            .Map<CommentResponse>(result.Value));
     }
 
     [HttpDelete("{commentId:guid}")]

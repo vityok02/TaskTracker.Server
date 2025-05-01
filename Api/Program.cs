@@ -1,8 +1,10 @@
 ﻿using Api.Extensions;
-using Api.Hubs;
 using Application.Extensions;
 using Database;
 using Infrastructure.Extensions;
+using Infrastructure.Hubs;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Net.Http.Headers;
 using Persistence;
 using Persistence.Abstractions;
 using Persistence.Extensions;
@@ -60,8 +62,19 @@ if (app.Environment.IsDevelopment())
         logger.LogError("Testing data hasn't been initialized");
     }
 }
+//
+app.UseResponseCompression();
 
 app.UseHttpsRedirection();
+
+//
+app.UseStaticFiles(new StaticFileOptions
+{
+    HttpsCompression = HttpsCompressionMode.Compress,
+    OnPrepareResponse = context =>
+        context.Context.Response.Headers[HeaderNames.CacheControl] =
+            $"public,max-age={86_400}"
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -69,6 +82,8 @@ app.UseAuthorization();
 app.UseSerilogRequestLogging();
 
 app.MapControllers();
-app.MapHub<CommentsHub>("/hubs/comments");
+
+app.MapHub<CommentsHub>(HubEndpoints.CommentsHub);
+app.MapHub<NotificationHub>(HubEndpoints.NotificationHub);
 
 await app.RunAsync();
