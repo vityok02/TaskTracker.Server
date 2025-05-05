@@ -2,14 +2,14 @@
 
 namespace Application.Modules.Tasks.CreateTask;
 
-public class CreateTaskValidator
+public class CreateTaskCommandValidator
     : AbstractValidator<CreateTaskCommand>
 {
-    public CreateTaskValidator()
+    public CreateTaskCommandValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .Length(3, 100);
+            .MaximumLength(100);
 
         RuleFor(x => x.Description)
             .MaximumLength(500);

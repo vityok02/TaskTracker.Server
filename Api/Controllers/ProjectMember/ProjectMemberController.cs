@@ -108,7 +108,8 @@ public class ProjectMemberController : BaseController
         var command = new UpdateMemberCommand(
             projectId,
             memberId,
-            request.RoleId);
+            request.RoleId,
+            User.GetUserId());
 
         var result = await Sender
             .Send(command, token);

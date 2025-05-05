@@ -1,3 +1,5 @@
+version: '3.4'
+
 services:
   api:
     image: ${DOCKER_REGISTRY-}api
@@ -8,17 +10,44 @@ services:
       dockerfile: Api/Dockerfile
     environment:
       - CONNECTION_STRING=Server=db,1433;Database=TaskTracker;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
+      - REDIS=task-tracker.redis:6379
     ports:
       - "5000:5000"
       - "5001:5001"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: task-tracker.db
     restart: always
     environment:
-        - SA_PASSWORD=yourStrong(!)Password
-        - ACCEPT_EULA=Y
+      - SA_PASSWORD=yourStrong(!)Password
+      - ACCEPT_EULA=Y
     ports:
-        - "1433:1433"
+      - "1433:1433"
     volumes:
-        - ./.containers/bot-db:/var/lib/sql/data
+      - ./.containers/bot-db:/var/lib/sql/data
+    networks:
+      - app-network
+  redis:
+    image: redis:latest
+    container_name: task-tracker.redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+  client:
+    build:
+      context: "D:/Projects/CSharp/TaskTracker/TaskTracker.Client"
+    ports:
+      - "7000:7000"
+      - "7001:7001"
+    networks:
+      - app-network
+
+networks:
+  app-network:

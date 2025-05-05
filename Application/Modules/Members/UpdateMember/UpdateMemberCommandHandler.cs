@@ -28,7 +28,7 @@ internal sealed class UpdateMemberCommandHandler
                 .Failure(ProjectMemberErrors.NotFound);
         }
 
-        if (member.UserId == command.UserId)
+        if (member.UserId == command.UpdatedById)
         {
             return Result
                 .Failure(ProjectMemberErrors.CannotUpdateYourself);

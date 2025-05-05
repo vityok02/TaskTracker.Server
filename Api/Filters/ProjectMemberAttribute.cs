@@ -39,25 +39,6 @@ public sealed class ProjectMemberAttribute
         }
 
         var userId = GetUserId(context.HttpContext);
-
-        var userReposiotry = context.HttpContext.RequestServices
-            .GetRequiredService<IUserRepository>();
-
-        var user = await userReposiotry
-            .GetByIdAsync(userId);
-
-        if (user is null)
-        {
-            context.Result = new NotFoundObjectResult(
-                ProblemDetailsFactory
-                    .CreateProblemDetails(
-                        "Not Found",
-                        StatusCodes.Status404NotFound,
-                        UserErrors.NotFound));
-
-            return;
-        }
-
         var projectId = GetProjectId(context.HttpContext);
 
         var memberRepository = context.HttpContext.RequestServices

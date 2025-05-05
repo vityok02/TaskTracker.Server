@@ -3,6 +3,8 @@ CREATE TABLE Task (
 	Name NVARCHAR(50) NOT NULL,
 	Description NVARCHAR(255),
     SortOrder INT NOT NULL,
+    StartDate DATETIME NULL,
+    EndDate DATETIME NULL,
 	CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
 	CreatedBy UNIQUEIDENTIFIER NOT NULL,
 	UpdatedAt DATETIME NULL,
@@ -12,5 +14,8 @@ CREATE TABLE Task (
 	FOREIGN KEY (ProjectId) REFERENCES Project(Id) ON DELETE CASCADE,
 	FOREIGN KEY (StateId) REFERENCES [State](Id),
 	FOREIGN KEY (CreatedBy) REFERENCES [User](Id),
-	FOREIGN KEY (UpdatedBy) REFERENCES [User](Id)
+	FOREIGN KEY (UpdatedBy) REFERENCES [User](Id),
+
+    CONSTRAINT CHK_Task_EndDate_After_StartDate
+    CHECK (EndDate >= StartDate)
 )

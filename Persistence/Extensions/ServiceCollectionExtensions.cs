@@ -14,12 +14,14 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>()
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IProjectRepository, ProjectRepository>()
-            .AddScoped<IProjectMemberRepository, ProjectMemberRepository>()
             .AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<ITaskRepository, TaskRepository>()
             .AddScoped<IStateRepository, StateRepository>()
             .AddScoped<ICommentRepository, CommentRepository>()
             .AddSingleton<IConnectionStringProvider, ConnectionStringProvider>()
+            .AddScoped<ProjectMemberRepository>()
+            .AddScoped<IProjectMemberRepository, CachedProjectMemberRepository>()
+
             ;
 
         return services;

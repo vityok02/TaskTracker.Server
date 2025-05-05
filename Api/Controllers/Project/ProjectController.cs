@@ -55,6 +55,7 @@ public class ProjectController : BaseController
                 Mapper.Map<ProjectResponse>(result.Value));
     }
 
+    [ProjectMember]
     [HttpGet("{projectId:guid}")]
     [ActionName(GetByIdAction)]
     [ProducesResponseType<ProjectResponse>(StatusCodes.Status200OK)]

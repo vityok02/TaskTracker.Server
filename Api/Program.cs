@@ -9,6 +9,7 @@ using Persistence;
 using Persistence.Abstractions;
 using Persistence.Extensions;
 using Serilog;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,21 @@ builder.Services
     .AddPersistence(builder.Configuration)
     .AddApi()
     .AddSignalR();
+
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    string? connection = Environment
+        .GetEnvironmentVariable("REDIS") 
+            ?? builder.Configuration
+                .GetConnectionString("Redis");
+
+    redisOptions.ConfigurationOptions = ConfigurationOptions
+        .Parse(connection ?? "localhost:6379");
+
+    redisOptions.ConfigurationOptions.ConnectTimeout = 1000;
+    redisOptions.ConfigurationOptions.SyncTimeout = 1000;
+    redisOptions.ConfigurationOptions.AbortOnConnectFail = false;
+});
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));

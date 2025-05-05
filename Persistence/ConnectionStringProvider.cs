@@ -14,7 +14,7 @@ public class ConnectionStringProvider : IConnectionStringProvider
 
     public string GetConnectionString()
     {
-        return Environment.GetEnvironmentVariable("CONNECTION_STRING")
+        return Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING")
             ?? _configuration.GetConnectionString("localdb")!;
     }
 }
