@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IConnectionStringProvider, ConnectionStringProvider>()
             .AddScoped<ProjectMemberRepository>()
             .AddScoped<IProjectMemberRepository, CachedProjectMemberRepository>()
+            .AddScoped<ITagRepository, TagRepository>()
 
             ;
 

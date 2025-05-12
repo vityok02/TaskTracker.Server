@@ -49,7 +49,7 @@ internal sealed class UpdateStateCommandHandler
         stateEntity.Description = command.Description;
 
         stateEntity.Color = string.IsNullOrWhiteSpace(command.Color)
-            ? DefaultStateColor.Value : command.Color;
+            ? DefaultColor.Value : command.Color;
 
         stateEntity.UpdatedBy = command.UserId;
         stateEntity.UpdatedAt = _dateTimeProvider.GetCurrentTime();

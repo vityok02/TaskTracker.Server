@@ -1,4 +1,5 @@
 ﻿using Api.Controllers.Abstract;
+using Api.Controllers.Tag.Responses;
 
 namespace Api.Controllers.Task.Responses;
 
@@ -14,6 +15,9 @@ public class TaskResponse : AuditableResponse
 
     public Guid StateId {get; init;}
     public string StateName { get; init; } = string.Empty;
+    public string StateColor { get; init; } = string.Empty;
+
+    public IEnumerable<TagResponse> Tags { get; init; } = [];
 
     public DateTime? StartDate { get; init; }
     public DateTime? EndDate { get; init; }

@@ -22,7 +22,8 @@ namespace Api.Controllers.Project;
 [Route("/projects")]
 public class ProjectController : BaseController
 {
-    public const string GetByIdAction = "GetProjectById";
+    private const string GetByIdAction = "GetProjectById";
+
     public ProjectController(
         ISender sender,
         IMapper mapper)
