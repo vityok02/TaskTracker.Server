@@ -15,4 +15,10 @@ public static class TaskErrors
 
     public static Error Forbidden
         => new("Task.Forbidden", "There is no permission to modify these tasks.");
+
+    public static Error TagAlreadyExists
+        => new("Task.TagAlreadyExists", "Task already has this tag");
+
+    public static Error TagNotFound
+        => new("Task.TagNotFound", "Tag not found");
 }

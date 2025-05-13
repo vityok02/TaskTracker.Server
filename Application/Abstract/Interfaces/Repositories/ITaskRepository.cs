@@ -18,7 +18,7 @@ public interface ITaskRepository : IRepository<TaskEntity, Guid>
 
     Task<int> GetLastOrderAsync(Guid projectId);
 
-    Task GetTagsAsync(Guid taskId);
+    Task<bool> HasTagAsync(Guid taskId, Guid tagid);
 
     Task RemoveTagAsync(Guid taskId, Guid tagId);
 

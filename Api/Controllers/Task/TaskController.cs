@@ -195,8 +195,9 @@ public class TaskController : BaseController
     }
 
     [ProjectMember(Roles.Contributor)]
-    [HttpPost("{taskId:guid}/tags/{tagId:guid}")]
-    [ProducesResponseType<TaskResponse>(StatusCodes.Status204NoContent)]
+    [HttpPut("{taskId:guid}/tags/{tagId:guid}")]
+    [ProducesResponseType<TaskResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<TaskResponse>(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> AddTagAsync(
         [FromRoute] Guid taskId,
         [FromRoute] Guid tagId,

@@ -29,13 +29,14 @@ internal sealed class RemoveTagCommandHandler
     {
         var taskTask = _taskRepository
             .GetByIdAsync(command.TaskId);
-        var tagTask = _tagRepository
-            .GetByIdAsync(command.TagId);
 
-        await Task.WhenAll(taskTask, tagTask);
+        var hasTagTask = _taskRepository
+            .HasTagAsync(command.TaskId, command.TagId);
+
+        await Task.WhenAll(taskTask, hasTagTask);
 
         var task = taskTask.Result;
-        var tag = tagTask.Result;
+        var hasTag = hasTagTask.Result;
 
         if (task is null)
         {
@@ -43,10 +44,10 @@ internal sealed class RemoveTagCommandHandler
                 .Failure(TaskErrors.NotFound);
         }
 
-        if (tag is null)
+        if (!hasTag)
         {
             return Result
-                .Failure(TagErrors.NotFound);
+                .Failure(TaskErrors.TagNotFound);
         }
 
         await _taskRepository

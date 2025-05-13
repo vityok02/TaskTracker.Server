@@ -1,4 +1,5 @@
 ﻿using Application.Abstract;
+using Application.Modules.Tags;
 
 namespace Application.Modules.Tasks;
 
@@ -14,6 +15,8 @@ public class TaskDto : AuditableDto
 
     public Guid StateId { get; init; }
     public string StateName { get; init; } = string.Empty;
+
+    public IEnumerable<TagDto> Tags { get; init; } = new List<TagDto>();
 
     public DateTime? StartDate { get; init; }
     public DateTime? EndDate { get; init; }

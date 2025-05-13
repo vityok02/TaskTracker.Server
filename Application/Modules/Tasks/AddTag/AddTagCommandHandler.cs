@@ -33,6 +33,7 @@ internal sealed class AddTagCommandHandler
     {
         var taskTask = _taskRepository
             .GetByIdAsync(command.TaskId);
+
         var tagTask = _tagRepository
             .GetByIdAsync(command.TagId);
 
@@ -51,6 +52,15 @@ internal sealed class AddTagCommandHandler
         {
             return Result<TaskDto>
                 .Failure(TagErrors.NotFound);
+        }
+
+        var hasTag = await _taskRepository
+            .HasTagAsync(command.TaskId, command.TagId);
+
+        if (hasTag)
+        {
+            return Result<TaskDto>
+                .Failure(TaskErrors.TagAlreadyExists);
         }
 
         await _taskRepository

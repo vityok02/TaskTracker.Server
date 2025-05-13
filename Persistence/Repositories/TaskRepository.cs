@@ -97,10 +97,35 @@ public class TaskRepository
 
         var query = GetSelectQuery("t.Id = @Id");
 
-        return await connection
-            .QueryFirstOrDefaultAsync<TaskModel>(
+        var taskDictionary = new Dictionary<Guid, TaskModel>();
+
+        var result = await connection
+            .QueryAsync<TaskModel, TagEntity, TaskModel>(
                 query,
-                new { Id = id });
+                (task, tag) =>
+                {
+                    if (!taskDictionary.TryGetValue(task.Id, out var taskEntry))
+                    {
+                        taskEntry = task;
+                        taskEntry.Tags = [];
+                        taskDictionary.Add(taskEntry.Id, taskEntry);
+                    }
+
+                    if (tag != null)
+                    {
+                        taskEntry.Tags.Add(tag);
+                    }
+
+                    return taskEntry;
+                },
+                new
+                {
+                    Id = id
+                },
+                splitOn: "Id");
+
+        return taskDictionary.Values
+            .SingleOrDefault();
     }
 
     public async Task<int> GetLastOrderAsync(Guid stateId)
@@ -157,17 +182,22 @@ public class TaskRepository
             });
     }
 
-    public async Task GetTagsAsync(Guid taskId)
+    public async Task<bool> HasTagAsync(Guid taskId, Guid tagId)
     {
         var connection = ConnectionFactory.Create();
 
-        var query = @"SELECT * FROM [Tag]
-            LEFT JOIN [TaskTag] tt ON tt.TagId = Id
-            WHERE tt.TaskId = @TaskId";
+        var query = @"SELECT COUNT(1) FROM [TaskTag]
+            WHERE TaskId = @TaskId
+            AND TagId = @TagId";
 
-        await connection.QueryAsync(
-            query,
-            new { TaskId = taskId });
+        return await connection
+            .ExecuteScalarAsync<bool>(
+                query,
+                new
+                {
+                    TaskId = taskId,
+                    TagId = tagId,
+                });
     }
 
     private static string GetSelectQuery(string whereCondition) => $@"
@@ -177,7 +207,7 @@ public class TaskRepository
                 s.Name AS StateName,
                 s.Color AS StateColor,
                 tg.Id,
-                tg.Name AS TagName,
+                tg.Name,
                 tg.Color,
                 tg.SortOrder AS TagSortOrder,
                 uc.Username AS CreatedByName,
