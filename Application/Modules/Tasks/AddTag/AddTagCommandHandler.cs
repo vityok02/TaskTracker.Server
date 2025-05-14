@@ -2,6 +2,7 @@
 using Application.Abstract.Interfaces.Repositories;
 using Application.Abstract.Messaging;
 using AutoMapper;
+using Domain.Entities;
 using Domain.Errors;
 using Domain.Shared;
 
@@ -54,17 +55,30 @@ internal sealed class AddTagCommandHandler
                 .Failure(TagErrors.NotFound);
         }
 
-        var hasTag = await _taskRepository
-            .HasTagAsync(command.TaskId, command.TagId);
+        var taskTag = await _taskRepository
+            .GetTaskTagAsync(command.TaskId, command.TagId);
 
-        if (hasTag)
+        if (taskTag is not null)
         {
             return Result<TaskDto>
                 .Failure(TaskErrors.TagAlreadyExists);
         }
 
+        var taskTags = await _taskRepository
+            .GetTagsAsync(command.TaskId);
+
+        var newTaskTag = new TaskTagEntity
+        {
+            TaskId = command.TaskId,
+            TagId = command.TagId,
+            SortOrder = taskTags
+                .Select(x => x.SortOrder)
+                .DefaultIfEmpty(0)
+                .Max() + 1
+        };
+
         await _taskRepository
-            .AddTagAsync(command.TaskId, command.TagId);
+            .AddTagAsync(newTaskTag);
 
         task.UpdatedBy = command.UserId;
 

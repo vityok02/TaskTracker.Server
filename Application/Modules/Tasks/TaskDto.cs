@@ -15,6 +15,7 @@ public class TaskDto : AuditableDto
 
     public Guid StateId { get; init; }
     public string StateName { get; init; } = string.Empty;
+    public string StateColor { get; init; } = string.Empty;
 
     public IEnumerable<TagDto> Tags { get; init; } = new List<TagDto>();
 
