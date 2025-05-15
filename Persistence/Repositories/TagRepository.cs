@@ -1,9 +1,9 @@
 ﻿using Application.Abstract.Interfaces.Repositories;
 using Dapper;
-using Domain.Abstract;
 using Domain.Entities;
 using Persistence.Abstractions;
 using Persistence.Repositories.Base;
+using Z.Dapper.Plus;
 
 namespace Persistence.Repositories;
 
@@ -25,5 +25,13 @@ public class TagRepository :
             .QueryAsync<TagEntity>(
                 query,
                 new { ProjectId = projectId });
+    }
+
+    public async Task UpdateRangeAsync(IEnumerable<TagEntity> tags)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        await connection
+            .BulkUpdateAsync(tags);
     }
 }
