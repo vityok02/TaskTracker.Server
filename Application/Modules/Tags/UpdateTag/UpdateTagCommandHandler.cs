@@ -40,7 +40,7 @@ internal sealed class UpdateTagCommandHandler
 
         tag.Name = command.Name;
         tag.Color = string.IsNullOrWhiteSpace(command.Color)
-            ? DefaultColor.Value : command.Color;
+            ? Colors.Default : command.Color;
         tag.UpdatedBy = command.UserId;
         tag.UpdatedAt = _dateTimeProvider
             .GetCurrentTime();

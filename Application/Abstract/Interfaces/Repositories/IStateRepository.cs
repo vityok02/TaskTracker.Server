@@ -17,4 +17,5 @@ public interface IStateRepository : IRepository<StateEntity, Guid>
     Task<int> GetLastOrderAsync(Guid ProjectId);
 
     Task UpdateRangeAsync(IEnumerable<StateEntity> states);
+    Task CreateManyAsync(IEnumerable<StateEntity> states);
 }

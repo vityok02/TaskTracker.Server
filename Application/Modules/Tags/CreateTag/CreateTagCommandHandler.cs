@@ -37,7 +37,7 @@ internal sealed class CreateTagCommandHandler
         {
             Id = Guid.NewGuid(),
             Name = command.Name,
-            Color = command.Color ?? DefaultColor.Value,
+            Color = command.Color ?? Colors.Default,
             SortOrder = tags
                 .Select(x => x.SortOrder)
                 .DefaultIfEmpty(0)

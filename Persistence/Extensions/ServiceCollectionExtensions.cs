@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ProjectMemberRepository>()
             .AddScoped<IProjectMemberRepository, CachedProjectMemberRepository>()
             .AddScoped<ITagRepository, TagRepository>()
+            .AddScoped<ITemplateRepository, TemplateRepository>()
 
             ;
 

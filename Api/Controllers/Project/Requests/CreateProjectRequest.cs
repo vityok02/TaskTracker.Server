@@ -3,4 +3,5 @@
 public record CreateProjectRequest(
     string Name,
     string? Description,
-    DateTime? StartDate);
+    DateTime? StartDate,
+    Guid? TemplateId);

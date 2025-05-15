@@ -76,10 +76,12 @@ public class StateRepository
             FROM [State] 
             WHERE ProjectId = @ProjectId";
 
-        return await connection
-            .QueryFirstOrDefaultAsync<int>(
+        var result = await connection
+            .QueryFirstOrDefaultAsync<int?>(
                 query,
                 new { ProjectId });
+
+        return result ?? 0;
     }
 
     public async Task UpdateRangeAsync(IEnumerable<StateEntity> states)
@@ -87,6 +89,13 @@ public class StateRepository
         using var connection = ConnectionFactory.Create();
 
         await connection.BulkUpdateAsync(states);
+    }
+
+    public async Task CreateManyAsync(IEnumerable<StateEntity> states)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        await connection.BulkInsertAsync(states);
     }
 
     private static string GetSelectQuery(string whereCondition) => @$"

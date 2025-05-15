@@ -1,5 +1,4 @@
 ﻿using Domain.Abstract;
-using Domain.Entities;
 
 namespace Application.Extensions;
 

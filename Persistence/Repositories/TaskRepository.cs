@@ -41,7 +41,7 @@ public class TaskRepository
 
         var query = @"SELECT * FROM [TaskTag]
             WHERE TaskId = @TaskId
-            AND TagId = @TagId";
+            AND TaskId = @TaskId";
 
         return await connection
             .QueryAsync<TaskTagEntity>(

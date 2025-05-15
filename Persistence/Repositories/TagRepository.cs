@@ -34,4 +34,11 @@ public class TagRepository :
         await connection
             .BulkUpdateAsync(tags);
     }
+
+    public async Task CreateManyAsync(IEnumerable<TagEntity> tags)
+    {
+        using var connection = ConnectionFactory.Create();
+
+        await connection.BulkInsertAsync(tags);
+    }
 }

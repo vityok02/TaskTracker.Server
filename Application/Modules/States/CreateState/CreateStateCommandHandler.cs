@@ -38,7 +38,7 @@ internal sealed class CreateStateCommandHandler
             Id = Guid.NewGuid(),
             Name = command.Name,
             Description = command.Description,
-            Color = command.Color ?? DefaultColor.Value,
+            Color = command.Color ?? Colors.Default,
             SortOrder = lastOrder + 1,
             ProjectId = command.ProjectId,
             CreatedBy = command.UserId,

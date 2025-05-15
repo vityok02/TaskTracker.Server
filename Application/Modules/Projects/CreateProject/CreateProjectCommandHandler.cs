@@ -14,32 +14,46 @@ internal sealed class CreateProjectCommandHandler
 {
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly ITemplateRepository _templateRepository;
     private readonly IDateTimeProvider _dateTimeService;
     private readonly IMapper _mapper;
     private readonly IRoleRepository _roleRepository;
+    private readonly IStateRepository _stateRepository;
+    private readonly ITagRepository _tagRepository;
 
     public CreateProjectCommandHandler(
         IUserRepository userRepository,
         IProjectRepository projectRepository,
+        ITemplateRepository templateRepository,
         IDateTimeProvider dateTimeService,
         IMapper mapper,
-        IRoleRepository roleRepository)
+        IRoleRepository roleRepository,
+        IStateRepository stateRepository,
+        ITagRepository tagRepository)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
+        _templateRepository = templateRepository;
         _dateTimeService = dateTimeService;
         _mapper = mapper;
         _roleRepository = roleRepository;
+        _stateRepository = stateRepository;
+        _tagRepository = tagRepository;
     }
 
     public async Task<Result<ProjectDto>> Handle(
         CreateProjectCommand command,
         CancellationToken cancellationToken)
     {
-        // TODO: improve db queries
-        // Implement ProjectService
-        var user = await _userRepository
-            .GetByIdAsync(command.UserId);
+        var getUserTask = _userRepository.GetByIdAsync(command.UserId);
+        var checkProjectExistsTask = _projectRepository.ExistsByNameAsync(command.UserId, command.Name);
+        var getRoleTask = _roleRepository.GetByNameAsync(Domain.Constants.Roles.Admin);
+
+        await Task.WhenAll(getUserTask, checkProjectExistsTask, getRoleTask);
+
+        var user = getUserTask.Result;
+        var projectExists = checkProjectExistsTask.Result;
+        var role = getRoleTask.Result;
 
         if (user is null)
         {
@@ -47,17 +61,11 @@ internal sealed class CreateProjectCommandHandler
                 .Failure(UserErrors.NotFound);
         }
 
-        bool projectExists = await _projectRepository
-            .ExistsByNameAsync(command.UserId, command.Name);
-
         if (projectExists)
         {
             return Result<ProjectDto>
                 .Failure(ProjectErrors.AlreadyExists);
         }
-
-        var role = await _roleRepository
-            .GetByNameAsync(Domain.Constants.Roles.Admin);
 
         if (role is null)
         {
@@ -75,8 +83,23 @@ internal sealed class CreateProjectCommandHandler
         var projectId = await _projectRepository
             .CreateAsync(project, role.Id);
 
-        var states = ProjectDefaults
-            .GetDefaultStates(projectId, user.Id, _dateTimeService.GetCurrentTime());
+        IEnumerable<StateEntity> states = [];
+
+        if (command.TemplateId is not null && command.TemplateId != Guid.Empty)
+        {
+            var templateResult = await CreateTemplateAsync(
+                projectId,
+                command.TemplateId.Value,
+                command.UserId);
+
+            if (templateResult.IsFailure)
+            {
+                return Result<ProjectDto>
+                    .Failure(templateResult.Error);
+            }
+
+            states = templateResult.Value;
+        }
 
         var projectDto = new ProjectDto
         {
@@ -87,19 +110,74 @@ internal sealed class CreateProjectCommandHandler
             CreatedAt = project.CreatedAt,
             StartDate = project.StartDate
                 ?? _dateTimeService.GetCurrentTime(),
-            States = ProjectDefaults
-                .GetDefaultStates(projectId, user.Id, _dateTimeService.GetCurrentTime())
-                .Select(s => new StateDto
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    Color = s.Color,
-                    Description = s.Description,
-                    SortOrder = s.SortOrder,
-                })
+            States = states.Select(s => new StateDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Color = s.Color,
+                Description = s.Description,
+                SortOrder = s.SortOrder,
+            }),
         };
 
         return Result<ProjectDto>
             .Success(projectDto);
+    }
+
+    private async Task<Result<IEnumerable<StateEntity>>> CreateTemplateAsync(Guid projectId, Guid templateId, Guid userId)
+    {
+        var template = await _templateRepository
+            .GetByIdAsync(templateId);
+
+        if (template is null)
+        {
+            return Result<IEnumerable<StateEntity>>
+                .Failure(TemplateErrors.NotFound);
+        }
+
+        var getTemplateStatesTask = _templateRepository
+            .GetStatesAsync(templateId);
+
+        var getTemplateTagsTask = _templateRepository
+            .GetTagsAsync(templateId);
+
+        await Task.WhenAll(getTemplateStatesTask, getTemplateTagsTask);
+
+        var templateStates = getTemplateStatesTask.Result;
+        var tempateTags = getTemplateTagsTask.Result;
+
+        var states = templateStates
+            .Select(s => new StateEntity
+            {
+                Id = Guid.NewGuid(),
+                Name = s.Name,
+                Color = s.Color,
+                Description = s.Description,
+                SortOrder = s.SortOrder,
+                ProjectId = projectId,
+                CreatedAt = _dateTimeService.GetCurrentTime(),
+                CreatedBy = userId,
+            });
+
+        await _stateRepository
+            .CreateManyAsync(states);
+
+        var tags = tempateTags
+            .Select(t => new TagEntity
+            {
+                Id = Guid.NewGuid(),
+                Name = t.Name,
+                Color = t.Color,
+                SortOrder = t.SortOrder,
+                ProjectId = projectId,
+                CreatedAt = _dateTimeService.GetCurrentTime(),
+                CreatedBy = userId,
+            });
+
+        await _tagRepository
+            .CreateManyAsync(tags);
+
+        return Result<IEnumerable<StateEntity>>
+            .Success(states);
     }
 }

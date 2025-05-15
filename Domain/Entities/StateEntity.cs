@@ -11,7 +11,7 @@ public class StateEntity : SortableEntity
 
     public string? Description { get; set; } = string.Empty;
 
-    public string Color { get; set;} = DefaultColor.Value;
+    public string Color { get; set;} = Colors.Default;
 
     public Guid ProjectId { get; set; }
 }

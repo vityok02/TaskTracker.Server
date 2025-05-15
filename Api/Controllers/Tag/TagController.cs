@@ -1,12 +1,15 @@
 ﻿using Api.Controllers.Abstract;
+using Api.Controllers.State.Requests;
 using Api.Controllers.Tag.Requests;
 using Api.Controllers.Tag.Responses;
 using Api.Extensions;
 using Api.Filters;
+using Application.Modules.States.UpdateStateOrder;
 using Application.Modules.Tags.CreateTag;
 using Application.Modules.Tags.DeleteTag;
 using Application.Modules.Tags.GetAllTags;
 using Application.Modules.Tags.GetTagById;
+using Application.Modules.Tags.ReorderTags;
 using Application.Modules.Tags.UpdateTag;
 using AutoMapper;
 using Domain.Constants;
@@ -117,6 +120,28 @@ public class TagController : BaseController
         return result.IsFailure
             ? HandleFailure(result)
             : Ok(Mapper.Map<TagResponse>(result.Value));
+    }
+
+    [ProjectMember(Roles.Contributor)]
+    [HttpPatch("{tagId:guid}/order")]
+    public async Task<IActionResult> UpdateStateOrder(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid tagId,
+        [FromBody] ReorderTagsRequest reordertagsRequest,
+        CancellationToken cancellationToken)
+    {
+        var command = new ReorderTagsCommand(
+            tagId,
+            reordertagsRequest.BeforeTagId,
+            projectId,
+            User.GetUserId());
+
+        var result = await Sender
+            .Send(command, cancellationToken);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
     }
 
     [ProjectMember(Roles.Contributor)]

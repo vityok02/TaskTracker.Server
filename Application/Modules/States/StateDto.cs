@@ -11,7 +11,7 @@ public class StateDto : AuditableDto
 
     public string? Description { get; init; }
 
-    public string Color { get; init; } = DefaultColor.Value;
+    public string Color { get; init; } = Domain.Constants.Colors.Default;
 
     public int SortOrder { get; init; }
 }

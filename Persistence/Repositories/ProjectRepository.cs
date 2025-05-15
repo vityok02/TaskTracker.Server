@@ -126,11 +126,11 @@ public class ProjectRepository
                 INSERT INTO ProjectMember(UserId, ProjectId, RoleId)
                 VALUES(@UserId, @ProjectId, @RoleId)";
 
-            string insertStatesQuery = @"
-                INSERT INTO State(Id, SortOrder, Name, CreatedBy, CreatedAt, ProjectId)
-                VALUES (@Id, @SortOrder, @Name, @CreatedBy, @CreatedAt, @ProjectId)";
+            //string insertStatesQuery = @"
+            //    INSERT INTO State(Id, SortOrder, Name, CreatedBy, CreatedAt, ProjectId)
+            //    VALUES (@Id, @SortOrder, @Name, @CreatedBy, @CreatedAt, @ProjectId)";
 
-            await connection.ExecuteAsync(insertStatesQuery, states, transaction);
+            //await connection.ExecuteAsync(insertStatesQuery, states, transaction);
 
             await connection.ExecuteAsync(insertMemberQuery, new
             {
@@ -199,24 +199,6 @@ public class ProjectRepository
             .SingleOrDefault();
     }
 
-    //public override async Task UpdateAsync(ProjectEntity project)
-    //{
-    //    using var connection = ConnectionFactory.Create();
-
-    //    await connection.UpdateAsync(project);
-    //}
-
-    //public override async Task DeleteAsync(Guid id)
-    //{
-    //    using var connection = ConnectionFactory.Create();
-
-    //    var query = @"
-    //        DELETE FROM [Project] WHERE Id = @ProjectId";
-
-    //    await connection.ExecuteAsync(
-    //        query,
-    //        new { ProjectId = id });
-    //}
 
     private static string GetProjectQuery()
     {

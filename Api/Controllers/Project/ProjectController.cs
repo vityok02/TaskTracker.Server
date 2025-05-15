@@ -43,7 +43,8 @@ public class ProjectController : BaseController
             User.GetUserId(),
             projectRequest.Name,
             projectRequest.Description,
-            projectRequest.StartDate);
+            projectRequest.StartDate,
+            projectRequest.TemplateId);
 
         var result = await Sender
             .Send(command, token);

@@ -6,9 +6,15 @@ namespace Persistence;
 
 public static class TestingDataSeeder
 {
-    public static async Task SeedData(ISqlConnectionFactory connectionFactory)
+    public static async Task SeedDataAsync(ISqlConnectionFactory connectionFactory)
     {
         using var connection = connectionFactory.Create();
+
+        var usersCount = await connection
+            .ExecuteScalarAsync<int>("SELECT COUNT(1) FROM Template");
+
+        if (usersCount > 0)
+            return;
 
         await SeedUsers(connection);
     }

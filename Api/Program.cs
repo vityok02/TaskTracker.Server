@@ -71,19 +71,19 @@ if (app.Environment.IsDevelopment())
 
     try
     {
-        await TestingDataSeeder.SeedData(sqlConnectionFactory);
+        await DataSeeder.SeedDataAsync(sqlConnectionFactory);
+        await TestingDataSeeder.SeedDataAsync(sqlConnectionFactory);
     }
     catch (Exception)
     {
         logger.LogError("Testing data hasn't been initialized");
     }
 }
-//
+
 app.UseResponseCompression();
 
 app.UseHttpsRedirection();
 
-//
 app.UseStaticFiles(new StaticFileOptions
 {
     HttpsCompression = HttpsCompressionMode.Compress,

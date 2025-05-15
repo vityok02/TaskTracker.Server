@@ -6,5 +6,6 @@ public sealed record CreateProjectCommand(
     Guid UserId,
     string Name,
     string? Description,
-    DateTime? StartDate)
+    DateTime? StartDate,
+    Guid? TemplateId)
     : ICommand<ProjectDto>;
