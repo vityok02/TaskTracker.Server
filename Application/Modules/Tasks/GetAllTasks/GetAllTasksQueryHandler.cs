@@ -24,7 +24,7 @@ internal sealed class GetAllTasksQueryHandler
         CancellationToken cancellationToken)
     {
         var tasks = await _taskRepository
-            .GetAllExtendedAsync(query.ProjectId, query.SearchTerm);
+            .GetAllExtendedAsync(query.ProjectId, query.SearchTerm, query.TagIds);
 
         return Result<IEnumerable<TaskDto>>
             .Success(_mapper.Map<IEnumerable<TaskDto>>(tasks));

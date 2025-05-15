@@ -3,10 +3,12 @@ using Api.Controllers.Task.Requests;
 using Api.Controllers.Task.Responses;
 using Api.Extensions;
 using Api.Filters;
+using Application.Modules.Tasks.AddTag;
 using Application.Modules.Tasks.CreateTask;
 using Application.Modules.Tasks.DeleteTask;
 using Application.Modules.Tasks.GetAllTasks;
 using Application.Modules.Tasks.GetTaskById;
+using Application.Modules.Tasks.RemoveTag;
 using Application.Modules.Tasks.ReorderTasks;
 using Application.Modules.Tasks.UpdateTask;
 using Application.Modules.Tasks.UpdateTaskState;
@@ -88,9 +90,10 @@ public class TaskController : BaseController
     public async Task<IActionResult> GetAllAsync(
         [FromRoute] Guid projectId,
         [FromQuery] string? searchTerm,
+        [FromQuery] IEnumerable<Guid>? tagIds,
         CancellationToken token)
     {
-        var query = new GetAllTasksQuery(projectId, searchTerm);
+        var query = new GetAllTasksQuery(projectId, searchTerm, tagIds);
 
         var result = await Sender
             .Send(query, token);
@@ -186,6 +189,49 @@ public class TaskController : BaseController
 
         var result = await Sender
             .Send(command, token);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : NoContent();
+    }
+
+    [ProjectMember(Roles.Contributor)]
+    [HttpPut("{taskId:guid}/tags/{tagId:guid}")]
+    [ProducesResponseType<TaskResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<TaskResponse>(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> AddTagAsync(
+        [FromRoute] Guid taskId,
+        [FromRoute] Guid tagId,
+        CancellationToken cancellationToken)
+    {
+        var command = new AddTagCommand(
+            taskId,
+            tagId,
+            User.GetUserId());
+
+        var result = await Sender
+            .Send(command, cancellationToken);
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(Mapper.Map<TaskResponse>(result.Value));
+    }
+
+    [ProjectMember(Roles.Contributor)]
+    [HttpDelete("{taskId:guid}/tags/{tagId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteTagAsync(
+        [FromRoute] Guid taskId,
+        [FromRoute] Guid tagId,
+        CancellationToken cancellationToken)
+    {
+        var command = new RemoveTagCommand(
+            taskId,
+            tagId,
+            User.GetUserId());
+
+        var result = await Sender
+            .Send(command, cancellationToken);
 
         return result.IsFailure
             ? HandleFailure(result)

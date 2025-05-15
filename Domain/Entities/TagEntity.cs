@@ -1,16 +1,16 @@
 ﻿using Domain.Constants;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domain.Models;
+namespace Domain.Entities;
 
-public class StateModel : AuditableModel
+[Table("Tag")]
+public class TagEntity : AuditableEntity
 {
-    public Guid Id { get; set; }
-
     public string Name { get; set; } = string.Empty;
-
-    public string? Description { get; set; }
 
     public string Color { get; set; } = DefaultColor.Value;
 
     public int SortOrder { get; set; }
+
+    public Guid ProjectId { get; set; }
 }

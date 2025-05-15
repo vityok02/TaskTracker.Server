@@ -1,4 +1,6 @@
-﻿namespace Domain.Models;
+﻿using Domain.Entities;
+
+namespace Domain.Models;
 
 public class TaskModel : AuditableModel
 {
@@ -12,6 +14,9 @@ public class TaskModel : AuditableModel
 
     public Guid StateId { get; set; }
     public string StateName { get; set; } = string.Empty;
+    public string StateColor { get; set; } = string.Empty;
+
+    public List<TagEntity> Tags { get; set; } = [];
 
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }

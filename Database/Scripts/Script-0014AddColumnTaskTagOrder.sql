@@ -1,0 +1,2 @@
+ALTER TABLE [TaskTag]
+ADD SortOrder int NOT NULL DEFAULT 0
